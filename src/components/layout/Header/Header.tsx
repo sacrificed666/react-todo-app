@@ -1,7 +1,9 @@
+import styles from "./Header.module.scss";
+
 const Header = () => {
   return (
-    <header className="">
-      <h1 className="">📝 React ToDo App</h1>
+    <header className={styles.header}>
+      <h1>📝 React ToDo App</h1>
     </header>
   );
 };

@@ -1,11 +1,7 @@
-.main {
-  max-width: 64rem;
-  width: 100%;
-  padding: 1rem;
+.layout {
+  min-height: 100svh;
   display: flex;
-  flex: 1;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
 }

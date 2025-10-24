@@ -5,13 +5,32 @@
   justify-content: center;
   align-items: center;
   gap: 0.25rem;
-  border: 1px solid black;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: calc(infinity * 1px);
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(0.25rem);
 
   .text {
     flex: 1;
   }
 
   .button {
-    border: 1px solid black;
+    height: 2rem;
+    width: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: calc(infinity * 1px);
+    backdrop-filter: blur(0.25rem);
+  }
+
+  .toggle {
+    background-color: rgba(0, 255, 0, 0.1);
+  }
+
+  .edit {
+    background-color: rgba(255, 128, 0, 0.1);
+  }
+
+  .delete {
+    background-color: rgba(255, 0, 0, 0.1);
   }
 }

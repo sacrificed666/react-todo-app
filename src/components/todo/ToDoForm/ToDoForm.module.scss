@@ -4,15 +4,28 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid black;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: calc(infinity * 1px);
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(0.25rem);
 
   .input {
     flex: 1;
+    padding-left: 1rem;
     border: none;
     outline: none;
+    background-color: transparent;
   }
 
   .button {
-    border: 1px solid black;
+    height: 2rem;
+    width: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: calc(infinity * 1px);
+    backdrop-filter: blur(0.25rem);
+  }
+
+  .add {
+    background-color: rgba(0, 0, 255, 0.1);
   }
 }

@@ -5,32 +5,51 @@
   justify-content: center;
   align-items: center;
   gap: 0.25rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 8, 16, 0.1);
   border-radius: calc(infinity * 1px);
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 8, 16, 0.1);
   backdrop-filter: blur(0.25rem);
+
+  &.completed {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
 
   .text {
     flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+
+    &::placeholder {
+      color: inherit;
+    }
   }
 
   .button {
-    height: 2rem;
-    width: 2rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    height: 2.5rem;
+    width: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(0, 8, 16, 0.1);
     border-radius: calc(infinity * 1px);
+    background-color: rgba(0, 8, 16, 0.1);
     backdrop-filter: blur(0.25rem);
-  }
 
-  .toggle {
-    background-color: rgba(0, 255, 0, 0.1);
-  }
-
-  .edit {
-    background-color: rgba(255, 128, 0, 0.1);
-  }
-
-  .delete {
-    background-color: rgba(255, 0, 0, 0.1);
+    .icon {
+      height: 1.5rem;
+      opacity: 0.9;
+    }
   }
 }

@@ -18,7 +18,7 @@ const ToDoForm = () => {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <input type="text" className={styles.input} value={value} onChange={(e) => setValue(e.target.value)} placeholder="Add new ToDo..." />
-      <button type="submit" className={`${styles.button} ${styles.add}`}>
+      <button type="submit" className={`${styles.button} ${styles.add}`} aria-label="Add">
         <img className={styles.icon} src="add.svg" alt="Add" />
       </button>
     </form>

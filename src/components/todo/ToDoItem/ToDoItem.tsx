@@ -28,14 +28,14 @@ const ToDoItem = ({ id, text, isCompleted }: ToDoItemProps) => {
 
   return (
     <li className={`${styles.item} ${isCompleted ? styles.completed : null}`}>
-      <button className={`${styles.button} ${styles.toggle}`} onClick={handleToggle}>
+      <button className={`${styles.button} ${styles.toggle}`} onClick={handleToggle} aria-label="Toggle">
         {isCompleted ? <img className={styles.icon} src="check.svg" alt="Check" /> : null}
       </button>
       {isEditing ? <input className={styles.input} value={newText} onChange={(e) => setNewText(e.target.value)} autoFocus /> : <span className={`${styles.text} ${isCompleted ? styles.completed : null}`}>{text}</span>}
-      <button className={`${styles.button} ${styles.edit}`} onClick={handleEdit}>
+      <button className={`${styles.button} ${styles.edit}`} onClick={handleEdit} aria-label={isEditing ? "Save" : "Edit"}>
         {isEditing ? <img className={styles.icon} src="save.svg" alt="Save" /> : <img className={styles.icon} src="edit.svg" alt="Edit" />}
       </button>
-      <button className={`${styles.button} ${styles.delete}`} onClick={handleDelete}>
+      <button className={`${styles.button} ${styles.delete}`} onClick={handleDelete} aria-label="Delete">
         <img className={styles.icon} src="delete.svg" alt="Delete" />
       </button>
     </li>

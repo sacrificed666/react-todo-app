@@ -4,7 +4,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   border-top: 1px solid rgba(0, 8, 16, 0.1);
   background-color: rgba(0, 8, 16, 0.1);
+  box-shadow: 0 0 1rem 0 rgba(0, 8, 16, 0.9), inset 0 1px 1px 0 rgba(240, 248, 255, 0.1);
   backdrop-filter: blur(0.25rem);
 }

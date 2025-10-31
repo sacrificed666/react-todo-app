@@ -7,9 +7,11 @@
   border: 1px solid rgba(0, 8, 16, 0.1);
   border-radius: calc(infinity * 1px);
   background-color: rgba(0, 8, 16, 0.1);
+  box-shadow: 0 0 1rem 0 rgba(0, 8, 16, 0.9), inset 0 1px 1px 0 rgba(240, 248, 255, 0.1);
   backdrop-filter: blur(0.25rem);
 
   .input {
+    min-width: 0;
     flex: 1;
     padding: 0 1.25rem;
     border: none;
@@ -34,6 +36,8 @@
     border-radius: calc(infinity * 1px);
     background-color: rgba(0, 8, 16, 0.1);
     backdrop-filter: blur(0.25rem);
+    box-shadow: 0 0 1rem 0 rgba(0, 8, 16, 0.9), inset 0 1px 1px 0 rgba(240, 248, 255, 0.1);
+    cursor: pointer;
     transition: all 0.15s ease-in-out;
 
     &:active {

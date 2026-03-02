@@ -3,7 +3,7 @@ import styles from "./Footer.module.scss";
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <span>© 2025 Illia Movchko</span>
+      <span>© {new Date().getFullYear()} Illia Movchko</span>
     </footer>
   );
 };

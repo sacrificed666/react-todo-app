@@ -5,16 +5,16 @@
   justify-content: center;
   align-items: center;
   gap: 0.25rem;
-  border: 1px solid rgba(0, 8, 16, 0.1);
-  border-radius: calc(infinity * 1px);
-  background-color: rgba(0, 8, 16, 0.1);
-  box-shadow: 0 0 1rem 0 rgba(0, 8, 16, 0.9), inset 0 1px 1px 0 rgba(240, 248, 255, 0.1);
+  border: 1px solid rgba(16, 8, 0, 0.1);
+  border-radius: 1rem;
+  background-color: rgba(16, 8, 0, 0.1);
+  box-shadow: 0 0 1rem 0 rgba(16, 8, 0, 0.25), inset 0 1px 1px 0 rgba(255, 248, 240, 0.1);
   backdrop-filter: blur(0.25rem);
   transition: all 0.15s ease-in-out;
 
   &.completed {
     text-decoration: line-through;
-    opacity: 0.5;
+    opacity: 0.75;
   }
 
   .text {
@@ -44,10 +44,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid rgba(0, 8, 16, 0.1);
-    border-radius: calc(infinity * 1px);
-    background-color: rgba(0, 8, 16, 0.1);
-    box-shadow: 0 0 1rem 0 rgba(0, 8, 16, 0.9), inset 0 1px 1px 0 rgba(240, 248, 255, 0.1);
+    border: 1px solid rgba(16, 8, 0, 0.1);
+    border-radius: 0.75rem;
+    background-color: rgba(16, 8, 0, 0.1);
+    box-shadow: 0 0 1rem 0 rgba(16, 8, 0, 0.25), inset 0 1px 1px 0 rgba(255, 248, 240, 0.1);
     backdrop-filter: blur(0.25rem);
     cursor: pointer;
     transition: all 0.15s ease-in-out;

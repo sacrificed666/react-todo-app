@@ -1,0 +1,139 @@
+@use "@/styles/mixins" as *;
+
+.trigger {
+  anchor-name: --todo-menu;
+}
+
+.menu {
+  @include glass(var(--radius-xl), var(--glass-tint-strong), var(--glass-blur-thick));
+  position: fixed;
+  inset: auto;
+  inset-block-start: var(--menu-top, 88px);
+  inset-inline-end: var(--menu-right, 16px);
+  inline-size: min(17rem, calc(100vw - 32px));
+  margin: 0;
+  padding: 6px;
+  border: 0;
+  overflow: visible;
+  color: var(--color-text);
+  transform-origin: top right;
+  opacity: 1;
+  scale: 1;
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    scale var(--duration-slow) var(--ease-spring),
+    overlay var(--duration-base) allow-discrete,
+    display var(--duration-base) allow-discrete;
+
+  &:not(:popover-open) {
+    opacity: 0;
+    scale: 0.92;
+  }
+
+  @starting-style {
+    &:popover-open {
+      opacity: 0;
+      scale: 0.92;
+    }
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
+
+  @supports (position-area: block-end) {
+    position-anchor: --todo-menu;
+    position-area: block-end span-inline-start;
+    position-try-fallbacks: flip-block;
+    inset: auto;
+    margin-block-start: 10px;
+  }
+
+  @media (forced-colors: active) {
+    border: 1px solid CanvasText;
+  }
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+
+  & + & {
+    margin-block-start: 6px;
+    padding-block-start: 6px;
+    border-block-start: 1px solid var(--color-separator);
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  block-size: 44px;
+  padding-inline: 12px;
+  border-radius: calc(var(--radius-xl) - 6px);
+  font-size: 0.9375rem;
+  text-align: start;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background-color: rgb(255 248 240 / 10%);
+  }
+
+  &:active:not(:disabled) {
+    background-color: rgb(255 248 240 / 16%);
+  }
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+.icon {
+  font-size: 1.1875rem;
+  color: var(--color-text-secondary);
+}
+
+.shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  margin-block-start: 6px;
+  padding: 10px 8px 6px;
+  border-block-start: 1px solid var(--color-separator);
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  dt {
+    display: flex;
+    gap: 2px;
+  }
+
+  kbd {
+    min-inline-size: 20px;
+    padding: 1px 5px;
+    border-radius: 6px;
+    background-color: var(--color-control);
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 30%);
+    font-family: inherit;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--color-text-secondary);
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    display: none;
+  }
+}

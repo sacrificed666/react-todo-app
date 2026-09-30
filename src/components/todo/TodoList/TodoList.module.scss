@@ -1,0 +1,20 @@
+@use "@/styles/mixins" as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.clear {
+  @include glass(var(--radius-full));
+  @include pressable(1.06);
+  block-size: 34px;
+  padding-inline: 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  @include hover {
+    background-color: var(--glass-tint-hover);
+    --light-strength: 0.18;
+  }
+}

@@ -1,0 +1,121 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 110%, rgb(46 20 70 / 70%) 0%, transparent 60%),
+    linear-gradient(165deg, #100d22 0%, #08070f 55%, #0d0918 100%);
+}
+
+.aurora {
+  position: absolute;
+  inset: 0;
+}
+
+.orb {
+  --size: 60vmax;
+  position: absolute;
+  inline-size: var(--size);
+  block-size: var(--size);
+  margin: calc(var(--size) / -2);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--tone), transparent);
+  mix-blend-mode: screen;
+  opacity: 0.58;
+  animation: drift var(--duration) var(--ease-in-out) var(--delay) infinite alternate;
+  will-change: translate, scale;
+
+  &[data-tone="violet"] {
+    --tone: #7a5cff;
+    --size: 70vmax;
+    --dx: 12vmax;
+    --dy: 8vmax;
+    --duration: 38s;
+    --delay: -6s;
+    inset-block-start: 38%;
+    inset-inline-start: 18%;
+  }
+
+  &[data-tone="rose"] {
+    --tone: #ff4f93;
+    --size: 58vmax;
+    --dx: -10vmax;
+    --dy: 12vmax;
+    --duration: 44s;
+    --delay: -18s;
+    inset-block-start: 12%;
+    inset-inline-start: 72%;
+  }
+
+  &[data-tone="amber"] {
+    --tone: #ff9f45;
+    --size: 52vmax;
+    --dx: -14vmax;
+    --dy: -9vmax;
+    --duration: 50s;
+    --delay: -30s;
+    inset-block-start: 88%;
+    inset-inline-start: 70%;
+  }
+
+  &[data-tone="teal"] {
+    --tone: #1fd1c2;
+    --size: 46vmax;
+    --dx: 10vmax;
+    --dy: -12vmax;
+    --duration: 42s;
+    --delay: -12s;
+    inset-block-start: 92%;
+    inset-inline-start: 8%;
+  }
+
+  &[data-tone="blue"] {
+    --tone: #3f6bff;
+    --size: 50vmax;
+    --dx: 9vmax;
+    --dy: 10vmax;
+    --duration: 47s;
+    --delay: -24s;
+    inset-block-start: 2%;
+    inset-inline-start: 4%;
+  }
+}
+
+.waves {
+  position: absolute;
+  inset: -4%;
+  background: url("@/assets/waves.svg") center / cover no-repeat;
+  opacity: 0.9;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+}
+
+@keyframes drift {
+  0% {
+    translate: 0 0;
+    scale: 1;
+  }
+
+  50% {
+    translate: var(--dx) var(--dy);
+    scale: 1.18;
+  }
+
+  100% {
+    translate: calc(var(--dx) * -0.7) calc(var(--dy) * 0.6);
+    scale: 0.88;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb {
+    animation: none;
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "jsx-a11y", "import", "unicorn", "oxc", "vitest"],
+  "jsPlugins": ["./lint/no-comments.js"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "options": {
+    "typeAware": true
+  },
+  "env": {
+    "browser": true,
+    "es2024": true
+  },
+  "ignorePatterns": ["dist", "dev-dist", "coverage"],
+  "rules": {
+    "local/no-comments": "error",
+    "eqeqeq": "error",
+    "no-console": "error",
+    "prefer-const": "error",
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
+    ],
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "import/no-self-import": "error",
+    "import/no-unassigned-import": [
+      "error",
+      {
+        "allow": ["**/*.scss", "@testing-library/jest-dom/vitest"]
+      }
+    ],
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "react/only-export-components": [
+      "error",
+      {
+        "allowConstantExport": true
+      }
+    ],
+    "react/button-has-type": "error",
+    "react/jsx-key": "error",
+    "react/jsx-no-useless-fragment": "error",
+    "react/self-closing-comp": "error",
+    "react/no-array-index-key": "error",
+    "react/purity": "error",
+    "react/refs": "error",
+    "react/immutability": "error",
+    "react/set-state-in-effect": "error",
+    "react/set-state-in-render": "error",
+    "react/static-components": "error",
+    "react/globals": "error",
+    "react/use-memo": "error",
+    "react/unsupported-syntax": "error",
+    "react/incompatible-library": "error",
+    "react/preserve-manual-memoization": "error",
+    "react/no-deriving-state-in-effects": "error",
+    "react-perf/jsx-no-new-function-as-prop": "off",
+    "react-perf/jsx-no-new-object-as-prop": "off",
+    "react-perf/jsx-no-new-array-as-prop": "off",
+    "react-perf/jsx-no-jsx-as-prop": "off",
+    "typescript/consistent-type-imports": "error",
+    "typescript/consistent-type-definitions": ["error", "interface"],
+    "typescript/no-explicit-any": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/await-thenable": "error",
+    "typescript/switch-exhaustiveness-check": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-unnecessary-condition": "error",
+    "typescript/prefer-nullish-coalescing": "error",
+    "typescript/prefer-optional-chain": "error",
+    "typescript/restrict-template-expressions": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/prefer-at": "error",
+    "unicorn/prefer-string-replace-all": "error",
+    "unicorn/no-useless-undefined": "error",
+    "unicorn/prefer-structured-clone": "error",
+    "vitest/no-focused-tests": "error",
+    "vitest/no-disabled-tests": "error",
+    "vitest/no-identical-title": "error",
+    "vitest/prefer-to-be": "error",
+    "vitest/prefer-to-have-length": "error",
+    "vitest/valid-title": "error",
+    "react/react-in-jsx-scope": "off",
+    "typescript/consistent-return": "off"
+  },
+  "overrides": [
+    {
+      "files": ["vite.config.ts", "lint/**", "scripts/**"],
+      "env": {
+        "node": true
+      }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "src/test/**"],
+      "rules": {
+        "typescript/no-non-null-assertion": "off",
+        "typescript/no-unnecessary-condition": "off"
+      }
+    }
+  ]
+}

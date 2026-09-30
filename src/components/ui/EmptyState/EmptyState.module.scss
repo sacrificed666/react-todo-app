@@ -1,0 +1,43 @@
+@use "@/styles/mixins" as *;
+
+.empty {
+  @include glass(var(--radius-xl));
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 40px 24px;
+  text-align: center;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    scale var(--duration-slow) var(--ease-spring);
+
+  @starting-style {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  inline-size: 60px;
+  block-size: 60px;
+  margin-block-end: 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-control);
+  box-shadow: var(--glass-edge);
+  font-size: 1.75rem;
+  color: var(--color-text-secondary);
+}
+
+.title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.description {
+  max-inline-size: 26rem;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,15 @@
+.toolbar {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filters {
+  flex: 1;
+  min-inline-size: 0;
+}

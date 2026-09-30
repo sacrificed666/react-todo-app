@@ -1,12 +1,11 @@
-.layout {
-  min-height: 100svh;
+.app {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background-image: url("/levi.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: fixed;
+  gap: 22px;
+  min-block-size: 100svh;
+  padding-block: max(env(safe-area-inset-top), 32px) max(env(safe-area-inset-bottom), 24px);
+  padding-inline: max(env(safe-area-inset-left), 16px) max(env(safe-area-inset-right), 16px);
 }

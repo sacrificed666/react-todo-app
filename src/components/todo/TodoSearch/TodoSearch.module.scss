@@ -1,0 +1,72 @@
+@use "@/styles/mixins" as *;
+
+.search {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-block-start: 0;
+  opacity: 0;
+  translate: 0 -6px;
+  transition:
+    grid-template-rows var(--duration-base) var(--ease-in-out),
+    margin-block-start var(--duration-base) var(--ease-in-out),
+    opacity var(--duration-base) var(--ease-out),
+    translate var(--duration-slow) var(--ease-spring);
+
+  &[data-open] {
+    grid-template-rows: 1fr;
+    margin-block-start: 10px;
+    opacity: 1;
+    translate: none;
+  }
+}
+
+.clip {
+  min-block-size: 0;
+  overflow: clip;
+  overflow-clip-margin: 24px;
+}
+
+.field {
+  @include glass(var(--radius-full), $blur: var(--glass-blur-control));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  block-size: 50px;
+  padding: 6px 7px 6px 18px;
+
+  &:has(:focus-visible) {
+    box-shadow:
+      var(--glass-shadow),
+      var(--glass-edge),
+      0 0 0 2px var(--color-focus);
+  }
+}
+
+.icon {
+  font-size: 1.1875rem;
+  color: var(--color-text-secondary);
+}
+
+.input {
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 36px;
+  border: 0;
+  background: none;
+  font-size: 1rem;
+  outline: none;
+  appearance: none;
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-decoration {
+    appearance: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}

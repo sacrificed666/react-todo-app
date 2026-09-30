@@ -1,14 +1,17 @@
-import ToDoForm from "../../todo/ToDoForm/ToDoForm";
-import ToDoList from "../../todo/ToDoList/ToDoList";
+import TodoComposer from "@/components/todo/TodoComposer/TodoComposer";
+import TodoList from "@/components/todo/TodoList/TodoList";
+import TodoToolbar from "@/components/todo/TodoToolbar/TodoToolbar";
+
 import styles from "./Main.module.scss";
 
-const Main = () => {
-  return (
-    <main className={styles.main}>
-      <ToDoForm />
-      <ToDoList />
-    </main>
-  );
-};
+const Main = () => (
+  <main className={styles.main}>
+    <div className={styles.controls}>
+      <TodoComposer />
+      <TodoToolbar />
+    </div>
+    <TodoList />
+  </main>
+);
 
 export default Main;

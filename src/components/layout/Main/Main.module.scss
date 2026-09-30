@@ -1,11 +1,19 @@
 .main {
-  max-width: 64rem;
-  width: 100%;
-  padding: 1rem;
   display: flex;
   flex: 1;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.25rem;
+  gap: 14px;
+  inline-size: min(100%, var(--content-width));
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+
+  @media (min-height: 560px) {
+    position: sticky;
+    inset-block-start: max(env(safe-area-inset-top), 12px);
+  }
 }

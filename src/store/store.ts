@@ -1,11 +1,19 @@
-import { configureStore } from "@reduxjs/toolkit";
-import todoReducer from "./slices/todoSlice";
+import { combineSlices, configureStore, type ThunkAction, type UnknownAction } from "@reduxjs/toolkit";
 
-export const store = configureStore({
-  reducer: {
-    todo: todoReducer,
-  },
-});
+import { toastSlice } from "./slices/toastSlice";
+import { todosSlice } from "./slices/todosSlice";
+import { viewSlice } from "./slices/viewSlice";
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export const rootReducer = combineSlices(todosSlice, viewSlice, toastSlice);
+
+export type RootState = ReturnType<typeof rootReducer>;
+
+export const setupStore = (preloadedState?: Partial<RootState>) =>
+  configureStore({
+    reducer: rootReducer,
+    preloadedState,
+  });
+
+export type AppStore = ReturnType<typeof setupStore>;
+export type AppDispatch = AppStore["dispatch"];
+export type AppThunk<Result = void> = ThunkAction<Result, RootState, unknown, UnknownAction>;

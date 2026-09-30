@@ -1,0 +1,78 @@
+@mixin glass($radius: var(--radius-lg), $tint: var(--glass-tint), $blur: var(--glass-blur)) {
+  position: relative;
+  isolation: isolate;
+  border-radius: $radius;
+  background-color: $tint;
+  box-shadow: var(--glass-shadow), var(--glass-edge);
+  -webkit-backdrop-filter: blur($blur) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
+  backdrop-filter: blur($blur) var(--glass-refraction, opacity(1)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness));
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  &::before {
+    padding: 1px;
+    background: var(--glass-rim);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  &::after {
+    background:
+      radial-gradient(
+        160px circle at var(--light-x) var(--light-y),
+        rgb(255 255 255 / var(--light-strength)),
+        transparent 72%
+      ),
+      var(--glass-sheen);
+    transition: --light-strength var(--duration-slow) var(--ease-out);
+  }
+
+  @media (forced-colors: active) {
+    border: 1px solid CanvasText;
+  }
+}
+
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+@mixin pressable($scale: 0.96) {
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out),
+    scale var(--duration-slow) var(--ease-bounce),
+    --light-strength var(--duration-slow) var(--ease-out);
+
+  &:active:not(:disabled) {
+    scale: $scale;
+    transition-duration: var(--duration-fast);
+  }
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

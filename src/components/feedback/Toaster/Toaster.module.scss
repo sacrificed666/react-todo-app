@@ -1,0 +1,70 @@
+@use "@/styles/mixins" as *;
+
+.region {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: max(env(safe-area-inset-bottom), 18px);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  padding-inline: 16px;
+  pointer-events: none;
+}
+
+.toast {
+  @include glass(var(--radius-full), var(--glass-tint-strong), var(--glass-blur-thick));
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  inline-size: min(100%, 30rem);
+  min-block-size: 56px;
+  padding: 7px 8px 7px 22px;
+  pointer-events: auto;
+  box-shadow: var(--glass-shadow-lifted), var(--glass-edge);
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    translate var(--duration-slow) var(--ease-spring),
+    scale var(--duration-slow) var(--ease-spring);
+
+  @starting-style {
+    opacity: 0;
+    translate: 0 20px;
+    scale: 0.92;
+  }
+
+  &[data-tone="error"] .message {
+    color: var(--color-danger);
+  }
+}
+
+.message {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.undo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  block-size: 40px;
+  padding-inline: 14px 16px;
+  border-radius: var(--radius-full);
+  background-color: var(--glass-tint-accent);
+  color: var(--color-on-accent);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  @include pressable(1.06);
+
+  svg {
+    font-size: 1.0625rem;
+  }
+
+  @include hover {
+    background-color: var(--color-accent);
+  }
+}

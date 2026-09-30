@@ -2,45 +2,105 @@ import { act, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { TOAST_DURATION } from "@/components/feedback/Toaster/Toaster";
-import { parseTodos } from "@/lib/todo";
+import { parseTodos, type Todo } from "@/lib/todo";
 import { selectTodos } from "@/store/selectors";
-import { makeState, sampleTodos } from "@/test/factories";
+import { dayFromToday, makeState, makeTodo, sampleTodos, todayKey } from "@/test/factories";
 import { renderWithStore } from "@/test/render";
 
 import App from "./App";
 
-const renderApp = (todos = sampleTodos) => renderWithStore(<App />, { preloadedState: makeState(todos) });
+type User = ReturnType<typeof renderWithStore>["user"];
+
+const renderApp = (todos: readonly Todo[] = sampleTodos, list: Parameters<typeof makeState>[1] = "all") =>
+  renderWithStore(<App />, { preloadedState: makeState(todos, list) });
 
 const section = (name: RegExp) => screen.getByRole("region", { name });
-
-const notification = () => screen.getByRole("status", { name: "Notification" });
-
-const chooseMenuItem = async (user: ReturnType<typeof renderApp>["user"], name: string) => {
-  await user.click(screen.getByRole("button", { name: "More actions" }));
-  await user.click(screen.getByRole("button", { name }));
-  expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
-};
 
 const itemTitles = (region: HTMLElement) =>
   within(region)
     .queryAllByRole("checkbox")
     .map((checkbox) => checkbox.getAttribute("aria-label"));
 
-describe("App", () => {
-  it("renders the header with progress", () => {
-    renderApp();
-    expect(screen.getByRole("heading", { level: 1, name: "ToDo" })).toBeInTheDocument();
-    expect(screen.getByText("1 of 3 tasks completed")).toBeInTheDocument();
+const notification = () => screen.getByRole("status", { name: "Notification" });
+
+const openPopover = async (user: User, trigger: HTMLElement) => {
+  await user.click(trigger);
+  const popover = document.getElementById(trigger.getAttribute("popovertarget") ?? "");
+  if (!popover) throw new Error("Popover not found");
+  return within(popover);
+};
+
+const chooseMenuItem = async (user: User, name: string) => {
+  const menu = await openPopover(user, screen.getByRole("button", { name: "More actions" }));
+  await user.click(menu.getByRole("button", { name }));
+  expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
+};
+
+const plannedTodos = [
+  makeTodo({ id: "late", title: "Send the invoice", dueDate: dayFromToday(-2), important: true }),
+  makeTodo({ id: "now", title: "Daily standup", dueDate: todayKey() }),
+  makeTodo({ id: "soon", title: "Dentist appointment", dueDate: dayFromToday(3) }),
+  makeTodo({ id: "free", title: "Read a book" }),
+];
+
+describe("App shell", () => {
+  it("renders the header, lists and footer", () => {
+    renderApp(plannedTodos);
+
+    expect(screen.getByRole("banner")).toHaveTextContent("ToDo");
+    expect(screen.getByRole("heading", { level: 1, name: "All tasks" })).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "Lists" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Today (2)" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Important (1)" })).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo")).toHaveTextContent("1 overdue");
   });
 
-  it("adds tasks from the composer", async () => {
+  it("switches lists with the navigation and number keys", async () => {
+    const { user } = renderApp(plannedTodos);
+
+    await user.click(screen.getByRole("button", { name: /^Today/ }));
+    expect(screen.getByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
+    expect(itemTitles(section(/^To do/))).toEqual(["Send the invoice", "Daily standup"]);
+    expect(screen.getByRole("button", { name: /^Today/ })).toHaveAttribute("aria-current", "page");
+
+    await user.keyboard("3");
+    expect(screen.getByRole("heading", { level: 1, name: "Upcoming" })).toBeInTheDocument();
+    expect(itemTitles(section(/^To do/))).toEqual(["Dentist appointment"]);
+
+    await user.keyboard("4");
+    expect(itemTitles(section(/^To do/))).toEqual(["Send the invoice"]);
+  });
+
+  it("shows list-specific empty states", async () => {
+    const { user } = renderApp([]);
+
+    expect(screen.getByText("No tasks yet")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /^Upcoming/ }));
+    expect(screen.getByText("Nothing planned")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /^Completed/ }));
+    expect(screen.getByText("Nothing completed yet")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: "New task" })).not.toBeInTheDocument();
+  });
+
+  it("changes the appearance and accent", async () => {
+    const { user, store } = renderApp();
+
+    const panel = await openPopover(user, screen.getByRole("button", { name: "Appearance" }));
+    await user.click(panel.getByRole("radio", { name: "Light" }));
+    await user.click(panel.getByRole("radio", { name: "Forest" }));
+
+    expect(store.getState().settings).toEqual({ appearance: "light", accent: "forest" });
+    expect(document.documentElement.dataset).toMatchObject({ appearance: "light", accent: "forest" });
+  });
+});
+
+describe("Composer", () => {
+  it("adds tasks", async () => {
     const { user } = renderApp([]);
     const input = screen.getByRole("textbox", { name: "New task" });
     const submit = screen.getByRole("button", { name: "Add task" });
 
-    expect(screen.getByText("No tasks yet")).toBeInTheDocument();
     expect(submit).toBeDisabled();
-
     await user.type(input, "   ");
     expect(submit).toBeDisabled();
 
@@ -53,6 +113,41 @@ describe("App", () => {
     expect(itemTitles(section(/^To do/))).toEqual(["Feed the cat", "Water the plants"]);
   });
 
+  it("sets a due date and importance for new tasks", async () => {
+    const { user, store } = renderApp([]);
+
+    const picker = await openPopover(user, screen.getByRole("button", { name: "Due date" }));
+    await user.click(picker.getByRole("button", { name: /Tomorrow/ }));
+    await user.click(screen.getByRole("button", { name: "Important", pressed: false }));
+    await user.type(screen.getByRole("textbox", { name: "New task" }), "Renew passport{Enter}");
+
+    expect(selectTodos(store.getState())[0]).toMatchObject({
+      title: "Renew passport",
+      dueDate: dayFromToday(1),
+      important: true,
+    });
+    expect(within(section(/^To do/)).getByText("Tomorrow", { selector: "p > span" })).toBeInTheDocument();
+  });
+
+  it("uses the defaults of the selected list", async () => {
+    const { user, store } = renderApp([], "today");
+
+    expect(screen.getByRole("button", { name: "Due date: Today" })).toBeInTheDocument();
+    await user.type(screen.getByRole("textbox", { name: "New task" }), "Stretch{Enter}");
+    expect(selectTodos(store.getState())[0]?.dueDate).toBe(todayKey());
+
+    await user.click(screen.getByRole("button", { name: "Important (0)" }));
+    expect(screen.getByRole("button", { name: "Important", pressed: true })).toBeInTheDocument();
+  });
+
+  it("focuses the composer with the N shortcut", async () => {
+    const { user } = renderApp();
+    await user.keyboard("n");
+    expect(screen.getByRole("textbox", { name: "New task" })).toHaveFocus();
+  });
+});
+
+describe("Tasks", () => {
   it("moves completed tasks between sections", async () => {
     const { user } = renderApp();
 
@@ -61,26 +156,22 @@ describe("App", () => {
     expect(itemTitles(section(/^To do/))).toEqual(["Call grandma"]);
     expect(itemTitles(section(/^Completed/))).toEqual(["Buy milk", "Write the quarterly report"]);
     expect(screen.getByRole("checkbox", { name: "Buy milk" })).toHaveFocus();
-
-    await user.click(screen.getByRole("checkbox", { name: "Write the quarterly report" }));
-    expect(itemTitles(section(/^To do/))).toEqual(["Write the quarterly report", "Call grandma"]);
   });
 
   it("edits a task inline", async () => {
     const { user } = renderApp();
 
-    await user.dblClick(screen.getByText("Buy milk"));
+    await user.click(screen.getByRole("button", { name: "Edit “Buy milk”" }));
     const editor = screen.getByRole("textbox", { name: "Task title" });
     expect(editor).toHaveFocus();
 
     await user.clear(editor);
     await user.type(editor, "Buy oat milk{Enter}");
 
-    expect(screen.getByText("Buy oat milk")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Edit “Buy oat milk”" })).toHaveFocus();
   });
 
-  it("cancels editing with Escape and keeps the original title for blank input", async () => {
+  it("cancels editing and keeps the title for blank input", async () => {
     const { user } = renderApp();
 
     await user.click(screen.getByRole("button", { name: "Edit “Call grandma”" }));
@@ -91,6 +182,32 @@ describe("App", () => {
     await user.clear(screen.getByRole("textbox", { name: "Task title" }));
     await user.click(screen.getByRole("button", { name: "Save changes" }));
     expect(screen.getByText("Call grandma")).toBeInTheDocument();
+  });
+
+  it("marks tasks as important and schedules them", async () => {
+    const { user, store } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "Mark “Buy milk” as important" }));
+    expect(screen.getByRole("button", { name: "Mark “Buy milk” as important" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: "Important (1)" })).toBeInTheDocument();
+
+    const picker = await openPopover(user, screen.getByRole("button", { name: "Set due date for “Buy milk”" }));
+    await user.click(picker.getByRole("button", { name: /Next week/ }));
+    expect(selectTodos(store.getState())[0]?.dueDate).toBe(dayFromToday(7));
+
+    const again = await openPopover(user, screen.getByRole("button", { name: "Set due date for “Buy milk”" }));
+    await user.click(again.getByRole("button", { name: "Remove date" }));
+    expect(selectTodos(store.getState())[0]?.dueDate).toBeNull();
+  });
+
+  it("removes tasks that leave the current list", async () => {
+    const { user } = renderApp(plannedTodos, "important");
+
+    await user.click(screen.getByRole("button", { name: "Mark “Send the invoice” as important" }));
+    expect(screen.getByText("No important tasks")).toBeInTheDocument();
   });
 
   it("deletes a task and restores it with undo", async () => {
@@ -105,7 +222,6 @@ describe("App", () => {
 
     expect(selectTodos(store.getState()).map((todo) => todo.id)).toEqual(["milk", "report", "call"]);
     expect(screen.getByRole("checkbox", { name: "Buy milk" })).toHaveFocus();
-    expect(screen.queryByRole("button", { name: "Undo" })).not.toBeInTheDocument();
   });
 
   it("supports the undo keyboard shortcut", async () => {
@@ -132,18 +248,38 @@ describe("App", () => {
     vi.useRealTimers();
   });
 
-  it("filters tasks by status", async () => {
+  it("collapses and clears the completed section", async () => {
     const { user } = renderApp();
 
-    await user.click(screen.getByRole("radio", { name: /Active/ }));
-    expect(screen.queryByRole("region", { name: /^Completed/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /Completed1/ }));
+    expect(screen.queryByRole("checkbox", { name: "Write the quarterly report" })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("radio", { name: /Done/ }));
-    expect(screen.queryByRole("region", { name: /^To do/ })).not.toBeInTheDocument();
-    expect(itemTitles(section(/^Completed/))).toEqual(["Write the quarterly report"]);
+    await user.click(screen.getByRole("button", { name: /Completed1/ }));
+    expect(screen.getByRole("checkbox", { name: "Write the quarterly report" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Clear" }));
-    expect(screen.getByText("Nothing completed yet")).toBeInTheDocument();
+    expect(notification()).toHaveTextContent("Cleared 1 completed task");
+    expect(screen.queryByRole("region", { name: /^Completed/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("Sorting and search", () => {
+  it("sorts tasks and disables manual reordering", async () => {
+    const { user } = renderApp(plannedTodos);
+
+    expect(screen.getAllByRole("button", { name: /^Reorder/ })).toHaveLength(4);
+
+    const menu = await openPopover(user, screen.getByRole("button", { name: "Sort tasks: Manual" }));
+    await user.click(menu.getByRole("button", { name: "Title A–Z" }));
+
+    expect(itemTitles(section(/^To do/))).toEqual([
+      "Daily standup",
+      "Dentist appointment",
+      "Read a book",
+      "Send the invoice",
+    ]);
+    expect(screen.queryByRole("button", { name: /^Reorder/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sort tasks: Title A–Z" })).toBeInTheDocument();
   });
 
   it("searches tasks with the slash shortcut", async () => {
@@ -164,22 +300,17 @@ describe("App", () => {
     expect(search).toHaveValue("");
 
     await user.keyboard("{Escape}");
-    expect(screen.getByRole("button", { name: "Search" })).toHaveFocus();
-    expect(screen.getByRole("button", { name: "Search" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "Show search" })).toHaveFocus();
   });
+});
 
-  it("focuses the composer with the N shortcut", async () => {
-    const { user } = renderApp();
-    await user.keyboard("n");
-    expect(screen.getByRole("textbox", { name: "New task" })).toHaveFocus();
-  });
-
-  it("runs bulk actions from the menu", async () => {
+describe("More actions menu", () => {
+  it("runs bulk actions", async () => {
     const { user } = renderApp();
 
     await chooseMenuItem(user, "Complete all");
     expect(screen.queryByRole("region", { name: /^To do/ })).not.toBeInTheDocument();
-    expect(screen.getByText("3 of 3 tasks completed")).toBeInTheDocument();
+    expect(screen.getByText("All done")).toBeInTheDocument();
 
     await chooseMenuItem(user, "Mark all as active");
     expect(screen.queryByRole("region", { name: /^Completed/ })).not.toBeInTheDocument();

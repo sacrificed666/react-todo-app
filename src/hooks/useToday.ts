@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-import { startOfDay } from "@/lib/date";
+import { toDateKey } from "@/lib/date";
 
 const REFRESH_INTERVAL = 60_000;
 
@@ -9,6 +9,6 @@ const subscribe = (onChange: () => void) => {
   return () => clearInterval(timer);
 };
 
-const getSnapshot = () => startOfDay(new Date());
+const getSnapshot = () => toDateKey(new Date());
 
 export const useToday = () => useSyncExternalStore(subscribe, getSnapshot);

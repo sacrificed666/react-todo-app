@@ -7,10 +7,11 @@ interface EmptyStateProps {
   icon: IconName;
   title: string;
   description: string;
+  compact?: boolean;
 }
 
-const EmptyState = ({ icon, title, description }: EmptyStateProps) => (
-  <div className={styles.empty}>
+const EmptyState = ({ icon, title, description, compact = false }: EmptyStateProps) => (
+  <div className={styles.empty} data-compact={compact || undefined}>
     <span className={styles.icon}>
       <Icon name={icon} />
     </span>

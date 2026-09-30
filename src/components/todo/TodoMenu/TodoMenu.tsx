@@ -1,15 +1,17 @@
-import { useId, useRef, type ChangeEvent, type ReactNode, type ToggleEvent } from "react";
+import { useRef, type ChangeEvent, type ReactNode } from "react";
 
 import Icon from "@/components/ui/Icon/Icon";
 import type { IconName } from "@/components/ui/Icon/icons";
 import IconButton from "@/components/ui/IconButton/IconButton";
-import { useLiquidGlass } from "@/hooks/useLiquidGlass";
+import Popover from "@/components/ui/Popover/Popover";
+import { usePopover } from "@/components/ui/Popover/usePopover";
+import { useToday } from "@/hooks/useToday";
 import { toDateKey } from "@/lib/date";
 import { downloadJson } from "@/lib/download";
 import { isApplePlatform } from "@/lib/keyboard";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/store/hooks";
 import { createExport } from "@/store/persistence";
-import { selectCounts, selectTodos } from "@/store/selectors";
+import { selectListCounts, selectTodos } from "@/store/selectors";
 import { allTodosMarked } from "@/store/slices/todosSlice";
 import { clearCompleted, importTodos } from "@/store/thunks";
 
@@ -29,49 +31,41 @@ const MenuItem = ({ icon, disabled = false, onSelect, children }: MenuItemProps)
   </button>
 );
 
-const modifierKey = isApplePlatform() ? "⌘" : "Ctrl";
+const SHORTCUTS = [
+  { keys: ["N"], label: "New task" },
+  { keys: ["/"], label: "Search" },
+  { keys: ["1", "–", "5"], label: "Lists" },
+  { keys: [isApplePlatform() ? "⌘" : "Ctrl", "Z"], label: "Undo" },
+];
 
 const TodoMenu = () => {
   const dispatch = useAppDispatch();
   const store = useAppStore();
-  const counts = useAppSelector(selectCounts);
-  const menuId = useId();
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const today = useToday();
+  const counts = useAppSelector((state) => selectListCounts(state, today));
+  const popover = usePopover();
   const fileRef = useRef<HTMLInputElement>(null);
-  const allCompleted = counts.total > 0 && counts.active === 0;
-
-  useLiquidGlass(menuRef, { bezel: 22, scale: 40 });
-
-  const close = () => menuRef.current?.hidePopover();
+  const allCompleted = counts.total > 0 && counts.all === 0;
 
   const toggleAll = () => {
-    close();
+    popover.close();
     dispatch(allTodosMarked(!allCompleted));
   };
 
   const clear = () => {
-    close();
+    popover.close();
     dispatch(clearCompleted());
   };
 
   const exportTodos = () => {
-    close();
+    popover.close();
     const now = new Date();
     downloadJson(`todos-${toDateKey(now)}.json`, createExport(selectTodos(store.getState()), now));
   };
 
   const pickFile = () => {
-    close();
+    popover.close();
     fileRef.current?.click();
-  };
-
-  const handleBeforeToggle = (event: ToggleEvent<HTMLDivElement>) => {
-    const trigger = triggerRef.current;
-    if (event.newState !== "open" || !trigger) return;
-    const rect = trigger.getBoundingClientRect();
-    event.currentTarget.style.setProperty("--menu-top", `${rect.bottom + 10}px`);
-    event.currentTarget.style.setProperty("--menu-right", `${document.documentElement.clientWidth - rect.right}px`);
   };
 
   const handleImport = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -83,14 +77,8 @@ const TodoMenu = () => {
 
   return (
     <>
-      <IconButton
-        ref={triggerRef}
-        icon="ellipsis"
-        label="More actions"
-        className={styles.trigger}
-        popoverTarget={menuId}
-      />
-      <div ref={menuRef} id={menuId} popover="auto" className={styles.menu} onBeforeToggle={handleBeforeToggle}>
+      <IconButton icon="ellipsis" label="More actions" {...popover.triggerProps} />
+      <Popover id={popover.id} popoverRef={popover.ref} anchorName={popover.anchorName} label="More actions">
         <div className={styles.group}>
           <MenuItem icon={allCompleted ? "rotate" : "checkAll"} disabled={counts.total === 0} onSelect={toggleAll}>
             {allCompleted ? "Mark all as active" : "Complete all"}
@@ -108,27 +96,18 @@ const TodoMenu = () => {
           </MenuItem>
         </div>
         <dl className={styles.shortcuts}>
-          <div>
-            <dt>
-              <kbd>N</kbd>
-            </dt>
-            <dd>New task</dd>
-          </div>
-          <div>
-            <dt>
-              <kbd>/</kbd>
-            </dt>
-            <dd>Search</dd>
-          </div>
-          <div>
-            <dt>
-              <kbd>{modifierKey}</kbd>
-              <kbd>Z</kbd>
-            </dt>
-            <dd>Undo</dd>
-          </div>
+          {SHORTCUTS.map(({ keys, label }) => (
+            <div key={label}>
+              <dt>
+                {keys.map((key) => (
+                  <kbd key={key}>{key}</kbd>
+                ))}
+              </dt>
+              <dd>{label}</dd>
+            </div>
+          ))}
         </dl>
-      </div>
+      </Popover>
       <input
         ref={fileRef}
         type="file"

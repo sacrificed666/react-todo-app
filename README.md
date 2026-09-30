@@ -8,14 +8,16 @@ A task manager wrapped in Apple-inspired **Liquid Glass**: translucent, refracti
 
 ## ✨ Highlights
 
-- 🫧 **Liquid Glass UI** — layered glass materials with specular rims, pointer light, spring motion and real edge refraction in Chromium
-- 🌌 **Animated backdrop** — drifting aurora orbs, generated flow lines and film grain
-- ✅ **Complete task flow** — add, complete, edit inline, delete, drag and drop reordering (mouse, touch and keyboard)
+- 🫧 **Liquid Glass UI** — full-width glass header and footer, floating panels with specular rims, pointer light, spring motion and real edge refraction in Chromium
+- 🎨 **Themes** — Auto, Light and Dark appearances with five accent colours that also recolour the animated aurora backdrop
+- 📚 **Smart lists** — All tasks, Today, Upcoming, Important and Completed with live counters and an overview of your progress
+- 📅 **Due dates and stars** — schedule tasks with quick picks or a calendar, highlight overdue ones, star what matters
+- 🔀 **Sorting** — manual drag and drop (mouse, touch and keyboard), by due date, importance, newest or title
 - ↩️ **Undo** — restore deleted or cleared tasks with a button or <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd>
-- 🔎 **Filters and search** — All / Active / Done with counters, diacritic-insensitive search
-- 💾 **Local-first** — autosave, cross-tab sync, JSON import and export, migration of data from the first version
+- 🔎 **Search and shortcuts** — diacritic-insensitive search, <kbd>N</kbd>, <kbd>/</kbd> and <kbd>1</kbd>–<kbd>5</kbd> shortcuts
+- 💾 **Local-first** — autosave, cross-tab sync, JSON import and export, automatic migration of older data
 - 📱 **Installable PWA** — works offline after the first visit
-- ♿ **Accessible** — keyboard shortcuts, focus management, screen reader announcements, reduced motion and transparency support
+- ♿ **Accessible** — focus management, screen reader announcements, reduced motion, transparency and contrast support
 
 ## ⚛️ Front-end
 

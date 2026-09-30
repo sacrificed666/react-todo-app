@@ -6,7 +6,9 @@ import {
   allTodosMarked,
   todoAdded,
   todoMoved,
+  todoImportanceToggled,
   todoRenamed,
+  todoScheduled,
   todosAdapter,
   todosImported,
   todosRemoved,
@@ -26,15 +28,22 @@ const stateOf = (...ids: string[]) =>
 
 describe("todosSlice", () => {
   it("prepends new todos with normalized titles", () => {
-    const state = reducer(stateOf("a"), todoAdded("  Fresh   task "));
+    const state = reducer(
+      stateOf("a"),
+      todoAdded({ title: "  Fresh   task ", important: true, dueDate: "2026-10-02" }),
+    );
     const [id] = state.ids;
 
     expect(state.ids).toHaveLength(2);
-    expect(id === undefined ? undefined : state.entities[id]?.title).toBe("Fresh task");
+    expect(id === undefined ? undefined : state.entities[id]).toMatchObject({
+      title: "Fresh task",
+      important: true,
+      dueDate: "2026-10-02",
+    });
   });
 
   it("ignores blank titles", () => {
-    expect(reducer(stateOf("a"), todoAdded("   ")).ids).toEqual(["a"]);
+    expect(reducer(stateOf("a"), todoAdded({ title: "   " })).ids).toEqual(["a"]);
   });
 
   it("toggles completion and tracks timestamps", () => {
@@ -51,6 +60,19 @@ describe("todosSlice", () => {
     expect(reducer(renamed, todoRenamed("a", "   "))).toBe(renamed);
     expect(reducer(renamed, todoRenamed("a", "New name"))).toBe(renamed);
     expect(reducer(renamed, todoRenamed("missing", "Title"))).toBe(renamed);
+  });
+
+  it("toggles importance", () => {
+    const starred = reducer(stateOf("a"), todoImportanceToggled("a"));
+    expect(starred.entities.a?.important).toBe(true);
+    expect(reducer(starred, todoImportanceToggled("a")).entities.a?.important).toBe(false);
+  });
+
+  it("schedules and unschedules todos", () => {
+    const scheduled = reducer(stateOf("a"), todoScheduled("a", "2026-10-05"));
+    expect(scheduled.entities.a?.dueDate).toBe("2026-10-05");
+    expect(reducer(scheduled, todoScheduled("a", "not a date")).entities.a?.dueDate).toBeNull();
+    expect(reducer(scheduled, todoScheduled("a", "2026-10-05"))).toBe(scheduled);
   });
 
   it("moves todos in both directions", () => {

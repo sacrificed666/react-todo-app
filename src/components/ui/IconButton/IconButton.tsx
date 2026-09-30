@@ -16,6 +16,7 @@ interface IconButtonProps extends Omit<ComponentPropsWithRef<"button">, "childre
   variant?: IconButtonVariant;
   size?: IconButtonSize;
   type?: "button" | "submit";
+  iconFilled?: boolean;
 }
 
 const IconButton = ({
@@ -24,6 +25,7 @@ const IconButton = ({
   variant = "glass",
   size = "medium",
   type = "button",
+  iconFilled = false,
   className,
   ...props
 }: IconButtonProps) => (
@@ -34,7 +36,7 @@ const IconButton = ({
     data-glass-light=""
     {...props}
   >
-    <Icon name={icon} className={styles.icon} />
+    <Icon name={icon} filled={iconFilled} className={styles.icon} />
   </button>
 );
 

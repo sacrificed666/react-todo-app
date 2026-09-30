@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { makeState, makeTodo, sampleTodos } from "@/test/factories";
+import { dayFromToday, makeState, makeTodo, sampleTodos } from "@/test/factories";
 
 import { selectToast, selectTodos } from "./selectors";
 import { queryChanged } from "./slices/viewSlice";
@@ -12,27 +12,27 @@ const titles = (store: ReturnType<typeof setupStore>) => selectTodos(store.getSt
 describe("addTodo", () => {
   it("adds normalized todos and reports success", () => {
     const store = setupStore();
-    expect(store.dispatch(addTodo("  Plan   the trip "))).toBe(true);
-    expect(titles(store)).toEqual(["Plan the trip"]);
+    expect(store.dispatch(addTodo({ title: "  Plan   the trip ", important: true }))).toBe(true);
+    expect(selectTodos(store.getState())[0]).toMatchObject({ title: "Plan the trip", important: true });
   });
 
   it("rejects blank titles", () => {
     const store = setupStore();
-    expect(store.dispatch(addTodo("   "))).toBe(false);
+    expect(store.dispatch(addTodo({ title: "   " }))).toBe(false);
     expect(titles(store)).toEqual([]);
   });
 
-  it("reveals the new todo when filters would hide it", () => {
-    const store = setupStore(makeState(sampleTodos, "completed", "report"));
-    store.dispatch(addTodo("Buy flowers"));
-    expect(store.getState().view).toEqual({ filter: "all", query: "" });
+  it("reveals the new todo when the list or search would hide it", () => {
+    const store = setupStore(makeState(sampleTodos, "today", "report"));
+    store.dispatch(addTodo({ title: "Buy flowers" }));
+    expect(store.getState().view).toMatchObject({ list: "all", query: "" });
   });
 
-  it("keeps a query that matches the new todo", () => {
-    const store = setupStore(makeState([], "active"));
+  it("stays in the current list when the new todo belongs there", () => {
+    const store = setupStore(makeState([], "upcoming"));
     store.dispatch(queryChanged("flow"));
-    store.dispatch(addTodo("Buy flowers"));
-    expect(store.getState().view).toEqual({ filter: "active", query: "flow" });
+    store.dispatch(addTodo({ title: "Buy flowers", dueDate: dayFromToday(2) }));
+    expect(store.getState().view).toMatchObject({ list: "upcoming", query: "flow" });
   });
 });
 
@@ -75,12 +75,13 @@ describe("importTodos", () => {
   it("imports new todos from an export file", () => {
     const store = setupStore(makeState(sampleTodos));
     const file = JSON.stringify({
-      todos: [makeTodo({ id: "milk", title: "Buy milk" }), makeTodo({ id: "new", title: "Imported" })],
+      todos: [makeTodo({ id: "milk", title: "Buy milk" }), makeTodo({ id: "new", title: "Imported", important: true })],
     });
 
     store.dispatch(importTodos(file));
 
     expect(titles(store)).toEqual(["Buy milk", "Write the quarterly report", "Call grandma", "Imported"]);
+    expect(selectTodos(store.getState()).at(-1)?.important).toBe(true);
     expect(selectToast(store.getState())?.message).toBe("Imported 1 task");
   });
 

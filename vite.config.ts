@@ -5,10 +5,15 @@ import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vitest/config";
 
+import packageJson from "./package.json" with { type: "json" };
+
 const description = "A Liquid Glass ToDo application built with React, Redux Toolkit and Vite.";
 
 export default defineConfig({
   base: "/react-todo-app/",
+  define: {
+    "import.meta.env.VITE_APP_VERSION": JSON.stringify(packageJson.version),
+  },
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
@@ -25,8 +30,8 @@ export default defineConfig({
         description,
         lang: "en",
         display: "standalone",
-        theme_color: "#0a0913",
-        background_color: "#0a0913",
+        theme_color: "#070a14",
+        background_color: "#070a14",
         icons: [
           { src: "pwa-64x64.png", sizes: "64x64", type: "image/png" },
           { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },

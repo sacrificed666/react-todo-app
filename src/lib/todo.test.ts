@@ -32,14 +32,24 @@ describe("search helpers", () => {
 
 describe("createTodo", () => {
   it("creates an active todo with normalized title", () => {
-    expect(createTodo("  Plan   trip ", 42, "id-1")).toEqual({
+    expect(createTodo({ title: "  Plan   trip " }, 42, "id-1")).toEqual({
       id: "id-1",
       title: "Plan trip",
       completed: false,
+      important: false,
+      dueDate: null,
       createdAt: 42,
       updatedAt: 42,
       completedAt: null,
     });
+  });
+
+  it("keeps importance and valid due dates only", () => {
+    expect(createTodo({ title: "Pay rent", important: true, dueDate: "2026-10-05" }, 1)).toMatchObject({
+      important: true,
+      dueDate: "2026-10-05",
+    });
+    expect(createTodo({ title: "Pay rent", dueDate: "2026-02-30" }, 1).dueDate).toBeNull();
   });
 });
 
@@ -51,14 +61,32 @@ describe("parseTodos", () => {
   });
 
   it("reads exported envelopes and plain arrays", () => {
-    const todo = { id: "a", title: "Read", completed: false, createdAt: 1, updatedAt: 2, completedAt: null };
+    const todo = {
+      id: "a",
+      title: "Read",
+      completed: false,
+      important: true,
+      dueDate: "2026-10-01",
+      createdAt: 1,
+      updatedAt: 2,
+      completedAt: null,
+    };
     expect(parseTodos({ version: 2, todos: [todo] })).toEqual([todo]);
     expect(parseTodos([todo])).toEqual([todo]);
   });
 
   it("migrates the legacy format", () => {
     expect(parseTodos([{ id: "old", text: " Legacy task ", isCompleted: true }], 500)).toEqual([
-      { id: "old", title: "Legacy task", completed: true, createdAt: 500, updatedAt: 500, completedAt: 500 },
+      {
+        id: "old",
+        title: "Legacy task",
+        completed: true,
+        important: false,
+        dueDate: null,
+        createdAt: 500,
+        updatedAt: 500,
+        completedAt: 500,
+      },
     ]);
   });
 

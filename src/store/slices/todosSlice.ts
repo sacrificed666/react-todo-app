@@ -1,6 +1,7 @@
 import { createEntityAdapter, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import { createTodo, normalizeTitle, type Todo } from "@/lib/todo";
+import { isDateKey } from "@/lib/date";
+import { createTodo, normalizeTitle, type Todo, type TodoDraft } from "@/lib/todo";
 
 export interface RemovedTodo {
   todo: Todo;
@@ -20,7 +21,7 @@ export const todosSlice = createSlice({
         state.ids.unshift(todo.id);
         state.entities[todo.id] = todo;
       },
-      prepare: (title: string) => ({ payload: createTodo(title, Date.now()) }),
+      prepare: (draft: TodoDraft) => ({ payload: createTodo(draft, Date.now()) }),
     },
     todoToggled: {
       reducer(state, action: PayloadAction<{ id: string; at: number }>) {
@@ -41,6 +42,25 @@ export const todosSlice = createSlice({
         todo.updatedAt = action.payload.at;
       },
       prepare: (id: string, title: string) => ({ payload: { id, title, at: Date.now() } }),
+    },
+    todoImportanceToggled: {
+      reducer(state, action: PayloadAction<{ id: string; at: number }>) {
+        const todo = state.entities[action.payload.id];
+        if (!todo) return;
+        todo.important = !todo.important;
+        todo.updatedAt = action.payload.at;
+      },
+      prepare: (id: string) => ({ payload: { id, at: Date.now() } }),
+    },
+    todoScheduled: {
+      reducer(state, action: PayloadAction<{ id: string; dueDate: string | null; at: number }>) {
+        const todo = state.entities[action.payload.id];
+        const dueDate = isDateKey(action.payload.dueDate) ? action.payload.dueDate : null;
+        if (!todo || todo.dueDate === dueDate) return;
+        todo.dueDate = dueDate;
+        todo.updatedAt = action.payload.at;
+      },
+      prepare: (id: string, dueDate: string | null) => ({ payload: { id, dueDate, at: Date.now() } }),
     },
     todoMoved(state, action: PayloadAction<{ activeId: string; overId: string }>) {
       const from = state.ids.indexOf(action.payload.activeId);
@@ -88,6 +108,8 @@ export const {
   todoAdded,
   todoToggled,
   todoRenamed,
+  todoImportanceToggled,
+  todoScheduled,
   todoMoved,
   allTodosMarked,
   todosRemoved,

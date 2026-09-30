@@ -20,6 +20,9 @@ html {
 
 body {
   min-block-size: 100svh;
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.4;
@@ -64,7 +67,7 @@ svg {
 }
 
 ::selection {
-  background-color: rgb(255 248 240 / 28%);
+  background-color: var(--color-accent-soft);
 }
 
 .visually-hidden {

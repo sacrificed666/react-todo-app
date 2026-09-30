@@ -43,6 +43,30 @@
   }
 }
 
+@mixin glass-bar {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--glass-tint-bar);
+  box-shadow: var(--bar-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur-thick)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness));
+  backdrop-filter: blur(var(--glass-blur-thick)) var(--glass-refraction, opacity(1)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness));
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--glass-sheen);
+    pointer-events: none;
+  }
+
+  @media (forced-colors: active) {
+    border-block: 1px solid CanvasText;
+  }
+}
+
 @mixin hover {
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -75,4 +99,9 @@
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+@mixin container {
+  inline-size: min(100% - 32px, var(--layout-width));
+  margin-inline: auto;
 }

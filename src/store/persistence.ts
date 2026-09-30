@@ -1,19 +1,28 @@
 import { isRecord } from "@/lib/guards";
+import { isListId, type ListId } from "@/lib/lists";
+import { isSortMode } from "@/lib/sort";
 import { getStorage, readJson, removeKey, writeText } from "@/lib/storage";
+import { DEFAULT_THEME, isAccent, isAppearance, type ThemeSettings } from "@/lib/theme";
 import { parseTodos, type Todo } from "@/lib/todo";
 
 import { selectTodos } from "./selectors";
 import { todosAdapter, todosReplaced } from "./slices/todosSlice";
-import { isFilter, type Filter } from "./slices/viewSlice";
+import { initialViewState, type ViewState } from "./slices/viewSlice";
 import type { AppStore, RootState } from "./store";
 
-export const STORAGE_VERSION = 2;
+export const STORAGE_VERSION = 3;
 
 export const STORAGE_KEYS = {
   todos: "react-todo-app/todos",
   preferences: "react-todo-app/preferences",
   legacyTodos: "toDoList",
 } as const;
+
+interface Preferences extends ThemeSettings {
+  list: ListId;
+  sort: ViewState["sort"];
+  showCompleted: boolean;
+}
 
 export const serializeTodos = (todos: readonly Todo[]) => JSON.stringify({ version: STORAGE_VERSION, todos });
 
@@ -36,18 +45,42 @@ const loadTodos = (storage: Storage): Todo[] => {
   return migrated;
 };
 
-const loadFilter = (storage: Storage): Filter => {
-  const preferences = readJson(storage, STORAGE_KEYS.preferences);
-  const filter = isRecord(preferences) ? preferences.filter : undefined;
-  return isFilter(filter) ? filter : "all";
+const readListPreference = (preferences: Record<string, unknown>): ListId => {
+  if (isListId(preferences.list)) return preferences.list;
+  return preferences.filter === "completed" ? "completed" : initialViewState.list;
 };
+
+const loadPreferences = (storage: Storage): Preferences => {
+  const stored = readJson(storage, STORAGE_KEYS.preferences);
+  const preferences = isRecord(stored) ? stored : {};
+
+  return {
+    list: readListPreference(preferences),
+    sort: isSortMode(preferences.sort) ? preferences.sort : initialViewState.sort,
+    showCompleted:
+      typeof preferences.showCompleted === "boolean" ? preferences.showCompleted : initialViewState.showCompleted,
+    appearance: isAppearance(preferences.appearance) ? preferences.appearance : DEFAULT_THEME.appearance,
+    accent: isAccent(preferences.accent) ? preferences.accent : DEFAULT_THEME.accent,
+  };
+};
+
+const selectPreferences = (state: RootState): Preferences => ({
+  list: state.view.list,
+  sort: state.view.sort,
+  showCompleted: state.view.showCompleted,
+  appearance: state.settings.appearance,
+  accent: state.settings.accent,
+});
 
 export const loadPersistedState = (storage: Storage | null = getStorage()): Partial<RootState> | undefined => {
   if (!storage) return undefined;
 
+  const { appearance, accent, ...view } = loadPreferences(storage);
+
   return {
     todos: todosAdapter.setAll(todosAdapter.getInitialState(), loadTodos(storage)),
-    view: { filter: loadFilter(storage), query: "" },
+    view: { ...view, query: "" },
+    settings: { appearance, accent },
   };
 };
 
@@ -64,7 +97,7 @@ export const startPersistence = (store: AppStore, storage: Storage | null = getS
   if (!storage) return () => {};
 
   let todos = store.getState().todos;
-  let filter = store.getState().view.filter;
+  let preferences = JSON.stringify(selectPreferences(store.getState()));
 
   const unsubscribe = store.subscribe(() => {
     const state = store.getState();
@@ -74,9 +107,10 @@ export const startPersistence = (store: AppStore, storage: Storage | null = getS
       writeText(storage, STORAGE_KEYS.todos, serializeTodos(selectTodos(state)));
     }
 
-    if (state.view.filter !== filter) {
-      filter = state.view.filter;
-      writeText(storage, STORAGE_KEYS.preferences, JSON.stringify({ filter }));
+    const nextPreferences = JSON.stringify(selectPreferences(state));
+    if (nextPreferences !== preferences) {
+      preferences = nextPreferences;
+      writeText(storage, STORAGE_KEYS.preferences, preferences);
     }
   });
 

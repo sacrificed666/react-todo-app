@@ -24,17 +24,21 @@ The HTML coverage report is written to `coverage/index.html`.
 
 Tests sit next to the code they cover:
 
-| File                                  | Covers                                                                                                                  |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `src/App.test.tsx`                    | End-to-end user flows: adding, completing, editing, deleting, undo, filters, search, shortcuts, menu, import and export |
-| `src/store/slices/todosSlice.test.ts` | Every reducer, including reordering and restoring positions                                                             |
-| `src/store/selectors.test.ts`         | Counters, filtering, search and memoization                                                                             |
-| `src/store/thunks.test.ts`            | Adding, removal with undo, clearing and importing                                                                       |
-| `src/store/persistence.test.ts`       | Loading, legacy migration, corrupted data, saving and cross-tab sync                                                    |
-| `src/lib/todo.test.ts`                | Title normalization, search matching and data parsing                                                                   |
-| `src/lib/refraction.test.ts`          | Displacement maths and feature detection                                                                                |
-| `src/lib/keyboard.test.ts`            | Shortcut matching and editable targets                                                                                  |
-| `src/lib/motion.test.ts`              | Waiting for transitions and the safety timeout                                                                          |
+| File                                  | Covers                                                                                                                                            |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/App.test.tsx`                    | End-to-end flows: shell, smart lists, composer options, editing, starring, scheduling, undo, sorting, search, appearance, menu, import and export |
+| `src/store/slices/todosSlice.test.ts` | Every reducer, including importance, scheduling, reordering and restoring positions                                                               |
+| `src/store/selectors.test.ts`         | List counters, smart lists, search, sorting, progress and memoization                                                                             |
+| `src/store/thunks.test.ts`            | Adding with list switching, removal with undo, clearing and importing                                                                             |
+| `src/store/persistence.test.ts`       | Loading, legacy migrations, corrupted data, saving preferences and cross-tab sync                                                                 |
+| `src/lib/todo.test.ts`                | Title normalization, search matching and data parsing                                                                                             |
+| `src/lib/date.test.ts`                | Date keys, day arithmetic and friendly due labels                                                                                                 |
+| `src/lib/lists.test.ts`               | Smart list rules and overdue detection                                                                                                            |
+| `src/lib/sort.test.ts`                | All sort orders and their stability                                                                                                               |
+| `src/lib/theme.test.ts`               | Theme validation and applying it to the document                                                                                                  |
+| `src/lib/refraction.test.ts`          | Displacement maths and feature detection                                                                                                          |
+| `src/lib/keyboard.test.ts`            | Shortcut matching and editable targets                                                                                                            |
+| `src/lib/motion.test.ts`              | Waiting for transitions and the safety timeout                                                                                                    |
 
 ## 🌐 Test environment
 
@@ -47,7 +51,7 @@ Tests sit next to the code they cover:
 Helpers:
 
 - 🏗️ `renderWithStore(ui, { preloadedState })` in `src/test/render.tsx` renders with a fresh store and returns `{ store, user, ...queries }`.
-- 🏭 `makeTodo()`, `makeState()` and `sampleTodos` in `src/test/factories.ts` build consistent fixtures.
+- 🏭 `makeTodo()`, `makeState()`, `sampleTodos`, `todayKey()` and `dayFromToday()` in `src/test/factories.ts` build consistent fixtures, including due dates relative to the current day.
 
 ## 📐 Conventions
 

@@ -1,14 +1,23 @@
 import { nanoid } from "@reduxjs/toolkit";
 
+import { isDateKey } from "./date";
 import { isRecord } from "./guards";
 
 export interface Todo {
   id: string;
   title: string;
   completed: boolean;
+  important: boolean;
+  dueDate: string | null;
   createdAt: number;
   updatedAt: number;
   completedAt: number | null;
+}
+
+export interface TodoDraft {
+  title: string;
+  important?: boolean;
+  dueDate?: string | null;
 }
 
 export const MAX_TITLE_LENGTH = 200;
@@ -28,10 +37,16 @@ export const createMatcher = (query: string) => {
   return (title: string) => needle === "" || normalizeForSearch(title).includes(needle);
 };
 
-export const createTodo = (title: string, now: number, id: string = nanoid()): Todo => ({
+export const createTodo = (
+  { title, important = false, dueDate = null }: TodoDraft,
+  now: number,
+  id: string = nanoid(),
+): Todo => ({
   id,
   title: normalizeTitle(title),
   completed: false,
+  important,
+  dueDate: isDateKey(dueDate) ? dueDate : null,
   createdAt: now,
   updatedAt: now,
   completedAt: null,
@@ -74,6 +89,8 @@ export const parseTodos = (input: unknown, now: number = Date.now()): Todo[] | n
         id,
         title,
         completed,
+        important: entry.important === true,
+        dueDate: isDateKey(entry.dueDate) ? entry.dueDate : null,
         createdAt,
         updatedAt,
         completedAt: completed ? toTimestamp(entry.completedAt, updatedAt) : null,

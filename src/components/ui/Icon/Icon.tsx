@@ -4,14 +4,15 @@ import { icons, type IconName } from "./icons";
 
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "children"> {
   name: IconName;
+  filled?: boolean;
 }
 
-const Icon = ({ name, ...props }: IconProps) => (
+const Icon = ({ name, filled = false, ...props }: IconProps) => (
   <svg
     viewBox="0 0 24 24"
     width="1em"
     height="1em"
-    fill="none"
+    fill={filled ? "currentColor" : "none"}
     stroke="currentColor"
     strokeWidth={2}
     strokeLinecap="round"

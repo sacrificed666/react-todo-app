@@ -51,11 +51,11 @@ react-todo-app/
 │   ├── assets/                 Flow-lines artwork used by the backdrop
 │   ├── components/
 │   │   ├── feedback/           Toaster with undo
-│   │   ├── layout/             Backdrop, Header, Main, Footer
-│   │   ├── todo/               Composer, toolbar, search, list, sections, items, menu
-│   │   └── ui/                 Reusable primitives: Icon, IconButton, SegmentedControl, ProgressRing, EmptyState
-│   ├── hooks/                  Liquid glass, shortcuts, pointer light, current day
-│   ├── lib/                    Framework-free helpers: todo parsing, storage, refraction, motion
+│   │   ├── layout/             Backdrop, Header, Sidebar, Main, ListHeader, Footer
+│   │   ├── todo/               Lists, overview, composer, due picker, search, sort and theme menus, list, sections, items
+│   │   └── ui/                 Reusable primitives: Icon, IconButton, Popover, SegmentedControl, ProgressBar, EmptyState
+│   ├── hooks/                  Liquid glass, shortcuts, pointer light, current day, theme sync
+│   ├── lib/                    Framework-free helpers: todo model, dates, smart lists, sorting, theme, storage, refraction
 │   ├── store/                  Redux store, slices, selectors, thunks and persistence
 │   ├── styles/                 Design tokens, glass mixins and global styles
 │   ├── test/                   Test setup, factories and render helpers

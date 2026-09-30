@@ -1,15 +1,34 @@
 import { describe, expect, it } from "vitest";
 
-import { makeState, sampleTodos } from "@/test/factories";
+import { makeState, makeTodo, sampleTodos } from "@/test/factories";
 
-import { selectCompletedIds, selectCounts, selectVisibleTodos } from "./selectors";
+import { selectCompletedIds, selectListCounts, selectListProgress, selectVisibleTodos } from "./selectors";
+import { sortChanged } from "./slices/viewSlice";
 import { setupStore } from "./store";
+
+const today = "2026-10-01";
+
+const plannedTodos = [
+  makeTodo({ id: "late", title: "Late invoice", dueDate: "2026-09-29", important: true }),
+  makeTodo({ id: "now", title: "Daily standup", dueDate: today }),
+  makeTodo({ id: "soon", title: "Dentist", dueDate: "2026-10-06" }),
+  makeTodo({ id: "free", title: "Read a book" }),
+  makeTodo({ id: "done", title: "Old chore", completed: true, completedAt: 1 }),
+];
 
 const stateWith = (...args: Parameters<typeof makeState>) => setupStore(makeState(...args)).getState();
 
 describe("selectors", () => {
-  it("counts todos by status", () => {
-    expect(selectCounts(stateWith(sampleTodos))).toEqual({ total: 3, active: 2, completed: 1 });
+  it("counts tasks for every list", () => {
+    expect(selectListCounts(stateWith(plannedTodos), today)).toEqual({
+      all: 4,
+      today: 2,
+      upcoming: 1,
+      important: 1,
+      completed: 1,
+      overdue: 1,
+      total: 5,
+    });
   });
 
   it("lists completed ids in order", () => {
@@ -17,24 +36,46 @@ describe("selectors", () => {
   });
 
   it("splits visible todos into sections", () => {
-    const { active, completed } = selectVisibleTodos(stateWith(sampleTodos));
+    const { active, completed } = selectVisibleTodos(stateWith(sampleTodos), today);
     expect(active.map((todo) => todo.id)).toEqual(["milk", "call"]);
     expect(completed.map((todo) => todo.id)).toEqual(["report"]);
   });
 
-  it("applies the status filter", () => {
-    expect(selectVisibleTodos(stateWith(sampleTodos, "active")).completed).toEqual([]);
-    expect(selectVisibleTodos(stateWith(sampleTodos, "completed")).active).toEqual([]);
+  it("applies smart lists", () => {
+    expect(selectVisibleTodos(stateWith(plannedTodos, "today"), today).active.map((todo) => todo.id)).toEqual([
+      "late",
+      "now",
+    ]);
+    expect(selectVisibleTodos(stateWith(plannedTodos, "important"), today).active.map((todo) => todo.id)).toEqual([
+      "late",
+    ]);
+    expect(selectVisibleTodos(stateWith(plannedTodos, "completed"), today)).toMatchObject({ active: [] });
   });
 
   it("applies the search query", () => {
-    const { active, completed } = selectVisibleTodos(stateWith(sampleTodos, "all", "  MILK "));
+    const { active, completed } = selectVisibleTodos(stateWith(sampleTodos, "all", "  MILK "), today);
     expect(active.map((todo) => todo.id)).toEqual(["milk"]);
     expect(completed).toEqual([]);
   });
 
+  it("applies the sort mode", () => {
+    const store = setupStore(makeState(plannedTodos));
+    store.dispatch(sortChanged("alphabetical"));
+    expect(selectVisibleTodos(store.getState(), today).active.map((todo) => todo.id)).toEqual([
+      "now",
+      "soon",
+      "late",
+      "free",
+    ]);
+  });
+
+  it("reports progress for the current list", () => {
+    expect(selectListProgress(stateWith(plannedTodos), today)).toEqual({ done: 1, total: 5 });
+    expect(selectListProgress(stateWith(plannedTodos, "upcoming"), today)).toEqual({ done: 0, total: 1 });
+  });
+
   it("memoizes results for unchanged input", () => {
     const state = stateWith(sampleTodos);
-    expect(selectVisibleTodos(state)).toBe(selectVisibleTodos(state));
+    expect(selectVisibleTodos(state, today)).toBe(selectVisibleTodos(state, today));
   });
 });

@@ -1,11 +1,25 @@
+@use "@/styles/mixins" as *;
+
 .app {
   position: relative;
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 22px;
   min-block-size: 100svh;
-  padding-block: max(env(safe-area-inset-top), 32px) max(env(safe-area-inset-bottom), 24px);
-  padding-inline: max(env(safe-area-inset-left), 16px) max(env(safe-area-inset-right), 16px);
+}
+
+.body {
+  @include container;
+  flex: 1;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  align-items: start;
+  gap: 28px;
+  padding-block: 28px 48px;
+
+  @media (max-width: 899px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding-block: 16px 32px;
+  }
 }

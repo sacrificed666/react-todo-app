@@ -25,9 +25,14 @@
 
 .row {
   @include glass(var(--radius-lg));
-  display: flex;
+  display: grid;
+  grid-template-areas:
+    "check title actions"
+    "check meta actions";
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-content: center;
   align-items: center;
-  gap: 12px;
+  column-gap: 12px;
   min-block-size: 58px;
   padding: 8px 8px 8px 16px;
   transition:
@@ -64,19 +69,27 @@
   &[data-editing] {
     background-color: var(--glass-tint-hover);
   }
+
+  @container todo-list (max-width: 560px) {
+    grid-template-areas:
+      "check title title"
+      ". meta actions";
+    row-gap: 2px;
+    padding: 10px 8px 6px 14px;
+  }
 }
 
 .checkbox {
+  grid-area: check;
   appearance: none;
   display: grid;
   place-content: center;
-  flex: none;
   inline-size: 26px;
   block-size: 26px;
-  border: 1.5px solid rgb(255 248 240 / 55%);
+  border: 1.5px solid var(--color-text-tertiary);
   border-radius: var(--radius-full);
-  background-color: rgb(255 248 240 / 6%);
-  box-shadow: inset 0 1px 1px rgb(255 255 255 / 14%);
+  background-color: var(--color-fill);
+  box-shadow: inset 0 1px 1px var(--color-shade);
   cursor: pointer;
   transition:
     background-color var(--duration-base) var(--ease-out),
@@ -96,7 +109,7 @@
   }
 
   @include hover {
-    border-color: rgb(255 248 240 / 85%);
+    border-color: var(--color-accent-bright);
   }
 
   &:active {
@@ -108,8 +121,8 @@
     border-color: var(--color-accent);
     background-color: var(--color-accent);
     box-shadow:
-      0 0 0 4px rgb(255 248 240 / 10%),
-      0 0 16px rgb(255 248 240 / 35%);
+      0 0 0 4px var(--color-accent-soft),
+      0 0 16px var(--color-accent-glow);
 
     &::before {
       clip-path: inset(0);
@@ -125,70 +138,118 @@
 }
 
 .title {
-  flex: 1;
-  min-inline-size: 0;
-  padding-block: 6px;
-  font-size: 1.0625rem;
-  line-height: 1.35;
+  grid-area: title;
+  justify-self: start;
+  max-inline-size: 100%;
+  margin: -2px -6px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: start;
   overflow-wrap: anywhere;
+  cursor: text;
   text-decoration: line-through;
   text-decoration-color: transparent;
   text-decoration-thickness: 1.5px;
   transition:
     color var(--duration-base) var(--ease-out),
-    text-decoration-color var(--duration-base) var(--ease-out);
+    text-decoration-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background-color: var(--color-fill);
+  }
 
   .row[data-completed] & {
     color: var(--color-text-tertiary);
-    text-decoration-color: rgb(255 248 240 / 50%);
+    text-decoration-color: var(--color-text-tertiary);
   }
 }
 
 .editor {
-  flex: 1;
+  grid-area: title;
   min-inline-size: 0;
-  block-size: 40px;
-  margin-inline-start: -4px;
-  padding-inline: 12px;
+  block-size: 38px;
+  margin-inline-start: -6px;
+  padding-inline: 10px;
   border: 0;
-  border-radius: var(--radius-md);
-  background-color: rgb(6 4 16 / 30%);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-fill);
   box-shadow:
-    inset 0 1px 2px rgb(0 0 0 / 30%),
-    0 0 0 1px rgb(255 248 240 / 24%);
-  font-size: 1.0625rem;
+    inset 0 1px 2px var(--color-shade),
+    0 0 0 1px var(--color-separator);
+  font-size: 1rem;
   outline: none;
 
   &:focus-visible {
     box-shadow:
-      inset 0 1px 2px rgb(0 0 0 / 30%),
+      inset 0 1px 2px var(--color-shade),
       0 0 0 2px var(--color-focus);
   }
 }
 
+.meta {
+  grid-area: meta;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-block-start: 4px;
+}
+
+.due {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-fill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+
+  &[data-tone="today"] {
+    background-color: var(--color-warning-soft);
+    color: var(--color-warning);
+  }
+
+  &[data-tone="overdue"] {
+    background-color: var(--color-danger-soft);
+    color: var(--color-danger);
+  }
+
+  &[data-tone="upcoming"] {
+    color: var(--color-accent-bright);
+  }
+}
+
+.dueIcon {
+  font-size: 0.875rem;
+}
+
 .actions {
+  grid-area: actions;
   display: flex;
   align-items: center;
+  justify-self: end;
   gap: 2px;
-  margin-inline-start: auto;
+}
+
+.star[aria-pressed="true"] {
+  color: var(--color-star);
 }
 
 .handle {
   display: grid;
   place-items: center;
   flex: none;
-  inline-size: 36px;
-  block-size: 36px;
+  inline-size: 34px;
+  block-size: 34px;
   border-radius: var(--radius-full);
   color: var(--color-text-tertiary);
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   cursor: grab;
   touch-action: none;
-
-  @media (pointer: coarse) {
-    inline-size: 40px;
-    block-size: 40px;
-  }
   transition:
     color var(--duration-fast) var(--ease-out),
     background-color var(--duration-fast) var(--ease-out),
@@ -196,27 +257,30 @@
 
   @include hover {
     color: var(--color-text);
-    background-color: var(--color-control);
+    background-color: var(--color-fill);
   }
 
   .row[data-dragging] & {
     color: var(--color-text);
     cursor: grabbing;
   }
+
+  @media (pointer: coarse) {
+    inline-size: 40px;
+    block-size: 40px;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .action,
-  .handle {
+  .action {
     opacity: 0;
   }
 
-  .row:hover,
-  .row:focus-within,
-  .row[data-dragging] {
-    .action,
-    .handle {
-      opacity: 1;
-    }
+  .star[aria-pressed="true"],
+  .action[aria-expanded="true"],
+  .row:hover .action,
+  .row:focus-within .action,
+  .row[data-dragging] .action {
+    opacity: 1;
   }
 }

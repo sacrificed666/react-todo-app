@@ -1,33 +1,39 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-export const FILTERS = ["all", "active", "completed"] as const;
-
-export type Filter = (typeof FILTERS)[number];
+import type { ListId } from "@/lib/lists";
+import type { SortMode } from "@/lib/sort";
 
 export interface ViewState {
-  filter: Filter;
+  list: ListId;
   query: string;
+  sort: SortMode;
+  showCompleted: boolean;
 }
 
-export const isFilter = (value: unknown): value is Filter =>
-  typeof value === "string" && (FILTERS as readonly string[]).includes(value);
-
-const initialState: ViewState = {
-  filter: "all",
+export const initialViewState: ViewState = {
+  list: "all",
   query: "",
+  sort: "manual",
+  showCompleted: true,
 };
 
 export const viewSlice = createSlice({
   name: "view",
-  initialState,
+  initialState: initialViewState,
   reducers: {
-    filterChanged(state, action: PayloadAction<Filter>) {
-      state.filter = action.payload;
+    listChanged(state, action: PayloadAction<ListId>) {
+      state.list = action.payload;
     },
     queryChanged(state, action: PayloadAction<string>) {
       state.query = action.payload;
     },
+    sortChanged(state, action: PayloadAction<SortMode>) {
+      state.sort = action.payload;
+    },
+    completedVisibilityToggled(state) {
+      state.showCompleted = !state.showCompleted;
+    },
   },
 });
 
-export const { filterChanged, queryChanged } = viewSlice.actions;
+export const { listChanged, queryChanged, sortChanged, completedVisibilityToggled } = viewSlice.actions;

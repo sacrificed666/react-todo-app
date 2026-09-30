@@ -1,0 +1,86 @@
+@use "@/styles/mixins" as *;
+
+.card {
+  @include glass(var(--radius-xl));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+
+  @media (max-width: 899px) {
+    display: none;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.percent {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.caption {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-block-start: 4px;
+}
+
+.stat {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-fill);
+
+  &[data-tone="overdue"] {
+    --tone: var(--color-danger);
+  }
+
+  &[data-tone="today"] {
+    --tone: var(--tone-today);
+  }
+
+  &[data-tone="important"] {
+    --tone: var(--tone-important);
+  }
+}
+
+.statIcon {
+  font-size: 1rem;
+  color: var(--tone);
+}
+
+.value {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-size: 0.6875rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}

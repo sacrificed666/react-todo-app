@@ -1,10 +1,12 @@
+import { toDateKey } from "@/lib/date";
+import { matchesList } from "@/lib/lists";
 import { pluralize } from "@/lib/text";
-import { createMatcher, normalizeTitle, parseTodos } from "@/lib/todo";
+import { createMatcher, normalizeTitle, parseTodos, type TodoDraft } from "@/lib/todo";
 
-import { selectCompletedIds, selectFilter, selectQuery, selectToast } from "./selectors";
+import { selectCompletedIds, selectList, selectQuery, selectToast } from "./selectors";
 import { toastDismissed, toastShown } from "./slices/toastSlice";
 import { todoAdded, todosImported, todosRemoved, todosRestored, type RemovedTodo } from "./slices/todosSlice";
-import { filterChanged, queryChanged } from "./slices/viewSlice";
+import { listChanged, queryChanged } from "./slices/viewSlice";
 import type { AppThunk } from "./store";
 
 const parseJson = (text: string): unknown => {
@@ -16,16 +18,16 @@ const parseJson = (text: string): unknown => {
 };
 
 export const addTodo =
-  (title: string): AppThunk<boolean> =>
+  (draft: TodoDraft): AppThunk<boolean> =>
   (dispatch, getState) => {
-    const normalized = normalizeTitle(title);
-    if (!normalized) return false;
+    const title = normalizeTitle(draft.title);
+    if (!title) return false;
 
-    dispatch(todoAdded(normalized));
+    const { payload: todo } = dispatch(todoAdded({ ...draft, title }));
 
     const state = getState();
-    if (selectFilter(state) === "completed") dispatch(filterChanged("all"));
-    if (!createMatcher(selectQuery(state))(normalized)) dispatch(queryChanged(""));
+    if (!matchesList(todo, selectList(state), toDateKey(new Date()))) dispatch(listChanged("all"));
+    if (!createMatcher(selectQuery(state))(title)) dispatch(queryChanged(""));
     return true;
   };
 

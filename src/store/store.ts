@@ -1,10 +1,11 @@
 import { combineSlices, configureStore, type ThunkAction, type UnknownAction } from "@reduxjs/toolkit";
 
+import { settingsSlice } from "./slices/settingsSlice";
 import { toastSlice } from "./slices/toastSlice";
 import { todosSlice } from "./slices/todosSlice";
 import { viewSlice } from "./slices/viewSlice";
 
-export const rootReducer = combineSlices(todosSlice, viewSlice, toastSlice);
+export const rootReducer = combineSlices(todosSlice, viewSlice, settingsSlice, toastSlice);
 
 export type RootState = ReturnType<typeof rootReducer>;
 

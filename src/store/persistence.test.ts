@@ -6,8 +6,9 @@ import { makeTodo, sampleTodos } from "@/test/factories";
 
 import { createExport, loadPersistedState, serializeTodos, startPersistence, STORAGE_KEYS } from "./persistence";
 import { selectTodos } from "./selectors";
+import { accentChanged, appearanceChanged } from "./slices/settingsSlice";
 import { todoAdded } from "./slices/todosSlice";
-import { filterChanged } from "./slices/viewSlice";
+import { listChanged, sortChanged } from "./slices/viewSlice";
 import { setupStore } from "./store";
 
 const storedTitles = () => (parseTodos(readJson(localStorage, STORAGE_KEYS.todos)) ?? []).map((todo) => todo.title);
@@ -15,12 +16,21 @@ const storedTitles = () => (parseTodos(readJson(localStorage, STORAGE_KEYS.todos
 describe("loadPersistedState", () => {
   it("reads saved todos and preferences", () => {
     localStorage.setItem(STORAGE_KEYS.todos, serializeTodos(sampleTodos));
-    localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ filter: "active" }));
+    localStorage.setItem(
+      STORAGE_KEYS.preferences,
+      JSON.stringify({ list: "today", sort: "dueDate", showCompleted: false, appearance: "light", accent: "forest" }),
+    );
 
     const store = setupStore(loadPersistedState());
 
     expect(selectTodos(store.getState())).toEqual(sampleTodos);
-    expect(store.getState().view).toEqual({ filter: "active", query: "" });
+    expect(store.getState().view).toEqual({ list: "today", query: "", sort: "dueDate", showCompleted: false });
+    expect(store.getState().settings).toEqual({ appearance: "light", accent: "forest" });
+  });
+
+  it("maps the filter saved by version 2", () => {
+    localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ filter: "completed" }));
+    expect(setupStore(loadPersistedState()).getState().view.list).toBe("completed");
   });
 
   it("migrates todos saved by the previous version", () => {
@@ -35,12 +45,13 @@ describe("loadPersistedState", () => {
 
   it("falls back to defaults for corrupted data", () => {
     localStorage.setItem(STORAGE_KEYS.todos, "{broken");
-    localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ filter: "everything" }));
+    localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ list: "everything", sort: 1, accent: "pink" }));
 
     const state = setupStore(loadPersistedState()).getState();
 
     expect(selectTodos(state)).toEqual([]);
-    expect(state.view.filter).toBe("all");
+    expect(state.view).toMatchObject({ list: "all", sort: "manual", showCompleted: true });
+    expect(state.settings).toEqual({ appearance: "system", accent: "blue" });
   });
 
   it("skips persistence when storage is unavailable", () => {
@@ -50,18 +61,27 @@ describe("loadPersistedState", () => {
 });
 
 describe("startPersistence", () => {
-  it("saves todos and the selected filter", () => {
+  it("saves todos and preferences", () => {
     const store = setupStore();
     const stop = startPersistence(store);
 
-    store.dispatch(todoAdded("Persist me"));
-    store.dispatch(filterChanged("completed"));
+    store.dispatch(todoAdded({ title: "Persist me" }));
+    store.dispatch(listChanged("important"));
+    store.dispatch(sortChanged("newest"));
+    store.dispatch(appearanceChanged("dark"));
+    store.dispatch(accentChanged("violet"));
 
     expect(storedTitles()).toEqual(["Persist me"]);
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.preferences) ?? "{}")).toEqual({ filter: "completed" });
+    expect(readJson(localStorage, STORAGE_KEYS.preferences)).toEqual({
+      list: "important",
+      sort: "newest",
+      showCompleted: true,
+      appearance: "dark",
+      accent: "violet",
+    });
 
     stop();
-    store.dispatch(todoAdded("Not saved"));
+    store.dispatch(todoAdded({ title: "Not saved" }));
     expect(storedTitles()).toEqual(["Persist me"]);
   });
 
@@ -91,7 +111,7 @@ describe("createExport", () => {
   it("wraps todos with metadata", () => {
     expect(createExport(sampleTodos, new Date("2026-09-30T10:00:00.000Z"))).toEqual({
       app: "react-todo-app",
-      version: 2,
+      version: 3,
       exportedAt: "2026-09-30T10:00:00.000Z",
       todos: sampleTodos,
     });

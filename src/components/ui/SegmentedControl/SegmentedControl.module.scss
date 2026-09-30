@@ -19,7 +19,7 @@
   right: calc(var(--inset) + (var(--count) - var(--index) - 1) * var(--segment));
   z-index: 0;
   box-shadow:
-    0 4px 14px -6px rgb(6 4 16 / 55%),
+    0 4px 14px -6px var(--color-shade),
     var(--glass-edge);
   transition:
     left var(--duration-slow) var(--ease-spring),

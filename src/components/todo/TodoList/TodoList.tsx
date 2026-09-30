@@ -13,13 +13,14 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { hasSortableData, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 
 import EmptyState from "@/components/ui/EmptyState/EmptyState";
-import type { IconName } from "@/components/ui/Icon/icons";
+import { useToday } from "@/hooks/useToday";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { selectCounts, selectFilter, selectQuery, selectVisibleTodos } from "@/store/selectors";
+import { selectList, selectQuery, selectShowCompleted, selectSort, selectVisibleTodos } from "@/store/selectors";
 import { todoMoved } from "@/store/slices/todosSlice";
-import type { Filter } from "@/store/slices/viewSlice";
+import { completedVisibilityToggled } from "@/store/slices/viewSlice";
 import { clearCompleted } from "@/store/thunks";
 
+import { LIST_META } from "../lists";
 import TodoSection from "../TodoSection/TodoSection";
 
 import styles from "./TodoList.module.scss";
@@ -47,27 +48,14 @@ const screenReaderInstructions: ScreenReaderInstructions = {
     "To reorder a task, press Space or Enter to pick it up, use the arrow keys to move it, then press Space or Enter to drop it. Press Escape to cancel.",
 };
 
-interface EmptyContent {
-  icon: IconName;
-  title: string;
-  description: string;
-}
-
-const getEmptyContent = (total: number, filter: Filter, query: string): EmptyContent => {
-  if (query.trim()) return { icon: "search", title: "No results", description: `No tasks match “${query.trim()}”.` };
-  if (total === 0)
-    return { icon: "inbox", title: "No tasks yet", description: "Add your first task above to get started." };
-  if (filter === "active")
-    return { icon: "circleCheck", title: "All done", description: "Every task is completed. Nice work!" };
-  return { icon: "list", title: "Nothing completed yet", description: "Tasks you complete will show up here." };
-};
-
 const TodoList = () => {
   const dispatch = useAppDispatch();
-  const { active, completed } = useAppSelector(selectVisibleTodos);
-  const { total } = useAppSelector(selectCounts);
-  const filter = useAppSelector(selectFilter);
+  const today = useToday();
+  const { active, completed } = useAppSelector((state) => selectVisibleTodos(state, today));
+  const list = useAppSelector(selectList);
   const query = useAppSelector(selectQuery);
+  const sortable = useAppSelector(selectSort) === "manual";
+  const showCompleted = useAppSelector(selectShowCompleted);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -80,7 +68,11 @@ const TodoList = () => {
     dispatch(todoMoved({ activeId: String(dragged.id), overId: String(over.id) }));
   };
 
+  const meta = LIST_META[list];
+  const trimmedQuery = query.trim();
   const isEmpty = active.length === 0 && completed.length === 0;
+  const isAllDone = active.length === 0 && completed.length > 0 && list !== "completed" && !trimmedQuery;
+  const collapsible = list !== "completed";
 
   return (
     <DndContext
@@ -91,12 +83,20 @@ const TodoList = () => {
       onDragEnd={handleDragEnd}
     >
       <div className={styles.list}>
-        {active.length > 0 ? <TodoSection id="active" title="To do" todos={active} hideHeader /> : null}
+        {active.length > 0 ? (
+          <TodoSection id="active" title="To do" todos={active} sortable={sortable} hideHeader />
+        ) : null}
+        {isAllDone ? (
+          <EmptyState compact icon="circleCheck" title="All done" description="Every task in this list is completed." />
+        ) : null}
         {completed.length > 0 ? (
           <TodoSection
             id="completed"
             title="Completed"
             todos={completed}
+            sortable={sortable}
+            collapsed={collapsible && !showCompleted}
+            onToggleCollapsed={collapsible ? () => dispatch(completedVisibilityToggled()) : undefined}
             action={
               <button
                 type="button"
@@ -109,7 +109,12 @@ const TodoList = () => {
             }
           />
         ) : null}
-        {isEmpty ? <EmptyState {...getEmptyContent(total, filter, query)} /> : null}
+        {isEmpty && trimmedQuery ? (
+          <EmptyState icon="search" title="No results" description={`No tasks match “${trimmedQuery}”.`} />
+        ) : null}
+        {isEmpty && !trimmedQuery ? (
+          <EmptyState icon={meta.icon} title={meta.emptyTitle} description={meta.emptyDescription} />
+        ) : null}
       </div>
     </DndContext>
   );

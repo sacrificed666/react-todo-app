@@ -20,8 +20,8 @@ The source code is organised by **feature**, in four layers. A layer may only im
 ```mermaid
 flowchart TB
   app["🚀 app<br/>entry point, store, persistence, launch, PWA, error boundary"]
-  widgets["🧩 widgets<br/>Header, Sidebar, Workspace, Inspector, Footer, Backdrop"]
-  features["✨ features<br/>todos, lists, search, palette, settings, i18n, notifications, actions"]
+  widgets["🧩 widgets<br/>Header, Sidebar, Workspace, Inspector, Backdrop"]
+  features["✨ features<br/>todos, lists, stats, commands, search, settings, i18n, notifications"]
   shared["🧰 shared<br/>ui primitives, hooks, lib, styles"]
 
   app --> widgets
@@ -40,16 +40,16 @@ flowchart TB
 | ✨ Features | `src/features` | One folder per capability with a `model/` (state, logic) and a `ui/` (components)             | other features, shared, `@/app/hooks`, store types        |
 | 🧰 Shared   | `src/shared`   | Store-agnostic UI primitives, hooks, helpers and styles                                       | shared only                                               |
 
-| Feature            | Model                                                                                                    | UI                                                                                                                                 |
-| ------------------ | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ `todos`         | `Todo` model, slice, selectors (incl. tags), thunks, history, quick add parser, checklists, transfer     | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskDetails`, `TodoDetails` (dialog), `DetailsPanel` (inline), `DuePicker` |
-| 📚 `lists`         | Smart lists, sort orders, view slice, list shortcuts                                                     | `ListNav`, `TagNav`, `TabBar`, `ListHeader`, `SortMenu`, `Overview`                                                                |
-| 🔎 `search`        | —                                                                                                        | `TodoSearch`                                                                                                                       |
-| ⌘ `palette`        | Command ranking                                                                                          | `CommandPalette`                                                                                                                   |
-| 🎨 `settings`      | Appearance, accent, language and effects, `changeLocale()`, document sync                                | `SettingsMenu`                                                                                                                     |
-| 🌍 `i18n`          | Typed messages for eight languages, the lazy catalog, native names and flags, `translate()`, `useI18n()` | `LocaleFlag`                                                                                                                       |
-| 🔔 `notifications` | Toast slice and message formatting                                                                       | `Toaster`                                                                                                                          |
-| 🧰 `actions`       | —                                                                                                        | `ActionsMenu`                                                                                                                      |
+| Feature            | Model                                                                                                         | UI                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| ✅ `todos`         | `Todo` model, slice, selectors (incl. tags), thunks, history, repeats, quick add parser, checklists, transfer | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker` |
+| 📚 `lists`         | Smart lists, date groups, sort orders, view slice, list shortcuts                                             | `ListNav`, `TagNav`, `TabBar`, `ListHeader`, `SortMenu`                                                                                    |
+| 🔎 `search`        | —                                                                                                             | `TodoSearch`                                                                                                                               |
+| 📊 `stats`         | The 7-day activity and streak selector                                                                        | `Overview`                                                                                                                                 |
+| ⌘ `commands`       | `useTaskCommands()` shared by both menus, command ranking                                                     | `ActionsMenu`, `CommandPalette`                                                                                                            |
+| 🎨 `settings`      | Appearance, accent, language and effects, `changeLocale()`, document sync                                     | `SettingsMenu`                                                                                                                             |
+| 🌍 `i18n`          | Typed messages for eight languages, the lazy catalog, native names and flags, `translate()`, `useI18n()`      | `LocaleFlag`                                                                                                                               |
+| 🔔 `notifications` | Toast slice and message formatting                                                                            | `Toaster`                                                                                                                                  |
 
 ## 🔀 Data flow
 
@@ -102,6 +102,7 @@ erDiagram
     boolean completed
     boolean important
     string dueDate "YYYY-MM-DD or null"
+    string repeat "daily, weekdays, weekly, monthly, yearly or null"
     string notes "up to 2000 characters"
     number createdAt "epoch milliseconds"
     number updatedAt "epoch milliseconds"
@@ -138,39 +139,57 @@ stateDiagram-v2
 
 Completing the last active task of a smart list triggers the `toast.allDone` notification and a burst of confetti that starts at the checkbox.
 
+### 🔁 Repeating tasks
+
+```mermaid
+sequenceDiagram
+  actor User
+  participant Row as TodoItem
+  participant Slice as todosSlice
+  User->>Row: Completes "Water plants" (weekly, due Mon)
+  Row->>Slice: todoToggled(id) with a fresh nextId
+  Slice->>Slice: mark completed, repeat → null on the original
+  Slice->>Slice: insert copy with nextOccurrence(dueDate, weekly, today)
+  Slice-->>Row: "Water plants" completed + "Water plants" due next Monday
+```
+
+`nextOccurrence()` in `features/todos/model/repeat.ts` advances by the interval until the date is after today, skips weekends for `weekdays` and clamps monthly and yearly dates to the end of shorter months. Because the whole change is one action, one undo removes the copy and reopens the original.
+
 ## 🍰 Slices and actions
 
 Action names follow the Redux style guide and describe events in the past tense.
 
-| Slice      | Action                       | Effect                                                         |
-| ---------- | ---------------------------- | -------------------------------------------------------------- |
-| `todos`    | `todoAdded`                  | Prepends a todo created from a draft (title, importance, date) |
-|            | `todoToggled`                | Flips `completed` and updates `completedAt` and `updatedAt`    |
-|            | `todoRenamed`                | Renames a todo, ignoring empty or unchanged titles             |
-|            | `todoImportanceToggled`      | Stars or unstars a todo                                        |
-|            | `todoScheduled`              | Sets or clears the due date, ignoring invalid dates            |
-|            | `todoNoted`                  | Replaces the notes, normalized and limited to 2000 characters  |
-|            | `todoDuplicated`             | Inserts an active copy right after the original                |
-|            | `todoMoved`                  | Moves one id to the position of another (drag and drop)        |
-|            | `allTodosMarked`             | Marks every todo as completed or active                        |
-|            | `todosRemoved`               | Removes several todos                                          |
-|            | `todosRestored`              | Re-inserts removed todos at their original indices             |
-|            | `todosImported`              | Appends todos whose ids are not known yet                      |
-|            | `todosReplaced`              | Replaces the collection, used by cross-tab sync                |
-| `view`     | `listChanged`                | Selects a smart list                                           |
-|            | `queryChanged`               | Updates the search query                                       |
-|            | `sortChanged`                | Selects the sort order                                         |
-|            | `completedVisibilityToggled` | Expands or collapses the completed section                     |
-|            | `detailsOpened`              | Opens the details sheet of a task                              |
-|            | `detailsClosed`              | Closes the details sheet                                       |
-|            | `paletteToggled`             | Opens or closes the command palette                            |
-| `settings` | `appearanceChanged`          | Selects Auto, Light or Dark                                    |
-|            | `accentChanged`              | Selects the accent colour                                      |
-|            | `localeChanged`              | Selects English or Ukrainian                                   |
-|            | `effectsChanged`             | Selects Auto, Full or Reduced effects                          |
-| `toast`    | `toastShown`                 | Shows a notification with a tone and an optional action        |
-|            | `toastDismissed`             | Hides the notification if its id still matches                 |
-| `history`  | `undone` / `redone`          | Steps back or forward through the snapshots                    |
+| Slice      | Action                       | Effect                                                                                        |
+| ---------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
+| `todos`    | `todoAdded`                  | Prepends a todo created from a draft (title, importance, date)                                |
+|            | `todoToggled`                | Flips `completed`, updates the timestamps and inserts the next occurrence of a repeating todo |
+|            | `todoRenamed`                | Renames a todo, ignoring empty or unchanged titles                                            |
+|            | `todoImportanceToggled`      | Stars or unstars a todo                                                                       |
+|            | `todoScheduled`              | Sets or clears the due date, ignoring invalid dates                                           |
+|            | `todosScheduled`             | Moves several todos to one date (Move to today)                                               |
+|            | `todoRepeatChanged`          | Sets or clears the repeat rule, giving undated todos a date                                   |
+|            | `todoNoted`                  | Replaces the notes, normalized and limited to 2000 characters                                 |
+|            | `todoDuplicated`             | Inserts an active copy right after the original                                               |
+|            | `todoMoved`                  | Moves one id to the position of another (drag and drop)                                       |
+|            | `allTodosMarked`             | Marks every todo as completed or active                                                       |
+|            | `todosRemoved`               | Removes several todos                                                                         |
+|            | `todosRestored`              | Re-inserts removed todos at their original indices                                            |
+|            | `todosImported`              | Appends todos whose ids are not known yet                                                     |
+|            | `todosReplaced`              | Replaces the collection, used by cross-tab sync                                               |
+| `view`     | `listChanged`                | Selects a smart list                                                                          |
+|            | `queryChanged`               | Updates the search query                                                                      |
+|            | `sortChanged`                | Selects the sort order                                                                        |
+|            | `completedVisibilityToggled` | Expands or collapses the completed section                                                    |
+|            | `detailsOpened`              | Opens the details sheet of a task                                                             |
+|            | `detailsClosed`              | Closes the details sheet                                                                      |
+|            | `paletteToggled`             | Opens or closes the command palette                                                           |
+| `settings` | `appearanceChanged`          | Selects Auto, Light or Dark                                                                   |
+|            | `accentChanged`              | Selects the accent colour                                                                     |
+|            | `localeChanged`              | Selects English or Ukrainian                                                                  |
+|            | `effectsChanged`             | Selects Auto, Full or Reduced effects                                                         |
+| `toast`    | `toastShown`                 | Shows a notification with a tone and an optional action                                       |
+|            | `toastDismissed`             | Hides the notification if its id still matches                                                |
+| `history`  | `undone` / `redone`          | Steps back or forward through the snapshots                                                   |
 
 ## ↩️ Undo and redo
 
@@ -205,18 +224,19 @@ sequenceDiagram
 
 Thunks in `features/todos/model/thunks.ts` coordinate several slices:
 
-| Thunk                     | What it does                                                                                                             |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| ➕ `addTodo(draft)`       | Adds a todo and switches to **All tasks** or clears the search when they would hide it. Returns `false` for blank titles |
-| ✅ `toggleTodo(id, day)`  | Toggles a todo and returns `true` when it was the last active task of the current list, after showing `toast.allDone`    |
-| 📄 `duplicateTodo(id)`    | Duplicates a todo, confirms it in a notification and returns the id of the copy                                          |
-| 🗑️ `removeTodos(ids)`     | Captures each todo with its index, removes them, closes their details and shows a notification with a **Restore** action |
-| 🧹 `clearCompleted()`     | Removes every completed todo through `removeTodos`                                                                       |
-| ↩️ `undoRemoval()`        | Restores the todos stored in the current notification and dismisses it                                                   |
-| 📥 `importTodos(text)`    | Validates a file, merges new todos and reports the result                                                                |
-| 📤 `exportTodos()`        | Downloads every todo as `todos-YYYY-MM-DD.json`                                                                          |
-| ⏪ `undo()` / `redo()`    | Steps through the history and describes the step in a notification                                                       |
-| 🌍 `changeLocale(locale)` | Loads the language's messages, then switches; reports a failure in a notification (settings feature)                     |
+| Thunk                         | What it does                                                                                                                                                              |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ➕ `addTodo(draft)`           | Adds a todo, clears a search that would hide it and, when the todo belongs to another list, shows a notification with a **Show** action. Returns `false` for blank titles |
+| ✅ `toggleTodo(id, day)`      | Toggles a todo and returns `true` when it was the last active task of the current list, after showing `toast.allDone`                                                     |
+| 📄 `duplicateTodo(id)`        | Duplicates a todo, confirms it in a notification and returns the id of the copy                                                                                           |
+| 🗑️ `removeTodos(ids)`         | Captures each todo with its index, removes them, closes their details and shows a notification with a **Restore** action                                                  |
+| 📆 `rescheduleOverdue(today)` | Moves every overdue todo to today in one undoable step and offers **Undo** in the notification                                                                            |
+| 🧹 `clearCompleted()`         | Removes every completed todo through `removeTodos`                                                                                                                        |
+| ↩️ `undoRemoval()`            | Restores the todos stored in the current notification and dismisses it                                                                                                    |
+| 📥 `importTodos(text)`        | Validates a file, merges new todos and reports the result                                                                                                                 |
+| 📤 `exportTodos()`            | Downloads every todo as `todos-YYYY-MM-DD.json`                                                                                                                           |
+| ⏪ `undo()` / `redo()`        | Steps through the history and describes the step in a notification                                                                                                        |
+| 🌍 `changeLocale(locale)`     | Loads the language's messages, then switches; reports a failure in a notification (settings feature)                                                                      |
 
 ## 🎯 Selectors
 
@@ -249,13 +269,17 @@ flowchart LR
 
 `parseDatePhrase()` understands English and Ukrainian phrases (`tomorrow`, `завтра`, `in 3 days`, `через 3 дні`, `next friday`, `у п’ятницю`, `2026-10-20`, `20.10`), validates calendar dates and rolls `dd.mm` over to the next year when the date has passed. The full list is in [Features](./features.md#-quick-add).
 
+## 🗂️ Date groups
+
+`groupActiveTodos(todos, list, today)` in `features/lists/model/groups.ts` turns the active todos of a list into sections: **Today** becomes _Overdue_ and _Today_, **Upcoming** becomes one group per day for the next seven days and one per month after that, and every other list stays a single group. Each group is its own `SortableContext`, so dragging reorders within a day, and rows in a day group hide their date chip.
+
 ## 💾 Persistence
 
 `app/persistence.ts` is wired up once in `main.tsx`, which keeps the store itself free of browser APIs and easy to test.
 
 | Key                          | Content                                                                            |
 | ---------------------------- | ---------------------------------------------------------------------------------- |
-| `react-todo-app/todos`       | `{ "version": 4, "todos": Todo[] }`                                                |
+| `react-todo-app/todos`       | `{ "version": 5, "todos": Todo[] }`                                                |
 | `react-todo-app/preferences` | `{ "list", "sort", "showCompleted", "appearance", "accent", "locale", "effects" }` |
 | `toDoList`                   | Legacy data from version 1, migrated and removed on first launch                   |
 
@@ -313,7 +337,7 @@ A toast is `{ id, message, tone, action }`:
 
 - 💬 `message` is `{ key, params }`; parameters may themselves be messages (for example the undone action), and `formatMessage()` translates them recursively.
 - 🎨 `tone` is `neutral`, `success` (with a sparkle) or `error`.
-- 🔘 `action` is either `restore` (the removed todos with their positions) or `reload` (a waiting service worker update). Update notifications stay until the user acts on them; the others close after six seconds unless hovered or focused.
+- 🔘 `action` is `restore` (the removed todos with their positions), `undo` (step back through the history), `show` (jump to the list a new todo was added to) or `reload` (a waiting service worker update). Update notifications stay until the user acts on them; the others close after six seconds unless hovered or focused.
 
 ## 🗺️ Component map
 
@@ -321,23 +345,23 @@ A toast is `{ id, message, tone, action }`:
 App
 ├── Backdrop                 Aurora orbs in the accent palette, flow lines and grain
 ├── Header                   Full-width sticky glass bar, offline badge, / shortcut
-│   ├── TodoSearch           Search field (behind a toggle on phones)
+│   ├── TodoSearch           Search field with the ⌘K palette button (behind a toggle on phones)
 │   ├── SettingsMenu         Appearance, accent, language grid with flags and effects
 │   └── ActionsMenu          Undo, redo, bulk actions, import, export and the shortcut sheet
 ├── Sidebar                  One glass panel, sticky on desktop, below the list on phones
 │   ├── ListNav              Smart lists with counters (not on phones)
 │   ├── TagNav               Tags of active tasks with counters
-│   └── Overview             Progress, stats, 7-day activity chart and streak (not on wide screens)
+│   ├── Overview             Progress, stats, 7-day activity chart and streak (not on wide screens)
+│   └── credits              Author and source code link
 ├── Workspace
 │   ├── ListHeader           Title, date, progress bar and SortMenu
 │   ├── TodoComposer         Quick add field with DuePicker and star, N shortcut
-│   └── TodoList             DndContext, empty states and announcements
-│       └── TodoSection      SortableContext and one glass group per section
+│   └── TodoList             DndContext, date groups, empty states and announcements
+│       └── TodoSection      SortableContext and one glass group per section or date
 │           └── TodoItem     Checkbox, title, chips, actions, swipe gestures, keyboard commands
-├── Inspector                Wide screens: Overview, or DetailsPanel with TaskDetails
-├── Footer                   Full-width status bar
+├── Inspector                Wide screens: Overview, or TaskDetailsPanel with TaskDetails
 ├── TabBar                   Bottom glass tab bar on phones
-├── TodoDetails              Dialog with TaskDetails below 1240 px
+├── TaskDetailsDialog        Dialog with TaskDetails below 1240 px
 ├── CommandPalette           ⌘K palette with fuzzy search over commands and tasks
 └── Toaster                  Notifications with Restore and Reload actions
 ```

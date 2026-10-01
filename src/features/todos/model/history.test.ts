@@ -14,11 +14,13 @@ import {
   todoMoved,
   todoNoted,
   todoRenamed,
+  todoRepeatChanged,
   todoScheduled,
   todosImported,
   todosRemoved,
   todosReplaced,
   todosRestored,
+  todosScheduled,
   todoToggled,
 } from "./todosSlice";
 
@@ -94,6 +96,7 @@ describe("describeChange", () => {
     expect(describeChange(todoImportanceToggled("milk"), before).key).toBe("history.starred");
     expect(describeChange(todoScheduled("milk", null), before).key).toBe("history.scheduled");
     expect(describeChange(todoNoted("milk", "x"), before).key).toBe("history.noted");
+    expect(describeChange(todoRepeatChanged("milk", "daily"), before).key).toBe("history.repeat");
   });
 
   it("describes bulk actions", () => {
@@ -104,6 +107,10 @@ describe("describeChange", () => {
       params: { count: 2 },
     });
     expect(describeChange(todosRestored([]), before).key).toBe("history.restored");
+    expect(describeChange(todosScheduled(["milk", "call"], "2026-10-01"), before)).toEqual({
+      key: "history.rescheduled",
+      params: { count: 2 },
+    });
     expect(describeChange(todosImported([]), before).key).toBe("history.imported");
     expect(describeChange(listChanged("today"), before).key).toBe("history.changed");
   });

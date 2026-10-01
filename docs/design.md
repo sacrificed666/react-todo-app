@@ -34,10 +34,11 @@ flowchart LR
 | 📝 Tasks     | List header, the composer capsule and the grouped list: one glass panel per section, rows separated by hairlines inset past the checkbox                          |
 | 🧾 Inspector | On wide screens a third column shows the overview, or the details of the selected task as an inline glass panel; the selected row gets an accent tint and bar     |
 | 📱 Tab bar   | Below 900 px the lists move into a floating capsule at the bottom, like an iOS tab bar, with a glass indicator that slides between tabs on a spring               |
-| 🔚 Footer    | A full-width glass status bar mirroring the header                                                                                                                |
 | 🗔 Overlays   | Menus are anchored glass popovers; the command palette and the details (below 1240 px) are modal glass dialogs, and the details become a bottom sheet on phones   |
 
-The container is 76 rem wide, and 92 rem on wide screens to make room for the inspector. On phones `--tabbar-offset` lifts notifications and the footer above the tab bar.
+The container is 76 rem wide, and 92 rem on wide screens to make room for the inspector. There is no footer bar: a small credits line closes the sidebar, and on phones `--tabbar-offset` keeps notifications and the last rows clear of the tab bar.
+
+Within a list, **date groups** get small uppercase headings — _Overdue_ in red with a **Move to today** capsule, then _Today_, _Tomorrow_, weekdays and months — each with its own grouped panel.
 
 ## 🔤 Typography
 
@@ -105,17 +106,18 @@ Every glass surface uses `backdrop-filter`, and a browser has to recompute it wh
 Other changes that keep the frame budget:
 
 - 🧱 **One blur per section** — rows are plain content on a grouped panel, so a list of 60 tasks costs two backdrop filters instead of sixty.
+- 🪟 **No blur on content in Reduced** — task groups, the overview and empty states use a denser tint (`--glass-tint-content`) instead of `backdrop-filter` when the backdrop is still anyway, so even an Upcoming list with a dozen date groups scrolls smoothly. Bars and controls keep their blur.
 - 🖱️ **One pointer update per frame** — the pointer light is batched with `requestAnimationFrame` instead of running on every mouse event.
 - 💤 **Lazy content** — due date menus render their content only while open, and translations other than English load on demand.
 - ⏱️ **One timer** — every component that needs the current day shares a single minute timer.
 
 Measured in headless Chrome without a GPU, with the CPU slowed down four times and 60 tasks on screen:
 
-| Scenario        | Before                    | Reduced (Windows default) | Full   |
-| --------------- | ------------------------- | ------------------------- | ------ |
-| 💤 Idle         | 28 fps                    | **60 fps**                | 30 fps |
-| 📜 Scrolling    | 25 fps, 40 % janky frames | **54 fps, 0 % janky**     | 29 fps |
-| 🖱️ Pointer move | 24 fps                    | **60 fps**                | 31 fps |
+| Scenario        | Before                    | Reduced (Windows default)                                         | Full   |
+| --------------- | ------------------------- | ----------------------------------------------------------------- | ------ |
+| 💤 Idle         | 28 fps                    | **60 fps**                                                        | 30 fps |
+| 📜 Scrolling    | 25 fps, 40 % janky frames | **58–60 fps, 0 % janky** (Upcoming with 9 date groups: 51–60 fps) | 29 fps |
+| 🖱️ Pointer move | 24 fps                    | **60 fps**                                                        | 31 fps |
 
 ## 🔬 Anatomy of the glass material
 
@@ -140,7 +142,7 @@ The `glass()` mixin in `src/shared/styles/_mixins.scss` builds every glass surfa
 | 🔘 Control | `--glass-blur-control` (8 px) | Composer, list navigation, segmented control     | Yes        |
 | 📄 Content | `--glass-blur` (14 px)        | Task rows, overview, empty states, buttons       | No         |
 | 🪟 Overlay | `--glass-blur-thick` (26 px)  | Popovers, dialogs, the tab bar and notifications | Yes        |
-| 🔝 Bar     | `--glass-blur-thick` (26 px)  | Header and footer (`glass-bar` mixin)            | Header     |
+| 🔝 Bar     | `--glass-blur-thick` (26 px)  | The header (`glass-bar` mixin)                   | Yes        |
 
 Thin glass keeps the refraction readable, content glass keeps text legible over a busy backdrop, and thick glass makes overlays stand apart from what they cover.
 
@@ -165,19 +167,19 @@ Things worth knowing:
 
 Tokens live in `src/shared/styles/_tokens.scss` as CSS custom properties.
 
-| Group         | Tokens                                                                                                                                                                               |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 🔤 Typography | `--font-sans`, `--font-display` — Montserrat Variable with a system fallback                                                                                                         |
-| 🖋️ Text       | `--color-text`, `--color-text-secondary`, `--color-text-tertiary`                                                                                                                    |
-| 🎨 Accent     | `--color-accent` and derived `--color-accent-bright`, `--color-accent-soft`, `--color-accent-glow`, `--color-on-accent`                                                              |
-| 🚦 Semantic   | `--color-danger`, `--color-warning`, `--color-success`, `--color-star` and their `-soft` / `-glow` variants (`--color-success-soft` tints swipe and checklist chips)                 |
-| 🏷️ Lists      | `--tone-all`, `--tone-today`, `--tone-upcoming`, `--tone-important`, `--tone-completed`                                                                                              |
-| 🧱 Surfaces   | `--color-surface` (opaque rows while swiping or dragging), `--color-fill`, `--color-fill-strong`, `--color-shade`, `--color-separator`, `--color-focus`                              |
-| 🫧 Glass      | `--glass-tint*`, `--glass-blur*`, `--glass-saturate`, `--glass-brightness`, `--glass-rim`, `--glass-sheen`, `--glass-edge`, `--glass-shadow*`, `--bar-shadow`                        |
-| 🌌 Backdrop   | `--backdrop-base`, `--orb-1` … `--orb-5`, `--orb-opacity`, `--orb-blend`, `--waves-filter`, `--waves-opacity`, `--grain-opacity`                                                     |
-| ⭕ Shape      | `--radius-sm` 12 px, `--radius-md` 16 px, `--radius-lg` 22 px, `--radius-xl` 28 px, `--radius-full`                                                                                  |
-| 🌊 Motion     | `--ease-out`, `--ease-in-out`, `--ease-spring`, `--ease-bounce`, `--duration-fast`, `--duration-base`, `--duration-slow`                                                             |
-| 📐 Layout     | `--layout-width` (76 rem, 92 rem from 1240 px), `--sidebar-width` (16.75 rem), `--inspector-width` (20 rem), `--header-height` (64 px), `--tabbar-offset` (0, or 76 px below 900 px) |
+| Group         | Tokens                                                                                                                                                                                       |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔤 Typography | `--font-sans`, `--font-display` — Montserrat Variable with a system fallback                                                                                                                 |
+| 🖋️ Text       | `--color-text`, `--color-text-secondary`, `--color-text-tertiary`                                                                                                                            |
+| 🎨 Accent     | `--color-accent` and derived `--color-accent-bright`, `--color-accent-soft`, `--color-accent-glow`, `--color-on-accent`                                                                      |
+| 🚦 Semantic   | `--color-danger`, `--color-warning`, `--color-success`, `--color-star` and their `-soft` / `-glow` variants (`--color-success-soft` tints swipe and checklist chips)                         |
+| 🏷️ Lists      | `--tone-all`, `--tone-today`, `--tone-upcoming`, `--tone-important`, `--tone-completed`                                                                                                      |
+| 🧱 Surfaces   | `--color-surface` (opaque rows while swiping or dragging), `--color-fill`, `--color-fill-strong`, `--color-shade`, `--color-separator`, `--color-focus`                                      |
+| 🫧 Glass      | `--glass-tint*` (incl. `--glass-tint-content`), `--glass-blur*`, `--glass-saturate`, `--glass-brightness`, `--glass-rim`, `--glass-sheen`, `--glass-edge`, `--glass-shadow*`, `--bar-shadow` |
+| 🌌 Backdrop   | `--backdrop-base`, `--orb-1` … `--orb-5`, `--orb-opacity`, `--orb-blend`, `--waves-filter`, `--waves-opacity`, `--grain-opacity`                                                             |
+| ⭕ Shape      | `--radius-sm` 12 px, `--radius-md` 16 px, `--radius-lg` 22 px, `--radius-xl` 28 px, `--radius-full`                                                                                          |
+| 🌊 Motion     | `--ease-out`, `--ease-in-out`, `--ease-spring`, `--ease-bounce`, `--duration-fast`, `--duration-base`, `--duration-slow`                                                                     |
+| 📐 Layout     | `--layout-width` (76 rem, 92 rem from 1240 px), `--sidebar-width` (16.75 rem), `--inspector-width` (20 rem), `--header-height` (64 px), `--tabbar-offset` (0, or 76 px below 900 px)         |
 
 ## 🌊 Motion
 

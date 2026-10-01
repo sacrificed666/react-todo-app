@@ -30,7 +30,7 @@
       "sidebar";
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
-    padding-block: 12px 32px;
+    padding-block: 12px calc(24px + var(--tabbar-offset) + env(safe-area-inset-bottom));
   }
 }
 

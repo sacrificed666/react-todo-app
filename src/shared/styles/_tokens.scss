@@ -49,6 +49,7 @@
   --glass-tint-hover: rgb(255 255 255 / 56%);
   --glass-tint-pressed: rgb(255 255 255 / 70%);
   --glass-tint-strong: rgb(248 250 255 / 74%);
+  --glass-tint-content: rgb(250 252 255 / 68%);
   --glass-tint-bar: rgb(246 249 255 / 58%);
   --glass-saturate: 180%;
   --glass-brightness: 1.06;
@@ -123,6 +124,7 @@
   --glass-tint-hover: rgb(255 255 255 / 10%);
   --glass-tint-pressed: rgb(255 255 255 / 15%);
   --glass-tint-strong: rgb(16 20 36 / 60%);
+  --glass-tint-content: rgb(24 28 48 / 62%);
   --glass-tint-bar: rgb(10 14 26 / 48%);
   --glass-tint-accent: color-mix(in srgb, var(--color-accent) 88%, transparent);
   --glass-blur: 14px;
@@ -331,6 +333,7 @@
     --glass-tint-hover: color-mix(in srgb, var(--color-backdrop) 86%, var(--color-text));
     --glass-tint-pressed: color-mix(in srgb, var(--color-backdrop) 80%, var(--color-text));
     --glass-tint-strong: color-mix(in srgb, var(--color-backdrop) 94%, var(--color-text));
+    --glass-tint-content: color-mix(in srgb, var(--color-backdrop) 92%, var(--color-text));
     --glass-tint-bar: color-mix(in srgb, var(--color-backdrop) 94%, var(--color-text));
     --glass-blur: 0px;
     --glass-blur-control: 0px;
@@ -347,6 +350,7 @@
     --color-separator: color-mix(in srgb, var(--color-text) 40%, transparent);
     --glass-tint: color-mix(in srgb, var(--color-backdrop) 86%, transparent);
     --glass-tint-strong: color-mix(in srgb, var(--color-backdrop) 94%, transparent);
+    --glass-tint-content: color-mix(in srgb, var(--color-backdrop) 90%, transparent);
     --glass-tint-bar: color-mix(in srgb, var(--color-backdrop) 92%, transparent);
     --glass-rim: linear-gradient(var(--color-separator), var(--color-separator));
   }

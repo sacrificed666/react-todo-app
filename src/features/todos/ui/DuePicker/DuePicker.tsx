@@ -66,7 +66,7 @@ const DuePicker = ({ value, onChange, variant, label, detected = false, classNam
           {...popover.triggerProps}
         >
           <Icon name={detected ? "sparkles" : "calendar"} className={styles.chipIcon} />
-          {due ? <span>{due.label}</span> : null}
+          {due ? <span className={styles.chipLabel}>{due.label}</span> : null}
         </button>
       ) : (
         <IconButton

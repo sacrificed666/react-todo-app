@@ -35,13 +35,15 @@ const ListNav = () => {
                 <Icon name={LIST_ICONS[id]} filled={id === "important"} />
               </span>
               <span className={styles.label}>{t(`lists.${id}`)}</span>
-              <span
-                className={styles.count}
-                aria-hidden="true"
-                data-alert={id === "today" && counts.overdue > 0 ? "" : undefined}
-              >
-                {counts[id]}
-              </span>
+              {counts[id] > 0 ? (
+                <span
+                  className={styles.count}
+                  aria-hidden="true"
+                  data-alert={id === "today" && counts.overdue > 0 ? "" : undefined}
+                >
+                  {counts[id]}
+                </span>
+              ) : null}
             </button>
           </li>
         ))}

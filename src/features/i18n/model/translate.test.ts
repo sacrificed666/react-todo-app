@@ -18,19 +18,19 @@ describe("translate", () => {
   });
 
   it("selects plural forms", () => {
-    expect(translate("en", "footer.tasks", { count: 1 })).toBe("1 task");
-    expect(translate("en", "footer.tasks", { count: 3 })).toBe("3 tasks");
-    expect(translate("uk", "footer.tasks", { count: 3 })).toBe("3 завдання");
-    expect(translate("uk", "footer.tasks", { count: 5 })).toBe("5 завдань");
-    expect(translate("uk", "footer.tasks", { count: 21 })).toBe("21 завдання");
-    expect(translate("pl", "footer.tasks", { count: 1 })).toBe("1 zadanie");
-    expect(translate("pl", "footer.tasks", { count: 3 })).toBe("3 zadania");
-    expect(translate("pl", "footer.tasks", { count: 12 })).toBe("12 zadań");
-    expect(translate("pl", "footer.tasks", { count: 22 })).toBe("22 zadania");
-    expect(translate("fr", "footer.tasks", { count: 0 })).toBe("0 tâche");
-    expect(translate("fr", "footer.tasks", { count: 2 })).toBe("2 tâches");
-    expect(translate("de", "footer.tasks", { count: 1 })).toBe("1 Aufgabe");
-    expect(translate("it", "footer.tasks", { count: 7 })).toBe("7 attività");
+    expect(translate("en", "palette.results", { count: 1 })).toBe("1 result");
+    expect(translate("en", "palette.results", { count: 3 })).toBe("3 results");
+    expect(translate("uk", "palette.results", { count: 3 })).toBe("3 результати");
+    expect(translate("uk", "palette.results", { count: 5 })).toBe("5 результатів");
+    expect(translate("uk", "palette.results", { count: 21 })).toBe("21 результат");
+    expect(translate("pl", "palette.results", { count: 1 })).toBe("1 wynik");
+    expect(translate("pl", "palette.results", { count: 3 })).toBe("3 wyniki");
+    expect(translate("pl", "palette.results", { count: 12 })).toBe("12 wyników");
+    expect(translate("pl", "palette.results", { count: 22 })).toBe("22 wyniki");
+    expect(translate("fr", "palette.results", { count: 0 })).toBe("0 résultat");
+    expect(translate("fr", "palette.results", { count: 2 })).toBe("2 résultats");
+    expect(translate("de", "palette.results", { count: 1 })).toBe("1 Ergebnis");
+    expect(translate("it", "toast.deletedMany", { count: 7 })).toBe("7 attività eliminate");
   });
 
   it("detects the first supported browser language", () => {

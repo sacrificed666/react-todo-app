@@ -3,7 +3,8 @@ import type { KeyboardEvent, RefObject } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { selectQuery } from "@/features/lists/model/selectors";
-import { queryChanged } from "@/features/lists/model/viewSlice";
+import { paletteToggled, queryChanged } from "@/features/lists/model/viewSlice";
+import { isApplePlatform } from "@/shared/lib/keyboard";
 import Icon from "@/shared/ui/Icon/Icon";
 import IconButton from "@/shared/ui/IconButton/IconButton";
 
@@ -53,9 +54,15 @@ const TodoSearch = ({ inputRef, onClose }: TodoSearchProps) => {
       {query ? (
         <IconButton icon="xmark" label={t("search.clear")} variant="ghost" size="small" onClick={clear} />
       ) : (
-        <kbd className={styles.hint} aria-hidden="true">
-          /
-        </kbd>
+        <button
+          type="button"
+          className={styles.hint}
+          aria-label={t("header.palette")}
+          aria-keyshortcuts="Meta+K Control+K"
+          onClick={() => dispatch(paletteToggled(true))}
+        >
+          {isApplePlatform() ? "⌘K" : "Ctrl K"}
+        </button>
       )}
     </search>
   );

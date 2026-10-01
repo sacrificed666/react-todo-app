@@ -1,8 +1,9 @@
 import { createEntityAdapter, createSlice, nanoid, type PayloadAction } from "@reduxjs/toolkit";
 
-import { isDateKey } from "@/shared/lib/date";
+import { isDateKey, toDateKey } from "@/shared/lib/date";
 
-import { createTodo, normalizeNotes, normalizeTitle, type Todo, type TodoDraft } from "./todo";
+import { nextOccurrence } from "./repeat";
+import { createTodo, normalizeNotes, normalizeTitle, type Repeat, type Todo, type TodoDraft } from "./todo";
 
 export interface RemovedTodo {
   todo: Todo;
@@ -25,14 +26,27 @@ export const todosSlice = createSlice({
       prepare: (draft: TodoDraft) => ({ payload: createTodo(draft, Date.now()) }),
     },
     todoToggled: {
-      reducer(state, action: PayloadAction<{ id: string; at: number }>) {
-        const todo = state.entities[action.payload.id];
+      reducer(state, action: PayloadAction<{ id: string; at: number; nextId: string }>) {
+        const { id, at, nextId } = action.payload;
+        const todo = state.entities[id];
         if (!todo) return;
         todo.completed = !todo.completed;
-        todo.completedAt = todo.completed ? action.payload.at : null;
-        todo.updatedAt = action.payload.at;
+        todo.completedAt = todo.completed ? at : null;
+        todo.updatedAt = at;
+        if (!todo.completed || !todo.repeat || !todo.dueDate || nextId in state.entities) return;
+
+        state.entities[nextId] = {
+          ...todo,
+          id: nextId,
+          completed: false,
+          completedAt: null,
+          dueDate: nextOccurrence(todo.dueDate, todo.repeat, toDateKey(new Date(at))),
+          createdAt: at,
+        };
+        state.ids.splice(state.ids.indexOf(id) + 1, 0, nextId);
+        todo.repeat = null;
       },
-      prepare: (id: string) => ({ payload: { id, at: Date.now() } }),
+      prepare: (id: string) => ({ payload: { id, at: Date.now(), nextId: nanoid() } }),
     },
     todoRenamed: {
       reducer(state, action: PayloadAction<{ id: string; title: string; at: number }>) {
@@ -59,9 +73,34 @@ export const todosSlice = createSlice({
         const dueDate = isDateKey(action.payload.dueDate) ? action.payload.dueDate : null;
         if (!todo || todo.dueDate === dueDate) return;
         todo.dueDate = dueDate;
+        if (dueDate === null) todo.repeat = null;
         todo.updatedAt = action.payload.at;
       },
       prepare: (id: string, dueDate: string | null) => ({ payload: { id, dueDate, at: Date.now() } }),
+    },
+    todosScheduled: {
+      reducer(state, action: PayloadAction<{ ids: readonly string[]; dueDate: string; at: number }>) {
+        const { ids, dueDate, at } = action.payload;
+        if (!isDateKey(dueDate)) return;
+        for (const id of ids) {
+          const todo = state.entities[id];
+          if (!todo || todo.dueDate === dueDate) continue;
+          todo.dueDate = dueDate;
+          todo.updatedAt = at;
+        }
+      },
+      prepare: (ids: readonly string[], dueDate: string) => ({ payload: { ids, dueDate, at: Date.now() } }),
+    },
+    todoRepeatChanged: {
+      reducer(state, action: PayloadAction<{ id: string; repeat: Repeat | null; at: number }>) {
+        const { id, repeat, at } = action.payload;
+        const todo = state.entities[id];
+        if (!todo || todo.repeat === repeat) return;
+        todo.repeat = repeat;
+        if (repeat && !todo.dueDate) todo.dueDate = toDateKey(new Date(at));
+        todo.updatedAt = at;
+      },
+      prepare: (id: string, repeat: Repeat | null) => ({ payload: { id, repeat, at: Date.now() } }),
     },
     todoNoted: {
       reducer(state, action: PayloadAction<{ id: string; notes: string; at: number }>) {
@@ -138,6 +177,8 @@ export const {
   todoRenamed,
   todoImportanceToggled,
   todoScheduled,
+  todosScheduled,
+  todoRepeatChanged,
   todoNoted,
   todoDuplicated,
   todoMoved,

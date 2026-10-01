@@ -61,6 +61,14 @@ export const it: Messages = {
   "due.nextWeek": "La prossima settimana",
   "due.pick": "Scegli una data",
   "due.remove": "Rimuovi la data",
+  "repeat.heading": "Ripeti",
+  "repeat.none": "Mai",
+  "repeat.daily": "Ogni giorno",
+  "repeat.weekdays": "Giorni feriali",
+  "repeat.weekly": "Ogni settimana",
+  "repeat.monthly": "Ogni mese",
+  "repeat.yearly": "Ogni anno",
+  "repeat.chip": "Ripetizione: {rule}",
 
   "todo.edit": "Modifica «{title}»",
   "todo.editor": "Titolo dell’attività",
@@ -80,6 +88,8 @@ export const it: Messages = {
   "section.todo": "Da fare",
   "section.completed": "Completate",
   "section.clear": "Svuota",
+  "section.overdue": "Scadute",
+  "section.moveToToday": "Sposta a oggi",
 
   "list.allDoneTitle": "Tutto fatto",
   "list.allDoneDescription": "Tutte le attività di questo elenco sono completate.",
@@ -104,6 +114,7 @@ export const it: Messages = {
   "overview.dueToday": "In scadenza oggi",
   "overview.important": "Importanti",
   "overview.activity": "Ultimi 7 giorni",
+  "overview.empty": "Aggiungi qualche attività per vedere qui i tuoi progressi.",
   "overview.activityDay": { one: "{day}: {count} attività completata", other: "{day}: {count} attività completate" },
   "overview.streak": { one: "{count} giorno di fila", other: "{count} giorni di fila" },
 
@@ -164,6 +175,9 @@ export const it: Messages = {
   "toast.allDone": "Tutto fatto in «{list}»!",
   "toast.duplicated": "«{title}» duplicata",
   "toast.languageFailed": "Impossibile caricare questa lingua",
+  "toast.addedTo": "«{title}» aggiunta a «{list}»",
+  "toast.show": "Mostra",
+  "toast.rescheduled": { one: "{count} attività spostata a oggi", other: "{count} attività spostate a oggi" },
 
   "history.added": "aggiunta di «{title}»",
   "history.duplicated": "duplicazione di «{title}»",
@@ -180,11 +194,10 @@ export const it: Messages = {
   "history.restored": "ripristino delle attività",
   "history.imported": "importazione delle attività",
   "history.changed": "modifica delle attività",
+  "history.rescheduled": "spostamento di {count} attività a oggi",
+  "history.repeat": "modifica della ripetizione di «{title}»",
 
-  "footer.tasks": "{count} attività",
-  "footer.done": { one: "{count} completata", other: "{count} completate" },
-  "footer.overdue": { one: "{count} scaduta", other: "{count} scadute" },
-  "footer.source": "Codice sorgente",
+  "credits.source": "Codice sorgente",
 
   "details.title": "Dettagli dell’attività",
   "details.titleLabel": "Titolo",

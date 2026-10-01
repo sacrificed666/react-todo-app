@@ -2,12 +2,14 @@ import { useId } from "react";
 
 import { useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
-import { selectActivity, selectListCounts } from "@/features/todos/model/selectors";
+import { selectListCounts } from "@/features/todos/model/selectors";
 import { useToday } from "@/shared/hooks/useToday";
 import { formatWeekdayShort } from "@/shared/lib/date";
 import Icon from "@/shared/ui/Icon/Icon";
 import type { IconName } from "@/shared/ui/Icon/icons";
 import ProgressBar from "@/shared/ui/ProgressBar/ProgressBar";
+
+import { selectActivity } from "../../model/selectors";
 
 import styles from "./Overview.module.scss";
 
@@ -26,6 +28,20 @@ const Overview = () => {
   const percent = counts.total > 0 ? Math.round((counts.completed / counts.total) * 100) : 0;
   const busiest = Math.max(1, ...days.map((day) => day.count));
   const titleId = useId();
+
+  if (counts.total === 0) {
+    return (
+      <section className={styles.card} aria-labelledby={titleId}>
+        <h2 id={titleId} className={styles.title}>
+          {t("overview.title")}
+        </h2>
+        <p className={styles.empty}>
+          <Icon name="sparkles" className={styles.emptyIcon} />
+          {t("overview.empty")}
+        </p>
+      </section>
+    );
+  }
 
   const stats: readonly Stat[] = [
     { label: t("overview.overdue"), value: counts.overdue, icon: "calendar", tone: "overdue" },

@@ -18,7 +18,7 @@ const ListHeader = () => {
   const list = useAppSelector(selectList);
   const { done, total } = useAppSelector((state) => selectListProgress(state, today));
   const title = t(`lists.${list}`);
-  const showProgress = total > 0 && list !== "completed";
+  const showProgress = total > 0 && list !== "completed" && list !== "upcoming";
 
   return (
     <div className={styles.header}>

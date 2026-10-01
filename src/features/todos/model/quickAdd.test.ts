@@ -10,6 +10,7 @@ describe("parseQuickAdd", () => {
       title: "Call mom",
       dueDate: "2026-10-02",
       important: false,
+      repeat: null,
     });
     expect(parseQuickAdd("Подзвонити мамі завтра", today).dueDate).toBe("2026-10-02");
     expect(parseQuickAdd("Renew passport in 10 days", today).dueDate).toBe("2026-10-11");
@@ -38,6 +39,7 @@ describe("parseQuickAdd", () => {
       title: "Ship the release #work",
       dueDate: "2026-10-02",
       important: true,
+      repeat: null,
     });
   });
 
@@ -46,8 +48,14 @@ describe("parseQuickAdd", () => {
       title: "Read “Tomorrow and tomorrow” again",
       dueDate: null,
       important: false,
+      repeat: null,
     });
-    expect(parseQuickAdd("Tomorrow", today)).toEqual({ title: "Tomorrow", dueDate: null, important: false });
+    expect(parseQuickAdd("Tomorrow", today)).toEqual({
+      title: "Tomorrow",
+      dueDate: null,
+      important: false,
+      repeat: null,
+    });
     expect(parseQuickAdd("Enjoy the sun", today).dueDate).toBeNull();
   });
 
@@ -118,5 +126,67 @@ describe("parseQuickAdd in other languages", () => {
       dueDate: null,
     });
     expect(parseQuickAdd("Joggen am Morgen", today)).toMatchObject({ title: "Joggen am Morgen", dueDate: null });
+  });
+});
+
+describe("parseQuickAdd repeats", () => {
+  it("understands intervals in every language", () => {
+    expect(parseQuickAdd("Water the plants every day", today)).toMatchObject({
+      title: "Water the plants",
+      repeat: "daily",
+      dueDate: today,
+    });
+    expect(parseQuickAdd("Standup every weekday", today).repeat).toBe("weekdays");
+    expect(parseQuickAdd("Полити квіти щотижня", today).repeat).toBe("weekly");
+    expect(parseQuickAdd("Miete zahlen monatlich", today).repeat).toBe("monthly");
+    expect(parseQuickAdd("Revisión cada año", today).repeat).toBe("yearly");
+    expect(parseQuickAdd("Courir tous les jours", today).repeat).toBe("daily");
+    expect(parseQuickAdd("Riunione ogni settimana", today).repeat).toBe("weekly");
+    expect(parseQuickAdd("Planten water geven dagelijks", today).repeat).toBe("daily");
+    expect(parseQuickAdd("Podlać kwiaty co tydzień", today).repeat).toBe("weekly");
+  });
+
+  it("starts weekly repeats on the named weekday, today included", () => {
+    expect(parseQuickAdd("Gym every friday", today)).toMatchObject({
+      title: "Gym",
+      repeat: "weekly",
+      dueDate: "2026-10-02",
+    });
+    expect(parseQuickAdd("Standup every thursday", today)).toMatchObject({ repeat: "weekly", dueDate: today });
+    expect(parseQuickAdd("Йога щопонеділка", today)).toMatchObject({
+      title: "Йога",
+      repeat: "weekly",
+      dueDate: "2026-10-05",
+    });
+    expect(parseQuickAdd("Басейн по понеділках", today)).toMatchObject({ title: "Басейн", repeat: "weekly" });
+    expect(parseQuickAdd("Sport montags", today)).toMatchObject({
+      title: "Sport",
+      repeat: "weekly",
+      dueDate: "2026-10-05",
+    });
+    expect(parseQuickAdd("Marché tous les samedis", today)).toMatchObject({
+      title: "Marché",
+      repeat: "weekly",
+      dueDate: "2026-10-03",
+    });
+    expect(parseQuickAdd("Basen w każdy wtorek", today)).toMatchObject({
+      title: "Basen",
+      repeat: "weekly",
+      dueDate: "2026-10-06",
+    });
+  });
+
+  it("combines repeats with explicit dates, importance and tags", () => {
+    expect(parseQuickAdd("Pay rent monthly 05.10 #home !", today)).toEqual({
+      title: "Pay rent #home",
+      dueDate: "2026-10-05",
+      important: true,
+      repeat: "monthly",
+    });
+  });
+
+  it("does not treat single weekdays as repeats", () => {
+    expect(parseQuickAdd("Dentist friday", today)).toMatchObject({ repeat: null, dueDate: "2026-10-02" });
+    expect(parseQuickAdd("Reunión el lunes", today)).toMatchObject({ repeat: null, dueDate: "2026-10-05" });
   });
 });

@@ -166,3 +166,15 @@
     animation: none;
   }
 }
+
+@container composer (max-width: 420px) {
+  .chip:not([data-empty]) {
+    inline-size: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .chipLabel {
+    display: none;
+  }
+}

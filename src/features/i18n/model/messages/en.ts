@@ -59,6 +59,14 @@ export const en = {
   "due.nextWeek": "Next week",
   "due.pick": "Pick a date",
   "due.remove": "Remove date",
+  "repeat.heading": "Repeat",
+  "repeat.none": "Never",
+  "repeat.daily": "Every day",
+  "repeat.weekdays": "Every weekday",
+  "repeat.weekly": "Every week",
+  "repeat.monthly": "Every month",
+  "repeat.yearly": "Every year",
+  "repeat.chip": "Repeat: {rule}",
 
   "todo.edit": "Edit “{title}”",
   "todo.editor": "Task title",
@@ -78,6 +86,8 @@ export const en = {
   "section.todo": "To do",
   "section.completed": "Completed",
   "section.clear": "Clear",
+  "section.overdue": "Overdue",
+  "section.moveToToday": "Move to today",
 
   "list.allDoneTitle": "All done",
   "list.allDoneDescription": "Every task in this list is completed.",
@@ -102,6 +112,7 @@ export const en = {
   "overview.dueToday": "Due today",
   "overview.important": "Important",
   "overview.activity": "Last 7 days",
+  "overview.empty": "Add a few tasks to see your progress here.",
   "overview.activityDay": { one: "{day}: {count} task completed", other: "{day}: {count} tasks completed" },
   "overview.streak": { one: "{count}-day streak", other: "{count}-day streak" },
 
@@ -162,6 +173,9 @@ export const en = {
   "toast.allDone": "Everything in {list} is done!",
   "toast.duplicated": "Duplicated “{title}”",
   "toast.languageFailed": "This language could not be loaded",
+  "toast.addedTo": "Added “{title}” to {list}",
+  "toast.show": "Show",
+  "toast.rescheduled": { one: "Moved {count} task to today", other: "Moved {count} tasks to today" },
 
   "history.added": "add “{title}”",
   "history.duplicated": "duplicate “{title}”",
@@ -178,11 +192,10 @@ export const en = {
   "history.restored": "restore tasks",
   "history.imported": "import tasks",
   "history.changed": "change tasks",
+  "history.rescheduled": { one: "move {count} task to today", other: "move {count} tasks to today" },
+  "history.repeat": "change how “{title}” repeats",
 
-  "footer.tasks": { one: "{count} task", other: "{count} tasks" },
-  "footer.done": "{count} done",
-  "footer.overdue": "{count} overdue",
-  "footer.source": "Source code",
+  "credits.source": "Source code",
 
   "details.title": "Task details",
   "details.titleLabel": "Title",

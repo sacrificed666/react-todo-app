@@ -9,13 +9,13 @@ import type { Todo } from "../../model/todo";
 import { toggleId } from "../ids";
 import TaskDetails from "../TaskDetails/TaskDetails";
 
-import styles from "./DetailsPanel.module.scss";
+import styles from "./TaskDetailsPanel.module.scss";
 
 interface DetailsPanelProps {
   todo: Todo;
 }
 
-const DetailsPanel = ({ todo }: DetailsPanelProps) => {
+const TaskDetailsPanel = ({ todo }: DetailsPanelProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
   const ref = useRef<HTMLElement>(null);
@@ -52,4 +52,4 @@ const DetailsPanel = ({ todo }: DetailsPanelProps) => {
   );
 };
 
-export default DetailsPanel;
+export default TaskDetailsPanel;

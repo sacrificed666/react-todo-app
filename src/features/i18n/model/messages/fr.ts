@@ -61,6 +61,14 @@ export const fr: Messages = {
   "due.nextWeek": "La semaine prochaine",
   "due.pick": "Choisir une date",
   "due.remove": "Supprimer la date",
+  "repeat.heading": "Répéter",
+  "repeat.none": "Jamais",
+  "repeat.daily": "Chaque jour",
+  "repeat.weekdays": "En semaine",
+  "repeat.weekly": "Chaque semaine",
+  "repeat.monthly": "Chaque mois",
+  "repeat.yearly": "Chaque année",
+  "repeat.chip": "Répétition\u00a0: {rule}",
 
   "todo.edit": "Modifier «\u00a0{title}\u00a0»",
   "todo.editor": "Titre de la tâche",
@@ -80,6 +88,8 @@ export const fr: Messages = {
   "section.todo": "À faire",
   "section.completed": "Terminées",
   "section.clear": "Effacer",
+  "section.overdue": "En retard",
+  "section.moveToToday": "Reporter à aujourd’hui",
 
   "list.allDoneTitle": "Tout est fait",
   "list.allDoneDescription": "Toutes les tâches de cette liste sont terminées.",
@@ -104,6 +114,7 @@ export const fr: Messages = {
   "overview.dueToday": "Pour aujourd’hui",
   "overview.important": "Importantes",
   "overview.activity": "7 derniers jours",
+  "overview.empty": "Ajoutez quelques tâches pour voir votre progression ici.",
   "overview.activityDay": {
     one: "{day}\u00a0: {count} tâche terminée",
     other: "{day}\u00a0: {count} tâches terminées",
@@ -167,6 +178,9 @@ export const fr: Messages = {
   "toast.allDone": "Tout est fait dans «\u00a0{list}\u00a0»\u202f!",
   "toast.duplicated": "«\u00a0{title}\u00a0» dupliquée",
   "toast.languageFailed": "Impossible de charger cette langue",
+  "toast.addedTo": "«\u00a0{title}\u00a0» ajoutée à «\u00a0{list}\u00a0»",
+  "toast.show": "Afficher",
+  "toast.rescheduled": { one: "{count} tâche reportée à aujourd’hui", other: "{count} tâches reportées à aujourd’hui" },
 
   "history.added": "l’ajout de «\u00a0{title}\u00a0»",
   "history.duplicated": "la duplication de «\u00a0{title}\u00a0»",
@@ -183,11 +197,13 @@ export const fr: Messages = {
   "history.restored": "la restauration des tâches",
   "history.imported": "l’import des tâches",
   "history.changed": "la modification des tâches",
+  "history.rescheduled": {
+    one: "le report de {count} tâche à aujourd’hui",
+    other: "le report de {count} tâches à aujourd’hui",
+  },
+  "history.repeat": "le changement de répétition de «\u00a0{title}\u00a0»",
 
-  "footer.tasks": { one: "{count} tâche", other: "{count} tâches" },
-  "footer.done": { one: "{count} terminée", other: "{count} terminées" },
-  "footer.overdue": "{count} en retard",
-  "footer.source": "Code source",
+  "credits.source": "Code source",
 
   "details.title": "Détails de la tâche",
   "details.titleLabel": "Titre",

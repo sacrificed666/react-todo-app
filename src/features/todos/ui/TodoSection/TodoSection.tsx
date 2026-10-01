@@ -13,7 +13,9 @@ interface TodoSectionProps {
   title: string;
   todos: readonly Todo[];
   sortable: boolean;
+  tone?: "overdue";
   hideHeader?: boolean;
+  hideDueDate?: boolean;
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
   action?: ReactNode;
@@ -24,7 +26,9 @@ const TodoSection = ({
   title,
   todos,
   sortable,
+  tone,
   hideHeader = false,
+  hideDueDate = false,
   collapsed = false,
   onToggleCollapsed,
   action,
@@ -35,7 +39,7 @@ const TodoSection = ({
 
   return (
     <section className={styles.section} aria-labelledby={headingId}>
-      <div className={hideHeader ? "visually-hidden" : styles.header}>
+      <div className={hideHeader ? "visually-hidden" : styles.header} data-tone={tone}>
         <h2 id={headingId} className={styles.title}>
           {onToggleCollapsed ? (
             <button
@@ -67,6 +71,7 @@ const TodoSection = ({
                   key={todo.id}
                   todo={todo}
                   sortable={sortable}
+                  hideDueDate={hideDueDate}
                   previousId={todos[index - 1]?.id ?? null}
                   nextId={todos[index + 1]?.id ?? null}
                 />

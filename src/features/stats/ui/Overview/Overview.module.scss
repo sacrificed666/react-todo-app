@@ -1,7 +1,7 @@
 @use "@/shared/styles/mixins" as *;
 
 .card {
-  @include glass(var(--radius-xl));
+  @include glass(var(--radius-xl), $content: true);
   container: overview / inline-size;
   display: flex;
   flex-direction: column;
@@ -29,6 +29,22 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
+}
+
+.empty {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+}
+
+.emptyIcon {
+  flex: none;
+  margin-block-start: 1px;
+  font-size: 1.125rem;
+  color: var(--color-accent-bright);
 }
 
 .caption {

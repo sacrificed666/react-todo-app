@@ -53,7 +53,13 @@ const TodoComposer = ({ list }: TodoComposerProps) => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (dispatch(addTodo({ title: parsed.title, dueDate: effectiveDueDate, important: effectiveImportant }))) {
+    const draft = {
+      title: parsed.title,
+      dueDate: effectiveDueDate,
+      important: effectiveImportant,
+      repeat: parsed.repeat,
+    };
+    if (dispatch(addTodo(draft))) {
       setTitle("");
     }
   };
@@ -81,6 +87,12 @@ const TodoComposer = ({ list }: TodoComposerProps) => {
           label={t("composer.dueDate")}
           detected={parsed.dueDate !== null}
         />
+        {parsed.repeat ? (
+          <span className={styles.repeat} title={t("composer.detected")}>
+            <Icon name="repeat" className={styles.repeatIcon} />
+            <span>{t(`repeat.${parsed.repeat}`)}</span>
+          </span>
+        ) : null}
         <IconButton
           icon="star"
           iconFilled={effectiveImportant}

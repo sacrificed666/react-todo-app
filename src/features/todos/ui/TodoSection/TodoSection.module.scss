@@ -17,6 +17,10 @@
   @starting-style {
     opacity: 0;
   }
+
+  &[data-tone="overdue"] .title {
+    color: var(--color-danger);
+  }
 }
 
 .title {
@@ -70,7 +74,7 @@
 
 .list {
   container: todo-list / inline-size;
-  @include glass(var(--radius-xl));
+  @include glass(var(--radius-xl), $content: true);
   display: flex;
   flex-direction: column;
   overflow: clip;

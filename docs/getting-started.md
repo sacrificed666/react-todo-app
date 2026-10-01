@@ -55,16 +55,16 @@ react-todo-app/
 ├── scripts/                         Coverage summary and build report for the pipeline
 ├── src/
 │   ├── app/                         Entry point, App shell, store, persistence, launch intents, PWA, error screen
-│   ├── widgets/                     Header, Sidebar, Workspace, Inspector, Footer, Backdrop
+│   ├── widgets/                     Header, Sidebar, Workspace, Inspector, Backdrop
 │   ├── features/
-│   │   ├── todos/                   Task model, history, quick add, checklists, transfer; composer, list, rows, details dialog and panel
-│   │   ├── lists/                   Smart lists, sorting, view state; navigation, tags, tab bar, list header, overview
-│   │   ├── palette/                 Command ranking and the ⌘K palette
+│   │   ├── todos/                   Task model, history, repeats, quick add, checklists, transfer; composer, list, rows, details
+│   │   ├── lists/                   Smart lists, date groups, sorting, view state; navigation, tags, tab bar, list header
+│   │   ├── stats/                   Activity and streak; the overview card
+│   │   ├── commands/                Shared task commands; the ⋯ menu and the ⌘K palette
 │   │   ├── search/                  Search field
 │   │   ├── settings/                Appearance, accent, language and effects
 │   │   ├── i18n/                    Messages in eight languages, the lazy catalog, names, flags and the translator
-│   │   ├── notifications/           Toast state and the Toaster
-│   │   └── actions/                 The ⋯ menu
+│   │   └── notifications/           Toast state and the Toaster
 │   ├── shared/
 │   │   ├── ui/                      Icon, IconButton, Checkbox, Popover, Dialog, SegmentedControl, ProgressBar, EmptyState
 │   │   ├── hooks/                   Liquid glass, effects level, shortcuts, media queries, online status, app badge, today, pointer light

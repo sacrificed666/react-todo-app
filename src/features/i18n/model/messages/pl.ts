@@ -61,6 +61,14 @@ export const pl: Messages = {
   "due.nextWeek": "Za tydzień",
   "due.pick": "Wybierz datę",
   "due.remove": "Usuń termin",
+  "repeat.heading": "Powtarzaj",
+  "repeat.none": "Nigdy",
+  "repeat.daily": "Codziennie",
+  "repeat.weekdays": "W dni robocze",
+  "repeat.weekly": "Co tydzień",
+  "repeat.monthly": "Co miesiąc",
+  "repeat.yearly": "Co roku",
+  "repeat.chip": "Powtarzanie: {rule}",
 
   "todo.edit": "Edytuj „{title}”",
   "todo.editor": "Tytuł zadania",
@@ -80,6 +88,8 @@ export const pl: Messages = {
   "section.todo": "Do zrobienia",
   "section.completed": "Ukończone",
   "section.clear": "Wyczyść",
+  "section.overdue": "Zaległe",
+  "section.moveToToday": "Przenieś na dziś",
 
   "list.allDoneTitle": "Wszystko zrobione",
   "list.allDoneDescription": "Wszystkie zadania na tej liście są ukończone.",
@@ -104,6 +114,7 @@ export const pl: Messages = {
   "overview.dueToday": "Na dziś",
   "overview.important": "Ważne",
   "overview.activity": "Ostatnie 7 dni",
+  "overview.empty": "Dodaj kilka zadań, aby zobaczyć tutaj swoje postępy.",
   "overview.activityDay": {
     one: "{day}: ukończono {count} zadanie",
     few: "{day}: ukończono {count} zadania",
@@ -189,6 +200,14 @@ export const pl: Messages = {
   "toast.allDone": "Wszystko na liście „{list}” zrobione!",
   "toast.duplicated": "Zduplikowano „{title}”",
   "toast.languageFailed": "Nie udało się wczytać tego języka",
+  "toast.addedTo": "Dodano „{title}” do listy „{list}”",
+  "toast.show": "Pokaż",
+  "toast.rescheduled": {
+    one: "Przeniesiono {count} zadanie na dziś",
+    few: "Przeniesiono {count} zadania na dziś",
+    many: "Przeniesiono {count} zadań na dziś",
+    other: "Przeniesiono {count} zadania na dziś",
+  },
 
   "history.added": "dodanie „{title}”",
   "history.duplicated": "zduplikowanie „{title}”",
@@ -210,11 +229,15 @@ export const pl: Messages = {
   "history.restored": "przywrócenie zadań",
   "history.imported": "import zadań",
   "history.changed": "zmiana zadań",
+  "history.rescheduled": {
+    one: "przeniesienie {count} zadania na dziś",
+    few: "przeniesienie {count} zadań na dziś",
+    many: "przeniesienie {count} zadań na dziś",
+    other: "przeniesienie {count} zadania na dziś",
+  },
+  "history.repeat": "zmiana powtarzania „{title}”",
 
-  "footer.tasks": { one: "{count} zadanie", few: "{count} zadania", many: "{count} zadań", other: "{count} zadania" },
-  "footer.done": "ukończone: {count}",
-  "footer.overdue": "zaległe: {count}",
-  "footer.source": "Kod źródłowy",
+  "credits.source": "Kod źródłowy",
 
   "details.title": "Szczegóły zadania",
   "details.titleLabel": "Tytuł",

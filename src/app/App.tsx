@@ -1,13 +1,13 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import CommandPalette from "@/features/commands/ui/CommandPalette/CommandPalette";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { useListShortcuts } from "@/features/lists/model/useListShortcuts";
 import TabBar from "@/features/lists/ui/TabBar/TabBar";
 import Toaster from "@/features/notifications/ui/Toaster/Toaster";
-import CommandPalette from "@/features/palette/ui/CommandPalette/CommandPalette";
 import { useDocumentSync } from "@/features/settings/model/useDocumentSync";
 import { selectListCounts } from "@/features/todos/model/selectors";
 import { redo, undo } from "@/features/todos/model/thunks";
-import TodoDetails from "@/features/todos/ui/TodoDetails/TodoDetails";
+import TaskDetailsDialog from "@/features/todos/ui/TaskDetailsDialog/TaskDetailsDialog";
 import { useAppBadge } from "@/shared/hooks/useAppBadge";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { usePointerLight } from "@/shared/hooks/usePointerLight";
@@ -16,7 +16,6 @@ import { useToday } from "@/shared/hooks/useToday";
 import { isRedoKey, isUndoKey } from "@/shared/lib/keyboard";
 import { COMPACT_LAYOUT, WIDE_LAYOUT } from "@/shared/lib/media";
 import Backdrop from "@/widgets/Backdrop/Backdrop";
-import Footer from "@/widgets/Footer/Footer";
 import Header from "@/widgets/Header/Header";
 import Inspector from "@/widgets/Inspector/Inspector";
 import Sidebar from "@/widgets/Sidebar/Sidebar";
@@ -59,9 +58,8 @@ const App = () => {
         <Workspace />
         {wide ? <Inspector /> : null}
       </div>
-      <Footer />
       {compact ? <TabBar /> : null}
-      {wide ? null : <TodoDetails />}
+      {wide ? null : <TaskDetailsDialog />}
       <CommandPalette />
       <Toaster />
     </div>

@@ -21,3 +21,24 @@
   gap: 6px;
   padding: 8px;
 }
+
+.credits {
+  padding-inline: 12px;
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+
+  @media (max-width: 899px) {
+    text-align: center;
+  }
+}
+
+.link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  text-underline-offset: 3px;
+
+  @include hover {
+    color: var(--color-text);
+    text-decoration: underline;
+  }
+}

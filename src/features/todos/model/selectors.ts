@@ -4,7 +4,6 @@ import type { RootState } from "@/app/store";
 import { isOverdue, matchesList, type ListId } from "@/features/lists/model/lists";
 import { selectList, selectQuery, selectSort } from "@/features/lists/model/selectors";
 import { sortTodos } from "@/features/lists/model/sort";
-import { addDays, toDateKey } from "@/shared/lib/date";
 
 import { createMatcher, extractTags } from "./todo";
 import { todosAdapter } from "./todosSlice";
@@ -63,29 +62,6 @@ export const selectVisibleTodos = createSelector(
 );
 
 export const selectHistory = (state: RootState) => state.history;
-
-export const selectActivity = createSelector([selectTodos, selectToday], (todos, today) => {
-  const completions = new Map<string, number>();
-  for (const todo of todos) {
-    if (!todo.completed || todo.completedAt === null) continue;
-    const day = toDateKey(new Date(todo.completedAt));
-    completions.set(day, (completions.get(day) ?? 0) + 1);
-  }
-
-  const days = Array.from({ length: 7 }, (_, index) => {
-    const day = addDays(today, index - 6);
-    return { day, count: completions.get(day) ?? 0 };
-  });
-
-  let streak = 0;
-  let cursor = completions.has(today) ? today : addDays(today, -1);
-  while ((completions.get(cursor) ?? 0) > 0) {
-    streak += 1;
-    cursor = addDays(cursor, -1);
-  }
-
-  return { days, streak };
-});
 
 export interface TagCount {
   tag: string;

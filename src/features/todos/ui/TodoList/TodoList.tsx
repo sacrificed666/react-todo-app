@@ -14,14 +14,16 @@ import { hasSortableData, sortableKeyboardCoordinates } from "@dnd-kit/sortable"
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import type { Translate } from "@/features/i18n/model/translate";
 import { useI18n } from "@/features/i18n/model/useI18n";
+import { groupActiveTodos, type TodoGroup } from "@/features/lists/model/groups";
 import { LIST_ICONS } from "@/features/lists/model/listIcons";
 import { selectList, selectQuery, selectShowCompleted, selectSort } from "@/features/lists/model/selectors";
 import { completedVisibilityToggled } from "@/features/lists/model/viewSlice";
 import { useToday } from "@/shared/hooks/useToday";
+import { describeDueDate, formatMonth } from "@/shared/lib/date";
 import EmptyState from "@/shared/ui/EmptyState/EmptyState";
 
 import { selectVisibleTodos } from "../../model/selectors";
-import { clearCompleted } from "../../model/thunks";
+import { clearCompleted, rescheduleOverdue } from "../../model/thunks";
 import { todoMoved } from "../../model/todosSlice";
 import TodoSection from "../TodoSection/TodoSection";
 
@@ -54,7 +56,7 @@ const createAnnouncements = (t: Translate): Announcements => {
 const TodoList = () => {
   const dispatch = useAppDispatch();
   const today = useToday();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { active, completed } = useAppSelector((state) => selectVisibleTodos(state, today));
   const list = useAppSelector(selectList);
   const query = useAppSelector(selectQuery);
@@ -70,6 +72,15 @@ const TodoList = () => {
     if (!hasSortableData(dragged) || !hasSortableData(over) || dragged.id === over.id) return;
     if (dragged.data.current.sortable.containerId !== over.data.current.sortable.containerId) return;
     dispatch(todoMoved({ activeId: String(dragged.id), overId: String(over.id) }));
+  };
+
+  const groups = groupActiveTodos(active, list, today);
+
+  const groupTitle = (group: TodoGroup) => {
+    if (group.kind === "overdue") return t("section.overdue");
+    if (group.kind === "month" && group.date) return formatMonth(group.date, today, locale);
+    if (group.kind === "day" && group.date) return describeDueDate(group.date, today, locale).label;
+    return t("section.todo");
   };
 
   const trimmedQuery = query.trim();
@@ -89,9 +100,30 @@ const TodoList = () => {
       onDragEnd={handleDragEnd}
     >
       <div className={styles.list}>
-        {active.length > 0 ? (
-          <TodoSection id="active" title={t("section.todo")} todos={active} sortable={sortable} hideHeader />
-        ) : null}
+        {groups.map((group) => (
+          <TodoSection
+            key={group.id}
+            id={group.id}
+            title={groupTitle(group)}
+            tone={group.kind === "overdue" ? "overdue" : undefined}
+            todos={group.todos}
+            sortable={sortable}
+            hideHeader={group.kind === "all" || (list === "today" && groups.length === 1 && group.kind === "day")}
+            hideDueDate={group.kind === "day"}
+            action={
+              group.kind === "overdue" ? (
+                <button
+                  type="button"
+                  className={styles.clear}
+                  data-glass-light=""
+                  onClick={() => dispatch(rescheduleOverdue(today))}
+                >
+                  {t("section.moveToToday")}
+                </button>
+              ) : undefined
+            }
+          />
+        ))}
         {isAllDone ? (
           <EmptyState
             compact

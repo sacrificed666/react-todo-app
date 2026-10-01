@@ -23,7 +23,7 @@ const plannedTodos = [
 ];
 
 describe("App shell", () => {
-  it("renders the header, lists and footer", () => {
+  it("renders the header, lists and credits", () => {
     renderApp(plannedTodos);
 
     expect(screen.getByRole("banner")).toHaveTextContent("ToDo");
@@ -31,7 +31,10 @@ describe("App shell", () => {
     expect(screen.getByRole("navigation", { name: "Lists" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Today (2)" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Important (1)" })).toBeInTheDocument();
-    expect(screen.getByRole("contentinfo")).toHaveTextContent("1 overdue");
+    expect(screen.getByRole("link", { name: "Source code" })).toHaveAttribute(
+      "href",
+      "https://github.com/sacrificed666/react-todo-app",
+    );
   });
 
   it("switches lists with the navigation and number keys", async () => {
@@ -39,12 +42,13 @@ describe("App shell", () => {
 
     await user.click(screen.getByRole("button", { name: /^Today/ }));
     expect(screen.getByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
-    expect(itemTitles(section(/^To do/))).toEqual(["Send the invoice", "Daily standup"]);
+    expect(itemTitles(section(/^Overdue/))).toEqual(["Send the invoice"]);
+    expect(itemTitles(section(/^Today/))).toEqual(["Daily standup"]);
     expect(screen.getByRole("button", { name: /^Today/ })).toHaveAttribute("aria-current", "page");
 
     await user.keyboard("3");
     expect(screen.getByRole("heading", { level: 1, name: "Upcoming" })).toBeInTheDocument();
-    expect(itemTitles(section(/^To do/))).toEqual(["Dentist appointment"]);
+    expect(itemTitles(screen.getByRole("main"))).toEqual(["Dentist appointment"]);
 
     await user.keyboard("4");
     expect(itemTitles(section(/^To do/))).toEqual(["Send the invoice"]);
@@ -82,7 +86,7 @@ describe("App shell", () => {
     expect(document.documentElement.lang).toBe("uk");
     expect(screen.getByRole("heading", { level: 1, name: "Усі завдання" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Сьогодні (2)" })).toBeInTheDocument();
-    expect(screen.getByRole("contentinfo")).toHaveTextContent("4 завдання");
+    expect(screen.getByRole("link", { name: "Вихідний код" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Нове завдання" })).toBeInTheDocument();
   });
 
@@ -107,9 +111,9 @@ describe("App shell", () => {
 });
 
 describe("Layout", () => {
-  it("keeps the footer free of version numbers", () => {
+  it("shows no version number anywhere", () => {
     renderApp();
-    expect(screen.getByRole("contentinfo")).not.toHaveTextContent(/v\d+\.\d+/);
+    expect(document.body).not.toHaveTextContent(/v\d+\.\d+\.\d+/);
   });
 
   it("filters by tag from the sidebar", async () => {
@@ -177,6 +181,80 @@ describe("Layout", () => {
 
     await user.click(panel.getByRole("radio", { name: "Reduced" }));
     expect(document.documentElement.dataset.effects).toBe("lite");
+  });
+});
+
+describe("Planning", () => {
+  it("groups overdue tasks in Today and moves them to today in one step", async () => {
+    const { user, store } = renderApp(
+      [
+        makeTodo({ id: "late", title: "Send the invoice", dueDate: dayFromToday(-2) }),
+        makeTodo({ id: "now", title: "Daily standup", dueDate: todayKey() }),
+      ],
+      "today",
+    );
+
+    const overdue = section(/^Overdue/);
+    expect(itemTitles(overdue)).toEqual(["Send the invoice"]);
+    await user.click(within(overdue).getByRole("button", { name: "Move to today" }));
+
+    expect(screen.queryByRole("region", { name: /^Overdue/ })).not.toBeInTheDocument();
+    expect(selectTodos(store.getState()).map((todo) => todo.dueDate)).toEqual([todayKey(), todayKey()]);
+    expect(notification()).toHaveTextContent("Moved 1 task to today");
+
+    await user.click(screen.getByRole("button", { name: "Undo" }));
+    expect(selectTodos(store.getState())[0]?.dueDate).toBe(dayFromToday(-2));
+  });
+
+  it("groups Upcoming by day without repeating the date on every row", () => {
+    renderApp(
+      [
+        makeTodo({ id: "a", title: "Dentist appointment", dueDate: dayFromToday(1) }),
+        makeTodo({ id: "b", title: "Book flights", dueDate: dayFromToday(1) }),
+        makeTodo({ id: "c", title: "Plan the holidays", dueDate: dayFromToday(30) }),
+      ],
+      "upcoming",
+    );
+
+    const tomorrow = section(/^Tomorrow/);
+    expect(itemTitles(tomorrow)).toEqual(["Dentist appointment", "Book flights"]);
+    expect(within(tomorrow).queryByText("Tomorrow", { ignore: "h2, [popover] *" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("main")).getAllByRole("region")).toHaveLength(2);
+  });
+
+  it("stays in the current list and offers to show a task added elsewhere", async () => {
+    const { user } = renderApp([], "today");
+
+    await user.type(screen.getByRole("textbox", { name: "New task" }), "Call mom in 3 days{Enter}");
+
+    expect(screen.getByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
+    expect(notification()).toHaveTextContent("Added “Call mom” to Upcoming");
+
+    await user.click(screen.getByRole("button", { name: "Show" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Upcoming" })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Call mom" })).toHaveFocus();
+  });
+
+  it("repeats tasks set up in the details", async () => {
+    const { user, store } = renderApp([makeTodo({ id: "plants", title: "Water the plants", dueDate: todayKey() })]);
+
+    await user.click(screen.getByRole("button", { name: "Details for “Water the plants”" }));
+    const repeat = await openPopover(user, screen.getByRole("button", { name: "Repeat" }));
+    await user.click(repeat.getByRole("button", { name: "Every week" }));
+    await user.click(screen.getByRole("button", { name: "Close" }));
+
+    expect(screen.getByText("Repeat: Every week")).toBeInTheDocument();
+    await user.click(screen.getByRole("checkbox", { name: "Water the plants" }));
+
+    const todos = selectTodos(store.getState());
+    expect(todos).toHaveLength(2);
+    expect(todos.find((todo) => !todo.completed)).toMatchObject({ dueDate: dayFromToday(7), repeat: "weekly" });
+  });
+
+  it("explains the overview and hides empty counters while there are no tasks", () => {
+    renderApp([]);
+    expect(screen.getByText("Add a few tasks to see your progress here.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Today (0)" })).toHaveTextContent(/^Today$/);
   });
 });
 

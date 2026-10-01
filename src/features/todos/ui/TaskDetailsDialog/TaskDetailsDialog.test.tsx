@@ -7,7 +7,7 @@ import { openPopover, renderApp } from "@/test/render";
 
 const details = () => screen.getByRole("dialog", { name: "Task details" });
 
-describe("TodoDetails", () => {
+describe("TaskDetailsDialog", () => {
   it("edits the title and notes and shows checklist progress", async () => {
     const { user, store } = renderApp();
 

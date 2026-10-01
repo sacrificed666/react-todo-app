@@ -24,8 +24,8 @@ The HTML coverage report is written to `coverage/index.html`.
 
 ```mermaid
 flowchart TB
-  UI["🖥️ UI flows · ~55 tests<br/>App, layouts, palette, details, rows, composer, error screen"]
-  Model["🧠 Model · ~130 tests<br/>slices, history, selectors, thunks, quick add in 8 languages, translations, settings"]
+  UI["🖥️ UI flows · ~60 tests<br/>App, layouts, planning, palette, details, rows, composer, error screen"]
+  Model["🧠 Model · ~150 tests<br/>slices, history, repeats, groups, selectors, thunks, quick add in 8 languages, translations"]
   Lib["🧰 Shared helpers · ~30 tests<br/>dates, keyboard, fuzzy search, refraction, Trusted Types"]
   UI --> Model --> Lib
 ```
@@ -36,15 +36,15 @@ Most behaviour is pinned down by fast unit tests of pure functions and reducers;
 
 Tests sit next to the code they cover as `*.test.ts(x)`:
 
-| Area                           | Files                                                                                       | Covers                                                                                                                               |
-| ------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| 🚀 App                         | `app/App.test.tsx`                                                                          | Shell, smart lists, tab bar on phones, language switch, skip link, composer, editing, undo, sorting, search, menu, import and export |
-|                                | `app/persistence.test.ts`, `app/launch.test.ts`, `app/ErrorBoundary.test.tsx`               | Loading, migrations, language detection, cross-tab sync, URL shortcuts, share target, recovery screen                                |
-| ✅ Todos model                 | `todo`, `todosSlice`, `history`, `selectors`, `thunks`, `quickAdd`, `checklist`, `transfer` | Parsing and validation, every reducer, undo and redo, counters and activity, quick add grammar, checklists, import limits            |
-| ✅ Todos UI                    | `TodoItem`, `TodoDetails`, `TodoComposer`                                                   | Keyboard commands, swipes, tags and chips, the details sheet, quick add recognition                                                  |
-| ⌘ Palette                      | `rank.test.ts`, `CommandPalette.test.tsx`                                                   | Ranking and grouping, shortcut, arrow keys, running commands, finding tasks                                                          |
-| 📚 Lists, 🎨 settings, 🌍 i18n | `lists`, `sort`, `theme`, `translate`                                                       | Smart list rules, sort orders, theme validation, plurals and interpolation                                                           |
-| 🧰 Shared                      | `date`, `keyboard`, `motion`, `refraction`, `text`, `trustedTypes`                          | Date keys and labels, shortcut matchers, transitions, displacement maths, fuzzy search, the URL policy                               |
+| Area                                     | Files                                                                                                 | Covers                                                                                                                                               |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🚀 App                                   | `app/App.test.tsx`                                                                                    | Shell, smart lists, tab bar on phones, language switch, skip link, composer, editing, undo, sorting, search, menu, import and export                 |
+|                                          | `app/persistence.test.ts`, `app/launch.test.ts`, `app/ErrorBoundary.test.tsx`                         | Loading, migrations, language detection, cross-tab sync, URL shortcuts, share target, recovery screen                                                |
+| ✅ Todos model                           | `todo`, `todosSlice`, `history`, `repeat`, `selectors`, `thunks`, `quickAdd`, `checklist`, `transfer` | Parsing and validation, every reducer, undo and redo, next occurrences, counters and tags, quick add grammar with repeats, checklists, import limits |
+| ✅ Todos UI                              | `TodoItem`, `TaskDetailsDialog`, `TodoComposer`                                                       | Keyboard commands, swipes, tags and chips, the details dialog, quick add recognition                                                                 |
+| ⌘ Commands                               | `rank.test.ts`, `CommandPalette.test.tsx`                                                             | Ranking and grouping, shortcut, arrow keys, running commands, finding tasks                                                                          |
+| 📚 Lists, 📊 stats, 🎨 settings, 🌍 i18n | `lists`, `groups`, `sort`, `stats/selectors`, `theme`, `settings`, `thunks`, `translate`              | Smart list rules, date groups, sort orders, activity and streaks, effects, language switching, plurals                                               |
+| 🧰 Shared                                | `date`, `keyboard`, `motion`, `refraction`, `text`, `trustedTypes`                                    | Date keys and labels, shortcut matchers, transitions, displacement maths, fuzzy search, the URL policy                                               |
 
 ## 🌐 Test environment
 

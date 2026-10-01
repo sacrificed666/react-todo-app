@@ -1,7 +1,7 @@
 @use "@/shared/styles/mixins" as *;
 
 .empty {
-  @include glass(var(--radius-xl));
+  @include glass(var(--radius-xl), $content: true);
   display: grid;
   justify-items: center;
   gap: 6px;

@@ -14,8 +14,10 @@ import {
   clearCompleted,
   duplicateTodo,
   exportTodos,
+  homeListOf,
   importTodos,
   redo,
+  rescheduleOverdue,
   removeTodos,
   toggleTodo,
   undo,
@@ -45,10 +47,25 @@ describe("addTodo", () => {
     expect(titles(store)).toEqual([]);
   });
 
-  it("reveals the new todo when the list or search would hide it", () => {
+  it("stays in the list and offers to show a task added elsewhere", () => {
     const store = setupStore(makeState(sampleTodos, "today", "report"));
-    store.dispatch(addTodo({ title: "Buy flowers" }));
-    expect(store.getState().view).toMatchObject({ list: "all", query: "" });
+    store.dispatch(addTodo({ title: "Buy flowers", dueDate: dayFromToday(3) }));
+
+    expect(store.getState().view).toMatchObject({ list: "today", query: "" });
+    expect(selectToast(store.getState())).toMatchObject({
+      message: { key: "toast.addedTo", params: { title: "Buy flowers", list: { key: "lists.upcoming" } } },
+      action: { type: "show", list: "upcoming" },
+    });
+    expect(toastText(store)).toBe("Added “Buy flowers” to Upcoming");
+  });
+
+  it("picks the list a new task belongs to", () => {
+    const today = todayKey();
+    expect(homeListOf(makeTodo({ id: "a", title: "a", dueDate: today }), today)).toBe("today");
+    expect(homeListOf(makeTodo({ id: "b", title: "b", dueDate: dayFromToday(-2) }), today)).toBe("today");
+    expect(homeListOf(makeTodo({ id: "c", title: "c", dueDate: dayFromToday(2) }), today)).toBe("upcoming");
+    expect(homeListOf(makeTodo({ id: "d", title: "d", important: true }), today)).toBe("important");
+    expect(homeListOf(makeTodo({ id: "e", title: "e" }), today)).toBe("all");
   });
 
   it("stays in the current list when the new todo belongs there", () => {
@@ -223,5 +240,33 @@ describe("exportTodos", () => {
       expect.stringMatching(/^todos-\d{4}-\d{2}-\d{2}\.json$/),
       expect.objectContaining({ app: "react-todo-app", todos: sampleTodos }),
     );
+  });
+});
+
+describe("rescheduleOverdue", () => {
+  it("moves every overdue task to today in one undoable step", () => {
+    const today = todayKey();
+    const store = setupStore(
+      makeState([
+        makeTodo({ id: "late", title: "Late", dueDate: dayFromToday(-3) }),
+        makeTodo({ id: "later", title: "Later", dueDate: dayFromToday(-1) }),
+        makeTodo({ id: "done", title: "Done", dueDate: dayFromToday(-1), completed: true, completedAt: 1 }),
+        makeTodo({ id: "future", title: "Future", dueDate: dayFromToday(2) }),
+      ]),
+    );
+
+    expect(store.dispatch(rescheduleOverdue(today))).toBe(2);
+    expect(selectTodos(store.getState()).map((todo) => todo.dueDate)).toEqual([
+      today,
+      today,
+      dayFromToday(-1),
+      dayFromToday(2),
+    ]);
+    expect(toastText(store)).toBe("Moved 2 tasks to today");
+    expect(selectToast(store.getState())?.action).toEqual({ type: "undo" });
+
+    store.dispatch(undo());
+    expect(selectTodos(store.getState())[0]?.dueDate).toBe(dayFromToday(-3));
+    expect(store.dispatch(rescheduleOverdue(dayFromToday(-10)))).toBe(0);
   });
 });

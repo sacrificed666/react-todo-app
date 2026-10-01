@@ -1,7 +1,7 @@
 import type { AppThunk } from "@/app/store";
-import { matchesList } from "@/features/lists/model/lists";
+import { isOverdue, matchesList, type ListId } from "@/features/lists/model/lists";
 import { selectDetailsId, selectList, selectQuery } from "@/features/lists/model/selectors";
-import { detailsClosed, listChanged, queryChanged } from "@/features/lists/model/viewSlice";
+import { detailsClosed, queryChanged } from "@/features/lists/model/viewSlice";
 import { selectToast } from "@/features/notifications/model/selectors";
 import { toastDismissed, toastShown, type ToastMessage } from "@/features/notifications/model/toastSlice";
 import { toDateKey } from "@/shared/lib/date";
@@ -9,13 +9,14 @@ import { downloadJson } from "@/shared/lib/download";
 
 import { redone, undone } from "./history";
 import { selectCompletedIds, selectTodoById, selectTodos } from "./selectors";
-import { createMatcher, normalizeTitle, type TodoDraft } from "./todo";
+import { createMatcher, normalizeTitle, type Todo, type TodoDraft } from "./todo";
 import {
   todoAdded,
   todoDuplicated,
   todosImported,
   todosRemoved,
   todosRestored,
+  todosScheduled,
   todoToggled,
   type RemovedTodo,
 } from "./todosSlice";
@@ -30,9 +31,42 @@ export const addTodo =
     const { payload: todo } = dispatch(todoAdded({ ...draft, title }));
 
     const state = getState();
-    if (!matchesList(todo, selectList(state), toDateKey(new Date()))) dispatch(listChanged("all"));
+    const today = toDateKey(new Date());
     if (!createMatcher(selectQuery(state))(title)) dispatch(queryChanged(""));
+    if (!matchesList(todo, selectList(state), today)) {
+      const list = homeListOf(todo, today);
+      dispatch(
+        toastShown({
+          message: { key: "toast.addedTo", params: { title: todo.title, list: { key: `lists.${list}` } } },
+          tone: "success",
+          action: { type: "show", list, todoId: todo.id },
+        }),
+      );
+    }
     return true;
+  };
+
+export const homeListOf = (todo: Todo, today: string): ListId => {
+  if (todo.dueDate !== null) return todo.dueDate <= today ? "today" : "upcoming";
+  return todo.important ? "important" : "all";
+};
+
+export const rescheduleOverdue =
+  (today: string): AppThunk<number> =>
+  (dispatch, getState) => {
+    const ids = selectTodos(getState())
+      .filter((todo) => isOverdue(todo, today))
+      .map((todo) => todo.id);
+    if (ids.length === 0) return 0;
+
+    dispatch(todosScheduled(ids, today));
+    dispatch(
+      toastShown({
+        message: { key: "toast.rescheduled", params: { count: ids.length } },
+        action: { type: "undo" },
+      }),
+    );
+    return ids.length;
   };
 
 export const toggleTodo =

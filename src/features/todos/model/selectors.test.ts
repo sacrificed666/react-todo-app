@@ -5,7 +5,6 @@ import { sortChanged } from "@/features/lists/model/viewSlice";
 import { makeState, makeTodo, sampleTodos } from "@/test/factories";
 
 import {
-  selectActivity,
   selectCompletedIds,
   selectListCounts,
   selectListProgress,
@@ -90,41 +89,6 @@ describe("selectors", () => {
     const todos = [makeTodo({ id: "trip", title: "Trip", notes: "Book the hotel" }), ...sampleTodos];
     const { active } = selectVisibleTodos(stateWith(todos, "all", "HOTEL"), today);
     expect(active.map((todo) => todo.id)).toEqual(["trip"]);
-  });
-});
-
-const noonOf = (day: string) => new Date(`${day}T12:00:00`).getTime();
-const doneOn = (id: string, day: string) => makeTodo({ id, title: id, completed: true, completedAt: noonOf(day) });
-
-describe("selectActivity", () => {
-  it("counts completions for the last seven days", () => {
-    const state = stateWith([
-      doneOn("a", "2026-10-01"),
-      doneOn("b", "2026-10-01"),
-      doneOn("c", "2026-09-29"),
-      doneOn("d", "2026-09-20"),
-      makeTodo({ id: "open", title: "Open" }),
-    ]);
-
-    const { days } = selectActivity(state, today);
-
-    expect(days.map((entry) => entry.day)).toEqual([
-      "2026-09-25",
-      "2026-09-26",
-      "2026-09-27",
-      "2026-09-28",
-      "2026-09-29",
-      "2026-09-30",
-      "2026-10-01",
-    ]);
-    expect(days.map((entry) => entry.count)).toEqual([0, 0, 0, 0, 1, 0, 2]);
-  });
-
-  it("counts the streak of consecutive days up to today or yesterday", () => {
-    expect(selectActivity(stateWith([doneOn("a", "2026-10-01"), doneOn("b", "2026-09-30")]), today).streak).toBe(2);
-    expect(selectActivity(stateWith([doneOn("a", "2026-09-30"), doneOn("b", "2026-09-29")]), today).streak).toBe(2);
-    expect(selectActivity(stateWith([doneOn("a", "2026-09-29")]), today).streak).toBe(0);
-    expect(selectActivity(stateWith([]), today).streak).toBe(0);
   });
 });
 

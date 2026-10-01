@@ -12,8 +12,10 @@ import {
   todoMoved,
   todoNoted,
   todoRenamed,
+  todoRepeatChanged,
   todoScheduled,
   todosImported,
+  todosScheduled,
   todosRemoved,
   todosReplaced,
   todosRestored,
@@ -63,6 +65,8 @@ export const describeChange = (action: UnknownAction, before: TodosState): Toast
     return titled(todo?.important ? "history.unstarred" : "history.starred", todo);
   }
   if (todoScheduled.match(action)) return titled("history.scheduled", before.entities[action.payload.id]);
+  if (todosScheduled.match(action)) return { key: "history.rescheduled", params: { count: action.payload.ids.length } };
+  if (todoRepeatChanged.match(action)) return titled("history.repeat", before.entities[action.payload.id]);
   if (todoNoted.match(action)) return titled("history.noted", before.entities[action.payload.id]);
   if (todoMoved.match(action)) return { key: "history.moved" };
   if (allTodosMarked.match(action)) return { key: "history.markedAll" };

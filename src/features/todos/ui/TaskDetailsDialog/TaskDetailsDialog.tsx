@@ -7,9 +7,9 @@ import Dialog from "@/shared/ui/Dialog/Dialog";
 import { selectTodoById } from "../../model/selectors";
 import TaskDetails from "../TaskDetails/TaskDetails";
 
-import styles from "./TodoDetails.module.scss";
+import styles from "./TaskDetailsDialog.module.scss";
 
-const TodoDetails = () => {
+const TaskDetailsDialog = () => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
   const id = useAppSelector(selectDetailsId);
@@ -23,4 +23,4 @@ const TodoDetails = () => {
   );
 };
 
-export default TodoDetails;
+export default TaskDetailsDialog;

@@ -79,14 +79,15 @@ interface TodoItemProps {
   previousId: string | null;
   nextId: string | null;
   sortable: boolean;
+  hideDueDate?: boolean;
 }
 
-const TodoItem = ({ todo, previousId, nextId, sortable }: TodoItemProps) => {
+const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: TodoItemProps) => {
   const dispatch = useAppDispatch();
   const today = useToday();
   const { t, locale } = useI18n();
   const list = useAppSelector(selectList);
-  const selected = useAppSelector(selectDetailsId) === todo.id;
+  const selected = useAppSelector((state) => selectDetailsId(state) === todo.id);
   const itemRef = useRef<HTMLLIElement>(null);
   const editorRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLButtonElement>(null);
@@ -105,7 +106,7 @@ const TodoItem = ({ todo, previousId, nextId, sortable }: TodoItemProps) => {
   });
 
   const checked = pendingToggle ? !todo.completed : todo.completed;
-  const due = todo.dueDate ? describeDueDate(todo.dueDate, today, locale) : null;
+  const due = todo.dueDate && !hideDueDate ? describeDueDate(todo.dueDate, today, locale) : null;
   const tags = extractTags(todo.title);
   const title = stripTags(todo.title) || todo.title;
   const checklist = checklistProgress(todo.notes);
@@ -389,12 +390,18 @@ const TodoItem = ({ todo, previousId, nextId, sortable }: TodoItemProps) => {
             </button>
           )}
 
-          {!editing && (due || tags.length > 0 || todo.notes) ? (
+          {!editing && (due || todo.repeat || tags.length > 0 || todo.notes) ? (
             <div className={styles.meta}>
               {due ? (
                 <span className={styles.chip} data-tone={todo.completed ? undefined : due.tone}>
                   <Icon name="calendar" className={styles.chipIcon} />
                   {due.label}
+                </span>
+              ) : null}
+              {todo.repeat ? (
+                <span className={styles.chip} title={t("repeat.chip", { rule: t(`repeat.${todo.repeat}`) })}>
+                  <Icon name="repeat" className={styles.chipIcon} />
+                  <span className="visually-hidden">{t("repeat.chip", { rule: t(`repeat.${todo.repeat}`) })}</span>
                 </span>
               ) : null}
               {checklist.total > 0 ? (

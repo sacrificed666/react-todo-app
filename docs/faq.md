@@ -24,6 +24,10 @@ The refraction uses an SVG filter inside `backdrop-filter`, which only Chromium-
 
 Dates like `tomorrow`, `next friday`, `in 3 days`, `20.10` and their equivalents in all eight languages (`morgen`, `mañana`, `demain`, `domani`, `jutro`…), and `!` for important — always at the end of the title. The full list is in [Features](./features.md#-quick-add).
 
+### 🔁 How do repeating tasks work?
+
+Open a task's details and pick **Repeat**, or end its title with a phrase like `every friday` or `щотижня`. When you complete it, the finished occurrence moves to **Completed** and the next one appears right away with its new date. See [Features](./features.md#-repeating-tasks).
+
 ### ⌨️ Is there a list of keyboard shortcuts?
 
 Yes — in the **⋯** menu, in the command palette (<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd>) and in [Features](./features.md#️-keyboard-shortcuts).

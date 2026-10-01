@@ -173,7 +173,7 @@
       }
     },
     {
-      "files": ["src/features/palette/**"],
+      "files": ["src/features/commands/ui/CommandPalette/**"],
       "rules": {
         "jsx-a11y/prefer-tag-over-role": "off"
       }

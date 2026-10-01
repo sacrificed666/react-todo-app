@@ -2,6 +2,7 @@
 
 .composer {
   @include glass(26px, var(--glass-tint), var(--glass-blur-control));
+  container: composer / inline-size;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -57,4 +58,35 @@
 
 .star[aria-pressed="true"] {
   color: var(--color-star);
+}
+
+.repeat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  block-size: 34px;
+  padding-inline: 10px 12px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent-soft);
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--color-accent-bright) 55%, transparent);
+  color: var(--color-accent-bright);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.repeatIcon {
+  font-size: 1.0625rem;
+}
+
+@container composer (max-width: 420px) {
+  .repeat {
+    inline-size: 34px;
+    padding: 0;
+    justify-content: center;
+
+    span {
+      display: none;
+    }
+  }
 }

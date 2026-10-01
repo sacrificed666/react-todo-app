@@ -17,26 +17,24 @@ import {
   queryChanged,
   sortChanged,
 } from "@/features/lists/model/viewSlice";
-import { formatMessage } from "@/features/notifications/model/format";
 import { selectSettings } from "@/features/settings/model/selectors";
 import { EFFECTS, resolveEffects } from "@/features/settings/model/settings";
 import { accentChanged, appearanceChanged, effectsChanged } from "@/features/settings/model/settingsSlice";
 import { ACCENTS, APPEARANCES } from "@/features/settings/model/theme";
 import { changeLocale } from "@/features/settings/model/thunks";
-import { selectHistory, selectListCounts, selectTodos } from "@/features/todos/model/selectors";
-import { clearCompleted, exportTodos, redo, undo } from "@/features/todos/model/thunks";
-import { allTodosMarked } from "@/features/todos/model/todosSlice";
+import { selectTodos } from "@/features/todos/model/selectors";
 import { COMPOSER_INPUT_ID } from "@/features/todos/ui/ids";
 import { useShortcut } from "@/shared/hooks/useShortcut";
 import { useToday } from "@/shared/hooks/useToday";
 import { describeDueDate } from "@/shared/lib/date";
-import { isApplePlatform, isModKey } from "@/shared/lib/keyboard";
+import { isModKey } from "@/shared/lib/keyboard";
 import { fuzzyScore } from "@/shared/lib/text";
 import Dialog from "@/shared/ui/Dialog/Dialog";
 import Icon from "@/shared/ui/Icon/Icon";
 import type { IconName } from "@/shared/ui/Icon/icons";
 
 import { rankCommands } from "../../model/rank";
+import { useTaskCommands } from "../../model/useTaskCommands";
 
 import styles from "./CommandPalette.module.scss";
 
@@ -68,16 +66,11 @@ const PaletteContent = () => {
   const list = useAppSelector(selectList);
   const sort = useAppSelector(selectSort);
   const settings = useAppSelector(selectSettings);
-  const history = useAppSelector(selectHistory);
   const todos = useAppSelector(selectTodos);
-  const counts = useAppSelector((state) => selectListCounts(state, today));
+  const taskCommands = useTaskCommands();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
-  const modifier = isApplePlatform() ? "⌘" : "Ctrl+";
   const trimmed = query.trim();
-  const lastChange = history.past.at(-1);
-  const nextChange = history.future.at(-1);
-  const allCompleted = counts.total > 0 && counts.all === 0;
 
   const focusComposer = () => {
     if (list === "completed") flushSync(() => dispatch(listChanged("all")));
@@ -86,63 +79,20 @@ const PaletteContent = () => {
 
   const actionCommands: Command[] = [
     { id: "new-task", group: "actions", label: t("palette.newTask"), icon: "plus", hint: "N", run: focusComposer },
-    ...(lastChange
-      ? [
-          {
-            id: "undo",
-            group: "actions",
-            label: `${t("actions.undo")}: ${formatMessage(t, lastChange.description)}`,
-            icon: "undo",
-            hint: `${modifier}Z`,
-            run: () => dispatch(undo()),
-          } satisfies Command,
-        ]
-      : []),
-    ...(nextChange
-      ? [
-          {
-            id: "redo",
-            group: "actions",
-            label: `${t("actions.redo")}: ${formatMessage(t, nextChange.description)}`,
-            icon: "redo",
-            hint: `${modifier}⇧Z`,
-            run: () => dispatch(redo()),
-          } satisfies Command,
-        ]
-      : []),
-    ...(counts.total > 0
-      ? [
-          {
-            id: "toggle-all",
-            group: "actions",
-            label: allCompleted ? t("actions.markAllActive") : t("actions.completeAll"),
-            icon: allCompleted ? "rotate" : "checkAll",
-            run: () => dispatch(allTodosMarked(!allCompleted)),
-          } satisfies Command,
-          {
-            id: "export",
-            group: "actions",
-            label: t("actions.export"),
-            keywords: "json backup",
-            icon: "download",
-            run: () => dispatch(exportTodos()),
-          } satisfies Command,
-        ]
-      : []),
-    ...(counts.completed > 0
-      ? [
-          {
-            id: "clear",
-            group: "actions",
-            label: t("actions.clearCompleted"),
-            icon: "eraser",
-            run: () => dispatch(clearCompleted()),
-          } satisfies Command,
-        ]
-      : []),
+    ...taskCommands
+      .filter((command) => !command.disabled)
+      .map(({ id, label, icon, hint, keywords, run }): Command => ({
+        id,
+        group: "actions",
+        label,
+        icon,
+        hint,
+        keywords,
+        run,
+      })),
   ];
 
-  const taskCommands: Command[] = trimmed
+  const foundTasks: Command[] = trimmed
     ? todos
         .flatMap((todo) => {
           const score = fuzzyScore(trimmed, todo.title) ?? (todo.notes ? fuzzyScore(trimmed, todo.notes) : null);
@@ -173,7 +123,7 @@ const PaletteContent = () => {
       current: id === list,
       run: () => dispatch(listChanged(id)),
     })),
-    ...taskCommands,
+    ...foundTasks,
     ...SORT_MODES.map((mode): Command => ({
       id: `sort-${mode}`,
       group: "sort",

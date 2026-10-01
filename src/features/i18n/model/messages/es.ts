@@ -61,6 +61,14 @@ export const es: Messages = {
   "due.nextWeek": "La próxima semana",
   "due.pick": "Elegir fecha",
   "due.remove": "Quitar fecha",
+  "repeat.heading": "Repetir",
+  "repeat.none": "Nunca",
+  "repeat.daily": "Cada día",
+  "repeat.weekdays": "Días laborables",
+  "repeat.weekly": "Cada semana",
+  "repeat.monthly": "Cada mes",
+  "repeat.yearly": "Cada año",
+  "repeat.chip": "Se repite: {rule}",
 
   "todo.edit": "Editar «{title}»",
   "todo.editor": "Título de la tarea",
@@ -80,6 +88,8 @@ export const es: Messages = {
   "section.todo": "Pendientes",
   "section.completed": "Completadas",
   "section.clear": "Borrar",
+  "section.overdue": "Vencidas",
+  "section.moveToToday": "Pasar a hoy",
 
   "list.allDoneTitle": "Todo listo",
   "list.allDoneDescription": "Todas las tareas de esta lista están completadas.",
@@ -104,6 +114,7 @@ export const es: Messages = {
   "overview.dueToday": "Para hoy",
   "overview.important": "Importantes",
   "overview.activity": "Últimos 7 días",
+  "overview.empty": "Añade algunas tareas para ver aquí tu progreso.",
   "overview.activityDay": { one: "{day}: {count} tarea completada", other: "{day}: {count} tareas completadas" },
   "overview.streak": { one: "Racha de {count} día", other: "Racha de {count} días" },
 
@@ -164,6 +175,9 @@ export const es: Messages = {
   "toast.allDone": "¡Todo listo en «{list}»!",
   "toast.duplicated": "Se duplicó «{title}»",
   "toast.languageFailed": "No se pudo cargar este idioma",
+  "toast.addedTo": "Se añadió «{title}» a «{list}»",
+  "toast.show": "Ver",
+  "toast.rescheduled": { one: "Se pasó {count} tarea a hoy", other: "Se pasaron {count} tareas a hoy" },
 
   "history.added": "añadir «{title}»",
   "history.duplicated": "duplicar «{title}»",
@@ -180,11 +194,10 @@ export const es: Messages = {
   "history.restored": "restaurar tareas",
   "history.imported": "importar tareas",
   "history.changed": "cambiar tareas",
+  "history.rescheduled": { one: "pasar {count} tarea a hoy", other: "pasar {count} tareas a hoy" },
+  "history.repeat": "cambiar la repetición de «{title}»",
 
-  "footer.tasks": { one: "{count} tarea", other: "{count} tareas" },
-  "footer.done": { one: "{count} completada", other: "{count} completadas" },
-  "footer.overdue": { one: "{count} vencida", other: "{count} vencidas" },
-  "footer.source": "Código fuente",
+  "credits.source": "Código fuente",
 
   "details.title": "Detalles de la tarea",
   "details.titleLabel": "Título",

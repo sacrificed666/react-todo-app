@@ -2,7 +2,7 @@ import { toDateKey } from "@/shared/lib/date";
 
 import { parseTodos, type Todo } from "./todo";
 
-export const DATA_VERSION = 4;
+export const DATA_VERSION = 5;
 export const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
 export const MAX_IMPORT_TODOS = 5000;
 

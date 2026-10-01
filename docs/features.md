@@ -2,13 +2,14 @@
 
 ## 🧭 Layout
 
-| Area           | Wide screens (1240 px and more)                                                          | Laptops and tablets (900–1239 px) | Phones (narrower than 900 px)                                |
-| -------------- | ---------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------ |
-| 🔝 Header      | Full-width glass bar: logo, search, command palette, settings and the **⋯** actions menu | Same                              | Search moves behind a 🔍 button below 720 px                 |
-| 📚 Sidebar     | One glass panel with the smart lists, live counters and your **tags**                    | Same, with the overview below it  | Lists move to a floating **tab bar**; tags go below the list |
-| 📝 Main column | List title with today's date and progress, sort menu, composer and the grouped task list | Same                              | Same, rows switch to a compact layout                        |
-| 🧾 Inspector   | A third column with the **overview**, replaced by the **task details** when one is open  | Details open as a dialog          | Details open as a bottom sheet                               |
-| 🔚 Footer      | Status bar with task totals, overdue count, author and the source link                   | Same                              | Stacked and centred above the tab bar                        |
+| Area           | Wide screens (1240 px and more)                                                                                      | Laptops and tablets (900–1239 px) | Phones (narrower than 900 px)                                |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------ |
+| 🔝 Header      | Full-width glass bar: logo, search with a **⌘K** button for the command palette, settings and the **⋯** actions menu | Same                              | Search moves behind a 🔍 button below 720 px                 |
+| 📚 Sidebar     | One glass panel with the smart lists, live counters and your **tags**                                                | Same, with the overview below it  | Lists move to a floating **tab bar**; tags go below the list |
+| 📝 Main column | List title with today's date and progress, sort menu, composer and the grouped task list                             | Same                              | Same, rows switch to a compact layout                        |
+| 🧾 Inspector   | A third column with the **overview**, replaced by the **task details** when one is open                              | Details open as a dialog          | Details open as a bottom sheet                               |
+
+The sidebar ends with a small credits line — author and source code — instead of a full-width footer.
 
 ![Wide screen, dark appearance](./images/desktop-dark.jpg)
 
@@ -22,23 +23,26 @@
 | ⭐ Important | Starred tasks                                                | <kbd>4</kbd> |
 | ✅ Completed | Everything you have finished                                 | <kbd>5</kbd> |
 
-- 🔢 Counters show how many active tasks each list holds; the **Today** counter turns red when something is overdue. Installed apps also show the Today count as an **app badge** on the icon.
+- 🔢 Counters show how many active tasks each list holds and disappear when a list is empty; the **Today** counter turns red when something is overdue. Installed apps also show the Today count as an **app badge** on the icon.
 - 🎯 New tasks inherit the context of the list: in **Today** they are due today, in **Upcoming** tomorrow, in **Important** they are starred.
-- 🔁 If a new task would not belong to the current list, the app switches to **All tasks** so you can see it.
+- 📍 If a new task belongs to another list — say you type `Call mom in 3 days` in **Today** — you stay where you are and a notification says where it went, with a **Show** button that jumps there and focuses the task.
+- 🗂️ **Today** separates **Overdue** tasks, in red, from the ones due today. **Move to today** reschedules every overdue task in one step, which a single <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd> or the notification's **Undo** reverts.
+- 📆 **Upcoming** is grouped by day for the next week — **Tomorrow**, **Sunday**, **Wednesday** — and by month after that. Rows in a day group skip the date chip, because the heading already says it.
 - 💾 The selected list is remembered between visits.
 
 ## ✅ Tasks
 
-| Action      | How                                                                                                                                                 |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ➕ Add      | Type in **Add a task** and press <kbd>Enter</kbd>. Pick a due date with the calendar chip and star it with ☆, or let [quick add](#-quick-add) do it |
-| ✅ Complete | Click the circle or swipe the row to the right. The check appears instantly and the task moves after a short pause — click again to undo it         |
-| ✏️ Edit     | Click the title. <kbd>Enter</kbd> saves, <kbd>Esc</kbd> cancels, clicking elsewhere saves. An empty title keeps the original                        |
-| ⭐ Star     | Press ☆ on a task. Starred tasks keep a filled star and appear in **Important**                                                                     |
-| 📅 Schedule | Press the calendar button and choose **Today**, **Tomorrow**, **Next week**, a custom date or **Remove date**                                       |
-| ℹ️ Details  | Press ⓘ to open the [details sheet](#️-details-notes-and-checklists) with notes, a checklist, dates, **Duplicate** and **Delete**                    |
-| 🗑️ Delete   | Press the trash button or swipe the row to the left. The task can be restored from the notification                                                 |
-| ↕️ Reorder  | Drag the handle, or press <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd>. Reordering is available with the **Manual** sort order                          |
+| Action      | How                                                                                                                                                      |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ➕ Add      | Type in **Add a task** and press <kbd>Enter</kbd>. Pick a due date with the calendar chip and star it with ☆, or let [quick add](#-quick-add) do it      |
+| ✅ Complete | Click the circle or swipe the row to the right. The check appears instantly and the task moves after a short pause — click again to undo it              |
+| ✏️ Edit     | Click the title. <kbd>Enter</kbd> saves, <kbd>Esc</kbd> cancels, clicking elsewhere saves. An empty title keeps the original                             |
+| ⭐ Star     | Press ☆ on a task. Starred tasks keep a filled star and appear in **Important**                                                                          |
+| 📅 Schedule | Press the calendar button and choose **Today**, **Tomorrow**, **Next week**, a custom date or **Remove date**                                            |
+| 🔁 Repeat   | Open the details and choose **Every day**, **Every weekday**, **Every week**, **Every month** or **Every year** — or type it in [quick add](#-quick-add) |
+| ℹ️ Details  | Press ⓘ to open the [details](#️-details-notes-and-checklists) with notes, a checklist, dates, **Duplicate** and **Delete**                               |
+| 🗑️ Delete   | Press the trash button or swipe the row to the left. The task can be restored from the notification                                                      |
+| ↕️ Reorder  | Drag the handle, or press <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd>. Reordering is available with the **Manual** sort order                               |
 
 Due dates are shown as friendly labels — **Today**, **Tomorrow**, **Yesterday**, a weekday for the next few days or a short date — and are coloured: 🔴 overdue, 🟠 today, 🔵 later. Rows also show chips for 🏷️ tags, ☑️ checklist progress (`2/5`) and 🗒️ notes.
 
@@ -60,19 +64,30 @@ The composer understands a few words at the **end** of the title in all eight la
 | `Spotkanie w piątek`           | **Spotkanie**, due on Friday                         |
 | `Urlaub 24.12.`                | **Urlaub**, due on 24 December (next year if passed) |
 
-| Kind             | Examples                                                                                                                                                                                                       |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 📅 Relative days | `today` `tomorrow` `day after tomorrow` · `сьогодні` `завтра` · `heute` `morgen` `übermorgen` · `hoy` `mañana` · `aujourd’hui` `demain` · `oggi` `domani` · `vandaag` `overmorgen` · `dziś` `jutro` `pojutrze` |
-| 🗓️ Weeks         | `next week` · `наступного тижня` · `nächste Woche` · `la próxima semana` · `la semaine prochaine` · `la prossima settimana` · `volgende week` · `w przyszłym tygodniu`                                         |
-| 🔢 In N days     | `in 5 days` · `через 5 днів` · `in 5 Tagen` · `en 5 días` · `dans 5 jours` · `tra 5 giorni` · `over 5 dagen` · `za 5 dni`                                                                                      |
-| 📆 Weekdays      | Any weekday name, alone or with words like `on`, `next`, `this`, `у`, `наступного`, `am`, `nächsten`, `el próximo`, `prochain`, `prossimo`, `op`, `volgende`, `w`, `przyszły`                                  |
-| 🧮 Exact dates   | `2026-10-20`, `20.10`, `20.10.`, `20.10.2026`                                                                                                                                                                  |
-| ⭐ Importance    | `!`, `!!` or `!!!` at the end                                                                                                                                                                                  |
-| 🏷️ Tags          | `#tags` at the end are kept in the title                                                                                                                                                                       |
+| Kind             | Examples                                                                                                                                                                                                                                                                                                                    |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 📅 Relative days | `today` `tomorrow` `day after tomorrow` · `сьогодні` `завтра` · `heute` `morgen` `übermorgen` · `hoy` `mañana` · `aujourd’hui` `demain` · `oggi` `domani` · `vandaag` `overmorgen` · `dziś` `jutro` `pojutrze`                                                                                                              |
+| 🗓️ Weeks         | `next week` · `наступного тижня` · `nächste Woche` · `la próxima semana` · `la semaine prochaine` · `la prossima settimana` · `volgende week` · `w przyszłym tygodniu`                                                                                                                                                      |
+| 🔢 In N days     | `in 5 days` · `через 5 днів` · `in 5 Tagen` · `en 5 días` · `dans 5 jours` · `tra 5 giorni` · `over 5 dagen` · `za 5 dni`                                                                                                                                                                                                   |
+| 📆 Weekdays      | Any weekday name, alone or with words like `on`, `next`, `this`, `у`, `наступного`, `am`, `nächsten`, `el próximo`, `prochain`, `prossimo`, `op`, `volgende`, `w`, `przyszły`                                                                                                                                               |
+| 🔁 Repeats       | `every day` `daily` `every weekday` `weekly` `every month` `every friday` · `щодня` `щотижня` `щопонеділка` · `täglich` `jeden Montag` `montags` · `cada día` `todos los lunes` · `tous les jours` `tous les lundis` · `ogni giorno` `ogni lunedì` · `elke dag` `elke maandag` · `codziennie` `co tydzień` `w każdy piątek` |
+| 🧮 Exact dates   | `2026-10-20`, `20.10`, `20.10.`, `20.10.2026`                                                                                                                                                                                                                                                                               |
+| ⭐ Importance    | `!`, `!!` or `!!!` at the end                                                                                                                                                                                                                                                                                               |
+| 🏷️ Tags          | `#tags` at the end are kept in the title                                                                                                                                                                                                                                                                                    |
 
 Phrases are matched without diacritics (`mercoledi` works like `mercoledì`), Ukrainian weekdays in the nominative, accusative and genitive case, and both `'` and `’` count as the apostrophe. Endings that mean _in the morning_ — `por la mañana`, `am Morgen` — are not mistaken for tomorrow.
 
 The recognised date overrides the calendar chip only while it is in the text, and the title always keeps at least one word, so `Tomorrow` alone is a task called “Tomorrow”.
+
+## 🔁 Repeating tasks
+
+A task can repeat every day, every weekday, every week, every month or every year.
+
+- ✅ Completing a repeating task keeps it in **Completed** and creates the next occurrence right below it, so your history and activity chart stay accurate.
+- 📅 The next date is counted from the due date; a task finished late jumps to the first date after today, so a daily task done three days late is due tomorrow, not three days ago.
+- 📏 Monthly and yearly repeats keep to the end of shorter months — the 31st becomes the 30th or the 28th when needed.
+- 🔁 Rows show a 🔁 chip, and removing the due date also stops the repetition.
+- ✍️ Quick add understands phrases like `every friday`, `щотижня` or `tous les lundis`; weekly phrases with a weekday start on that weekday, today included.
 
 ## 🗒️ Details, notes and checklists
 
@@ -118,7 +133,7 @@ The chosen order applies to every list and is remembered.
 
 ## ⌘ Command palette
 
-Press <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> or the ⌘ button in the header.
+Press <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> or the **⌘K** button at the end of the search field.
 
 ![Command palette](./images/palette.jpg)
 
@@ -179,7 +194,7 @@ Exported files look like this:
 ```json
 {
   "app": "react-todo-app",
-  "version": 4,
+  "version": 5,
   "exportedAt": "2026-10-01T10:00:00.000Z",
   "todos": [
     {
@@ -188,6 +203,7 @@ Exported files look like this:
       "completed": false,
       "important": true,
       "dueDate": "2026-10-02",
+      "repeat": null,
       "notes": "- [x] Check the timetable\n- [ ] Pick seats",
       "createdAt": 1790841600000,
       "updatedAt": 1790841600000,
@@ -201,7 +217,7 @@ Importing never deletes anything:
 
 - 🔁 tasks whose `id` already exists are skipped, new ones are appended to the list;
 - 📄 a plain array of tasks is accepted as well as the full export;
-- 🕰️ files from earlier versions — without `notes`, `important` and `dueDate`, or in the first `{ "id", "text", "isCompleted" }` format — are converted automatically;
+- 🕰️ files from earlier versions — without `repeat`, `notes`, `important` and `dueDate`, or in the first `{ "id", "text", "isCompleted" }` format — are converted automatically;
 - 🚫 invalid entries, dates and ids are ignored or replaced, and broken or oversized files are reported in a notification.
 
 ## 💾 Persistence and sync

@@ -61,6 +61,14 @@ export const nl: Messages = {
   "due.nextWeek": "Volgende week",
   "due.pick": "Datum kiezen",
   "due.remove": "Datum verwijderen",
+  "repeat.heading": "Herhalen",
+  "repeat.none": "Nooit",
+  "repeat.daily": "Elke dag",
+  "repeat.weekdays": "Op werkdagen",
+  "repeat.weekly": "Elke week",
+  "repeat.monthly": "Elke maand",
+  "repeat.yearly": "Elk jaar",
+  "repeat.chip": "Herhaling: {rule}",
 
   "todo.edit": "“{title}” bewerken",
   "todo.editor": "Titel van de taak",
@@ -80,6 +88,8 @@ export const nl: Messages = {
   "section.todo": "Te doen",
   "section.completed": "Voltooid",
   "section.clear": "Wissen",
+  "section.overdue": "Achterstallig",
+  "section.moveToToday": "Naar vandaag",
 
   "list.allDoneTitle": "Alles klaar",
   "list.allDoneDescription": "Alle taken in deze lijst zijn voltooid.",
@@ -104,6 +114,7 @@ export const nl: Messages = {
   "overview.dueToday": "Vandaag",
   "overview.important": "Belangrijk",
   "overview.activity": "Afgelopen 7 dagen",
+  "overview.empty": "Voeg een paar taken toe om hier je voortgang te zien.",
   "overview.activityDay": { one: "{day}: {count} taak voltooid", other: "{day}: {count} taken voltooid" },
   "overview.streak": { one: "{count} dag op rij", other: "{count} dagen op rij" },
 
@@ -164,6 +175,9 @@ export const nl: Messages = {
   "toast.allDone": "Alles in “{list}” is klaar!",
   "toast.duplicated": "“{title}” gedupliceerd",
   "toast.languageFailed": "Deze taal kon niet worden geladen",
+  "toast.addedTo": "“{title}” toegevoegd aan “{list}”",
+  "toast.show": "Tonen",
+  "toast.rescheduled": { one: "{count} taak naar vandaag verplaatst", other: "{count} taken naar vandaag verplaatst" },
 
   "history.added": "“{title}” toevoegen",
   "history.duplicated": "“{title}” dupliceren",
@@ -180,11 +194,13 @@ export const nl: Messages = {
   "history.restored": "taken herstellen",
   "history.imported": "taken importeren",
   "history.changed": "taken wijzigen",
+  "history.rescheduled": {
+    one: "{count} taak naar vandaag verplaatsen",
+    other: "{count} taken naar vandaag verplaatsen",
+  },
+  "history.repeat": "herhaling van “{title}” wijzigen",
 
-  "footer.tasks": { one: "{count} taak", other: "{count} taken" },
-  "footer.done": "{count} klaar",
-  "footer.overdue": "{count} achterstallig",
-  "footer.source": "Broncode",
+  "credits.source": "Broncode",
 
   "details.title": "Taakdetails",
   "details.titleLabel": "Titel",

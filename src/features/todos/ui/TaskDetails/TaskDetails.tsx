@@ -12,8 +12,15 @@ import IconButton from "@/shared/ui/IconButton/IconButton";
 import { parseChecklist, toggleChecklistItem } from "../../model/checklist";
 import { duplicateTodo, removeTodos, toggleTodo } from "../../model/thunks";
 import { extractTags, MAX_NOTES_LENGTH, MAX_TITLE_LENGTH, normalizeTitle, type Todo } from "../../model/todo";
-import { todoImportanceToggled, todoNoted, todoRenamed, todoScheduled } from "../../model/todosSlice";
+import {
+  todoImportanceToggled,
+  todoNoted,
+  todoRenamed,
+  todoRepeatChanged,
+  todoScheduled,
+} from "../../model/todosSlice";
 import DuePicker from "../DuePicker/DuePicker";
+import RepeatPicker from "../RepeatPicker/RepeatPicker";
 
 import styles from "./TaskDetails.module.scss";
 
@@ -101,6 +108,7 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
           variant="chip"
           label={t("details.dueDate")}
         />
+        <RepeatPicker value={todo.repeat} onChange={(repeat) => dispatch(todoRepeatChanged(todo.id, repeat))} />
         <button
           type="button"
           className={styles.toggleButton}

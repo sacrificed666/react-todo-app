@@ -1,8 +1,12 @@
 import { nanoid } from "@reduxjs/toolkit";
 
-import { isDateKey } from "@/shared/lib/date";
+import { isDateKey, toDateKey } from "@/shared/lib/date";
 import { isRecord } from "@/shared/lib/guards";
 import { normalizeForSearch } from "@/shared/lib/text";
+
+export const REPEATS = ["daily", "weekdays", "weekly", "monthly", "yearly"] as const;
+
+export type Repeat = (typeof REPEATS)[number];
 
 export interface Todo {
   id: string;
@@ -10,6 +14,7 @@ export interface Todo {
   completed: boolean;
   important: boolean;
   dueDate: string | null;
+  repeat: Repeat | null;
   notes: string;
   createdAt: number;
   updatedAt: number;
@@ -20,8 +25,12 @@ export interface TodoDraft {
   title: string;
   important?: boolean;
   dueDate?: string | null;
+  repeat?: Repeat | null;
   notes?: string;
 }
+
+export const isRepeat = (value: unknown): value is Repeat =>
+  typeof value === "string" && (REPEATS as readonly string[]).includes(value);
 
 export const MAX_TITLE_LENGTH = 200;
 export const MAX_NOTES_LENGTH = 2000;
@@ -45,20 +54,24 @@ export const createMatcher = (query: string) => {
 };
 
 export const createTodo = (
-  { title, important = false, dueDate = null, notes = "" }: TodoDraft,
+  { title, important = false, dueDate = null, repeat = null, notes = "" }: TodoDraft,
   now: number,
   id: string = nanoid(),
-): Todo => ({
-  id,
-  title: normalizeTitle(title),
-  completed: false,
-  important,
-  dueDate: isDateKey(dueDate) ? dueDate : null,
-  notes: normalizeNotes(notes),
-  createdAt: now,
-  updatedAt: now,
-  completedAt: null,
-});
+): Todo => {
+  const validDate = isDateKey(dueDate) ? dueDate : null;
+  return {
+    id,
+    title: normalizeTitle(title),
+    completed: false,
+    important,
+    dueDate: validDate ?? (repeat ? toDateKey(new Date(now)) : null),
+    repeat,
+    notes: normalizeNotes(notes),
+    createdAt: now,
+    updatedAt: now,
+    completedAt: null,
+  };
+};
 
 const toTimestamp = (value: unknown, fallback: number) => {
   const timestamp = typeof value === "string" ? Date.parse(value) : value;
@@ -99,6 +112,7 @@ export const parseTodos = (input: unknown, now: number = Date.now()): Todo[] | n
         completed,
         important: entry.important === true,
         dueDate: isDateKey(entry.dueDate) ? entry.dueDate : null,
+        repeat: isDateKey(entry.dueDate) && isRepeat(entry.repeat) ? entry.repeat : null,
         notes: typeof entry.notes === "string" ? normalizeNotes(entry.notes) : "",
         createdAt,
         updatedAt,

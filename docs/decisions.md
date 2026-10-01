@@ -15,6 +15,8 @@ Short architecture decision records. Each one explains the context, the choice a
 | [ADR-9](#adr-9--grouped-rows-and-an-inspector-column)                | Grouped rows and an inspector column                | ✅ Accepted |
 | [ADR-10](#adr-10--self-hosted-montserrat)                            | Self-hosted Montserrat                              | ✅ Accepted |
 | [ADR-11](#adr-11--lazy-translations-and-remote-flags)                | Lazy translations and remote flags                  | ✅ Accepted |
+| [ADR-12](#adr-12--repeating-tasks-as-new-occurrences)                | Repeating tasks as new occurrences                  | ✅ Accepted |
+| [ADR-13](#adr-13--stay-in-the-list-after-adding)                     | Stay in the list after adding                       | ✅ Accepted |
 
 ---
 
@@ -106,7 +108,7 @@ Short architecture decision records. Each one explains the context, the choice a
 
 **⚖️ Consequences.**
 
-- 👍 60 fps idle and 54 fps scrolling in the same worst-case test, with no janky frames.
+- 👍 60 fps idle and 58–60 fps scrolling in the same worst-case test, with no janky frames — content panels drop `backdrop-filter` entirely in Reduced, because a still backdrop does not need it.
 - 👍 Users with fast machines can still opt into the full show.
 - 👎 Two visual variants to keep in mind when designing; the CSS keys them off `<html data-effects>`.
 
@@ -143,3 +145,25 @@ Short architecture decision records. Each one explains the context, the choice a
 
 - 👍 The main bundle did not grow; every language is still available offline through the precache.
 - 👎 Flags are the first third-party request of the app — documented in [Security](./security.md#️-flag-images) — and appear only once the browser has fetched them.
+
+## ADR-12 · Repeating tasks as new occurrences
+
+**🧩 Context.** Repeating tasks can either move their own due date forward when completed (Todoist) or leave a completed copy behind (Reminders, Things). The app already has an activity chart, a streak and a Completed list that rely on completion timestamps.
+
+**✅ Decision.** Completing a repeating task marks it completed, removes its repeat rule and inserts the next occurrence right after it — all in the `todoToggled` reducer, so it is a single undoable step. The next date is computed from the due date and moved past today when the task was finished late.
+
+**⚖️ Consequences.**
+
+- 👍 History, the activity chart and streaks count every occurrence; reopening an old occurrence never spawns duplicates.
+- 👎 Completed occurrences pile up in Completed until cleared; monthly repeats on the 31st settle on shorter months.
+
+## ADR-13 · Stay in the list after adding
+
+**🧩 Context.** Adding a task that did not belong to the current list switched to **All tasks**, which pulled people out of Today in the middle of planning.
+
+**✅ Decision.** Stay in the current list and show a notification that names the list the task went to, with a **Show** action that switches lists and focuses the task.
+
+**⚖️ Consequences.**
+
+- 👍 Planning flows are not interrupted, and the new task is one click away.
+- 👎 Tasks added elsewhere are not visible immediately; the notification carries that information instead.

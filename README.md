@@ -18,7 +18,9 @@ A task manager wrapped in Apple-inspired **Liquid Glass**: translucent, refracti
 - 🖥️ **Three-pane layout** — lists and tags on the left, tasks in the middle, an inspector with the overview or the open task on the right; a tab bar and bottom sheets on phones
 - ⚡ **Fast everywhere** — an **Effects** setting (Auto, Full, Reduced) that keeps Windows laptops at 60 fps; Auto chooses for you
 - 🌍 **Eight languages with flags** — English, Українська, Deutsch, Español, Français, Italiano, Nederlands and Polski, with correct plurals, dates and typography, loaded on demand
-- ✍️ **Quick add** — type `Call mom tomorrow !`, `Teammeeting am Freitag` or `Купити квіти через 2 дні` and the date and importance are filled in for you
+- ✍️ **Quick add** — type `Call mom tomorrow !`, `Teammeeting am Freitag` or `Полити квіти щотижня` and the date, repeat and importance are filled in for you
+- 🔁 **Repeating tasks** — every day, weekday, week, month or year; completing one creates the next occurrence
+- 🗂️ **Planning views** — Today separates overdue tasks with a one-click **Move to today**, Upcoming is grouped by day and month
 - ⌘ **Command palette** — <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> to jump anywhere, run any action or find any task with fuzzy search
 - 🗒️ **Details and checklists** — notes, `- [ ]` checklists with progress chips, `#tags` with a tag cloud, duplicate and delete
 - ↩️ **Undo everything** — 50 steps of undo and redo with a description of each change

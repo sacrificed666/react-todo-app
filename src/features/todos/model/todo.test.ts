@@ -38,6 +38,25 @@ describe("search helpers", () => {
   });
 });
 
+describe("repeats", () => {
+  it("starts repeating tasks today when they have no date", () => {
+    expect(createTodo({ title: "Stretch", repeat: "daily" }, new Date(2026, 9, 1, 9).getTime())).toMatchObject({
+      repeat: "daily",
+      dueDate: "2026-10-01",
+    });
+  });
+
+  it("drops unknown repeats and repeats without a date when parsing", () => {
+    const [unknown, undated] =
+      parseTodos([
+        { id: "a", title: "A", dueDate: "2026-10-01", repeat: "hourly" },
+        { id: "b", title: "B", repeat: "daily" },
+      ]) ?? [];
+    expect(unknown?.repeat).toBeNull();
+    expect(undated?.repeat).toBeNull();
+  });
+});
+
 describe("tags", () => {
   it("extracts hashtags in any script", () => {
     expect(extractTags("Plan #trip to #Львів, not a#tag")).toEqual(["#trip", "#Львів"]);
@@ -78,6 +97,7 @@ describe("createTodo", () => {
       completed: false,
       important: false,
       dueDate: null,
+      repeat: null,
       notes: "",
       createdAt: 42,
       updatedAt: 42,
@@ -115,6 +135,7 @@ describe("parseTodos", () => {
       completed: false,
       important: true,
       dueDate: "2026-10-01",
+      repeat: "weekly",
       notes: "Chapter 3",
       createdAt: 1,
       updatedAt: 2,
@@ -132,6 +153,7 @@ describe("parseTodos", () => {
         completed: true,
         important: false,
         dueDate: null,
+        repeat: null,
         notes: "",
         createdAt: 500,
         updatedAt: 500,

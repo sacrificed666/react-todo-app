@@ -1,11 +1,10 @@
 import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import ActionsMenu from "@/features/actions/ui/ActionsMenu/ActionsMenu";
+import { useAppSelector } from "@/app/hooks";
+import ActionsMenu from "@/features/commands/ui/ActionsMenu/ActionsMenu";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { selectQuery } from "@/features/lists/model/selectors";
-import { paletteToggled } from "@/features/lists/model/viewSlice";
 import TodoSearch from "@/features/search/ui/TodoSearch/TodoSearch";
 import SettingsMenu from "@/features/settings/ui/SettingsMenu/SettingsMenu";
 import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
@@ -18,7 +17,6 @@ import IconButton from "@/shared/ui/IconButton/IconButton";
 import styles from "./Header.module.scss";
 
 const Header = () => {
-  const dispatch = useAppDispatch();
   const { t } = useI18n();
   const query = useAppSelector(selectQuery);
   const online = useOnlineStatus();
@@ -69,12 +67,6 @@ const Header = () => {
             className={styles.searchToggle}
             aria-expanded={searchVisible}
             onClick={searchVisible ? closeSearch : openSearch}
-          />
-          <IconButton
-            icon="command"
-            label={t("header.palette")}
-            aria-keyshortcuts="Meta+K Control+K"
-            onClick={() => dispatch(paletteToggled(true))}
           />
           <SettingsMenu />
           <ActionsMenu />

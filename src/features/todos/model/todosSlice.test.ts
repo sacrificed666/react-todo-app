@@ -8,6 +8,7 @@ import {
   todoDuplicated,
   todoMoved,
   todoNoted,
+  todoRepeatChanged,
   todoImportanceToggled,
   todoRenamed,
   todoScheduled,
@@ -16,6 +17,7 @@ import {
   todosRemoved,
   todosReplaced,
   todosRestored,
+  todosScheduled,
   todosSlice,
   todoToggled,
 } from "./todosSlice";
@@ -139,5 +141,48 @@ describe("todosSlice", () => {
     expect(state.ids[2]).toBe("b");
     expect(state.entities[copyId]).toMatchObject({ title: "Task a", completed: false, completedAt: null });
     expect(reducer(state, todoDuplicated("missing"))).toBe(state);
+  });
+
+  it("creates the next occurrence when a repeating task is completed", () => {
+    const at = new Date(2026, 9, 1, 12).getTime();
+    const repeating = todosAdapter.setAll(todosAdapter.getInitialState(), [
+      makeTodo({ id: "a", title: "Water plants", dueDate: "2026-09-29", repeat: "daily" }),
+      makeTodo({ id: "b", title: "Other" }),
+    ]);
+
+    const state = reducer(repeating, { type: todoToggled.type, payload: { id: "a", at, nextId: "next" } });
+
+    expect(state.ids).toEqual(["a", "next", "b"]);
+    expect(state.entities.a).toMatchObject({ completed: true, repeat: null });
+    expect(state.entities.next).toMatchObject({
+      title: "Water plants",
+      completed: false,
+      completedAt: null,
+      dueDate: "2026-10-02",
+      repeat: "daily",
+    });
+
+    const reopened = reducer(state, todoToggled("a"));
+    expect(reopened.ids).toHaveLength(3);
+  });
+
+  it("changes repeats and gives undated tasks a start date", () => {
+    const state = reducer(stateOf("a"), todoRepeatChanged("a", "weekly"));
+    expect(state.entities.a?.repeat).toBe("weekly");
+    expect(state.entities.a?.dueDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(reducer(state, todoRepeatChanged("a", "weekly"))).toBe(state);
+
+    const undated = reducer(state, todoScheduled("a", null));
+    expect(undated.entities.a).toMatchObject({ dueDate: null, repeat: null });
+  });
+
+  it("reschedules several tasks at once", () => {
+    const state = reducer(stateOf("a", "b", "c"), todosScheduled(["a", "c", "missing"], "2026-10-05"));
+    expect([state.entities.a?.dueDate, state.entities.b?.dueDate, state.entities.c?.dueDate]).toEqual([
+      "2026-10-05",
+      null,
+      "2026-10-05",
+    ]);
+    expect(reducer(state, todosScheduled(["a"], "not a date"))).toBe(state);
   });
 });

@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## 3.2.0 — 2026-10-02
+
+### ✨ Added
+
+- 🔁 **Repeating tasks** — every day, weekday, week, month or year, set in the details or typed in quick add in all eight languages (`every friday`, `щотижня`, `jeden Montag`, `tous les lundis`, `w każdy piątek`…). Completing one creates the next occurrence.
+- 🗂️ **Date groups** — Today shows **Overdue** and **Today**; Upcoming is grouped by day for a week and by month afterwards, without repeating the date on every row.
+- 📆 **Move to today** reschedules all overdue tasks at once, with **Undo** in the notification.
+- 📍 Adding a task that belongs elsewhere keeps you in the current list and offers **Show** in the notification.
+- 🌱 A friendly overview while there are no tasks yet.
+
+### 🔄 Changed
+
+- 🔍 The command palette opens from a **⌘K** button inside the search field; the separate header button is gone.
+- 🔚 The footer bar was replaced by a small credits line at the end of the sidebar; list counters hide when a list is empty.
+- 🧭 Code structure: the overview moved to `features/stats`, the ⋯ menu and the palette share commands in `features/commands`, and the details components are named `TaskDetails`, `TaskDetailsDialog` and `TaskDetailsPanel`.
+- 🚀 With Reduced effects, task groups, the overview and empty states no longer use `backdrop-filter`: scrolling went from 25–50 to 58–60 fps in the worst-case test, also with many date groups.
+- 🗃️ Storage format version **5** adds `repeat`; older data is migrated automatically.
+- 📱 The composer's date chip turns into an icon on narrow screens, so the field stays on one line.
+
 ## 3.1.0 — 2026-10-01
 
 ### ✨ Added

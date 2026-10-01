@@ -61,6 +61,14 @@ export const uk: Messages = {
   "due.nextWeek": "Через тиждень",
   "due.pick": "Обрати дату",
   "due.remove": "Прибрати термін",
+  "repeat.heading": "Повторення",
+  "repeat.none": "Ніколи",
+  "repeat.daily": "Щодня",
+  "repeat.weekdays": "Щобудня",
+  "repeat.weekly": "Щотижня",
+  "repeat.monthly": "Щомісяця",
+  "repeat.yearly": "Щороку",
+  "repeat.chip": "Повторення: {rule}",
 
   "todo.edit": "Редагувати «{title}»",
   "todo.editor": "Назва завдання",
@@ -80,6 +88,8 @@ export const uk: Messages = {
   "section.todo": "До виконання",
   "section.completed": "Виконані",
   "section.clear": "Очистити",
+  "section.overdue": "Прострочені",
+  "section.moveToToday": "Перенести на сьогодні",
 
   "list.allDoneTitle": "Усе виконано",
   "list.allDoneDescription": "Усі завдання в цьому списку виконано.",
@@ -104,6 +114,7 @@ export const uk: Messages = {
   "overview.dueToday": "На сьогодні",
   "overview.important": "Важливі",
   "overview.activity": "Останні 7 днів",
+  "overview.empty": "Додайте кілька завдань, і тут з’явиться ваш прогрес.",
   "overview.activityDay": {
     one: "{day}: виконано {count} завдання",
     few: "{day}: виконано {count} завдання",
@@ -189,6 +200,14 @@ export const uk: Messages = {
   "toast.allDone": "У списку «{list}» усе виконано!",
   "toast.duplicated": "Створено копію «{title}»",
   "toast.languageFailed": "Не вдалося завантажити мову",
+  "toast.addedTo": "«{title}» додано до списку «{list}»",
+  "toast.show": "Показати",
+  "toast.rescheduled": {
+    one: "{count} завдання перенесено на сьогодні",
+    few: "{count} завдання перенесено на сьогодні",
+    many: "{count} завдань перенесено на сьогодні",
+    other: "{count} завдання перенесено на сьогодні",
+  },
 
   "history.added": "додавання «{title}»",
   "history.duplicated": "копіювання «{title}»",
@@ -210,16 +229,15 @@ export const uk: Messages = {
   "history.restored": "відновлення завдань",
   "history.imported": "імпорт завдань",
   "history.changed": "зміна завдань",
-
-  "footer.tasks": {
-    one: "{count} завдання",
-    few: "{count} завдання",
-    many: "{count} завдань",
-    other: "{count} завдання",
+  "history.rescheduled": {
+    one: "перенесення {count} завдання на сьогодні",
+    few: "перенесення {count} завдань на сьогодні",
+    many: "перенесення {count} завдань на сьогодні",
+    other: "перенесення {count} завдання на сьогодні",
   },
-  "footer.done": "{count} виконано",
-  "footer.overdue": "{count} прострочено",
-  "footer.source": "Вихідний код",
+  "history.repeat": "зміна повторення «{title}»",
+
+  "credits.source": "Вихідний код",
 
   "details.title": "Подробиці завдання",
   "details.titleLabel": "Назва",

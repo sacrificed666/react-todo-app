@@ -13,6 +13,7 @@ export const makeTodo = (overrides: Partial<Todo> & Pick<Todo, "id" | "title">):
   completed: false,
   important: false,
   dueDate: null,
+  repeat: null,
   notes: "",
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_000_000,

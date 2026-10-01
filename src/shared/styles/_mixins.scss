@@ -1,4 +1,4 @@
-@mixin glass($radius: var(--radius-lg), $tint: var(--glass-tint), $blur: var(--glass-blur)) {
+@mixin glass($radius: var(--radius-lg), $tint: var(--glass-tint), $blur: var(--glass-blur), $content: false) {
   position: relative;
   isolation: isolate;
   border-radius: $radius;
@@ -40,6 +40,14 @@
       ),
       var(--glass-sheen);
     transition: --light-strength var(--duration-slow) var(--ease-out);
+  }
+
+  @if $content {
+    :root[data-effects="lite"] & {
+      background-color: var(--glass-tint-content);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
   }
 
   @media (forced-colors: active) {

@@ -3,16 +3,18 @@ import { flushSync } from "react-dom";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
-import { undoRemoval } from "@/features/todos/model/thunks";
+import { listChanged } from "@/features/lists/model/viewSlice";
+import { undo, undoRemoval } from "@/features/todos/model/thunks";
 import { toggleId } from "@/features/todos/ui/ids";
 import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
 import { applyUpdate } from "@/shared/lib/serviceWorker";
 import Icon from "@/shared/ui/Icon/Icon";
+import type { IconName } from "@/shared/ui/Icon/icons";
 import IconButton from "@/shared/ui/IconButton/IconButton";
 
 import { formatMessage } from "../../model/format";
 import { selectToast } from "../../model/selectors";
-import { toastDismissed, type Toast } from "../../model/toastSlice";
+import { toastDismissed, type Toast, type ToastAction } from "../../model/toastSlice";
 
 import styles from "./Toaster.module.scss";
 
@@ -39,12 +41,37 @@ const ToastCard = ({ toast }: ToastCardProps) => {
     return () => clearTimeout(timer);
   }, [dispatch, paused, toast.id]);
 
-  const restore = () => {
-    if (toast.action?.type !== "restore") return;
-    const [first] = toast.action.todos;
-    flushSync(() => dispatch(undoRemoval()));
-    if (first) document.getElementById(toggleId(first.todo.id))?.focus();
+  const run = (action: ToastAction) => {
+    switch (action.type) {
+      case "restore": {
+        const [first] = action.todos;
+        flushSync(() => dispatch(undoRemoval()));
+        if (first) document.getElementById(toggleId(first.todo.id))?.focus();
+        return;
+      }
+      case "undo":
+        dispatch(undo());
+        return;
+      case "reload":
+        applyUpdate();
+        return;
+      case "show":
+        flushSync(() => {
+          dispatch(listChanged(action.list));
+          dispatch(toastDismissed(toast.id));
+        });
+        document.getElementById(toggleId(action.todoId))?.focus();
+    }
   };
+
+  const actionButtons: Readonly<Record<ToastAction["type"], { icon: IconName; label: string }>> = {
+    restore: { icon: "undo", label: t("toast.undo") },
+    undo: { icon: "undo", label: t("toast.undo") },
+    reload: { icon: "rotate", label: t("toast.reload") },
+    show: { icon: "arrowRight", label: t("toast.show") },
+  };
+  const action = toast.action;
+  const button = action ? actionButtons[action.type] : null;
 
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
     if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
@@ -64,16 +91,10 @@ const ToastCard = ({ toast }: ToastCardProps) => {
       {toast.tone === "success" ? <Icon name="sparkles" className={styles.icon} /> : null}
       {toast.tone === "error" ? <Icon name="alert" className={styles.icon} /> : null}
       <p className={styles.message}>{formatMessage(t, toast.message)}</p>
-      {toast.action?.type === "restore" ? (
-        <button type="button" className={styles.action} onClick={restore}>
-          <Icon name="undo" />
-          {t("toast.undo")}
-        </button>
-      ) : null}
-      {toast.action?.type === "reload" ? (
-        <button type="button" className={styles.action} onClick={applyUpdate}>
-          <Icon name="rotate" />
-          {t("toast.reload")}
+      {action && button ? (
+        <button type="button" className={styles.action} onClick={() => run(action)}>
+          <Icon name={button.icon} />
+          {button.label}
         </button>
       ) : null}
       <IconButton

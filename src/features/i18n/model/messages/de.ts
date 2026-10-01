@@ -61,6 +61,14 @@ export const de: Messages = {
   "due.nextWeek": "Nächste Woche",
   "due.pick": "Datum wählen",
   "due.remove": "Datum entfernen",
+  "repeat.heading": "Wiederholen",
+  "repeat.none": "Nie",
+  "repeat.daily": "Täglich",
+  "repeat.weekdays": "An Werktagen",
+  "repeat.weekly": "Wöchentlich",
+  "repeat.monthly": "Monatlich",
+  "repeat.yearly": "Jährlich",
+  "repeat.chip": "Wiederholung: {rule}",
 
   "todo.edit": "„{title}“ bearbeiten",
   "todo.editor": "Titel der Aufgabe",
@@ -80,6 +88,8 @@ export const de: Messages = {
   "section.todo": "Zu erledigen",
   "section.completed": "Erledigt",
   "section.clear": "Leeren",
+  "section.overdue": "Überfällig",
+  "section.moveToToday": "Auf heute verschieben",
 
   "list.allDoneTitle": "Alles erledigt",
   "list.allDoneDescription": "Alle Aufgaben in dieser Liste sind erledigt.",
@@ -104,6 +114,7 @@ export const de: Messages = {
   "overview.dueToday": "Heute fällig",
   "overview.important": "Wichtig",
   "overview.activity": "Letzte 7 Tage",
+  "overview.empty": "Füge ein paar Aufgaben hinzu, um hier deinen Fortschritt zu sehen.",
   "overview.activityDay": { one: "{day}: {count} Aufgabe erledigt", other: "{day}: {count} Aufgaben erledigt" },
   "overview.streak": { one: "{count} Tag in Folge", other: "{count} Tage in Folge" },
 
@@ -164,6 +175,9 @@ export const de: Messages = {
   "toast.allDone": "In „{list}“ ist alles erledigt!",
   "toast.duplicated": "„{title}“ dupliziert",
   "toast.languageFailed": "Diese Sprache konnte nicht geladen werden",
+  "toast.addedTo": "„{title}“ zu „{list}“ hinzugefügt",
+  "toast.show": "Anzeigen",
+  "toast.rescheduled": { one: "{count} Aufgabe auf heute verschoben", other: "{count} Aufgaben auf heute verschoben" },
 
   "history.added": "„{title}“ hinzufügen",
   "history.duplicated": "„{title}“ duplizieren",
@@ -180,11 +194,13 @@ export const de: Messages = {
   "history.restored": "Aufgaben wiederherstellen",
   "history.imported": "Aufgaben importieren",
   "history.changed": "Aufgaben ändern",
+  "history.rescheduled": {
+    one: "{count} Aufgabe auf heute verschieben",
+    other: "{count} Aufgaben auf heute verschieben",
+  },
+  "history.repeat": "Wiederholung von „{title}“ ändern",
 
-  "footer.tasks": { one: "{count} Aufgabe", other: "{count} Aufgaben" },
-  "footer.done": "{count} erledigt",
-  "footer.overdue": "{count} überfällig",
-  "footer.source": "Quellcode",
+  "credits.source": "Quellcode",
 
   "details.title": "Aufgabendetails",
   "details.titleLabel": "Titel",

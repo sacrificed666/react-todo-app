@@ -1,9 +1,12 @@
 import { addDays, fromDateKey, isDateKey, toDateKey } from "@/shared/lib/date";
 
+import type { Repeat } from "./todo";
+
 export interface QuickAddResult {
   title: string;
   dueDate: string | null;
   important: boolean;
+  repeat: Repeat | null;
 }
 
 const fold = (value: string) =>
@@ -195,6 +198,186 @@ const BLOCKED_ENDINGS = new Set(
   ["la mañana", "por la mañana", "de la mañana", "am morgen", "den morgen", "jeden morgen", "guten morgen"].map(fold),
 );
 
+const REPEAT_PHRASES = foldKeys<Repeat>({
+  "every day": "daily",
+  "each day": "daily",
+  everyday: "daily",
+  daily: "daily",
+  "every weekday": "weekdays",
+  "on weekdays": "weekdays",
+  weekdays: "weekdays",
+  "every week": "weekly",
+  "each week": "weekly",
+  weekly: "weekly",
+  "every month": "monthly",
+  monthly: "monthly",
+  "every year": "yearly",
+  yearly: "yearly",
+  annually: "yearly",
+  щодня: "daily",
+  "кожного дня": "daily",
+  "кожен день": "daily",
+  щобудня: "weekdays",
+  "по буднях": "weekdays",
+  "у будні": "weekdays",
+  щотижня: "weekly",
+  "кожного тижня": "weekly",
+  щомісяця: "monthly",
+  "кожного місяця": "monthly",
+  щороку: "yearly",
+  "кожного року": "yearly",
+  täglich: "daily",
+  "jeden tag": "daily",
+  werktags: "weekdays",
+  "an werktagen": "weekdays",
+  wöchentlich: "weekly",
+  "jede woche": "weekly",
+  monatlich: "monthly",
+  "jeden monat": "monthly",
+  jährlich: "yearly",
+  "jedes jahr": "yearly",
+  "cada día": "daily",
+  "todos los días": "daily",
+  "a diario": "daily",
+  diariamente: "daily",
+  "entre semana": "weekdays",
+  "días laborables": "weekdays",
+  "cada semana": "weekly",
+  "todas las semanas": "weekly",
+  semanalmente: "weekly",
+  "cada mes": "monthly",
+  "todos los meses": "monthly",
+  mensualmente: "monthly",
+  "cada año": "yearly",
+  "todos los años": "yearly",
+  anualmente: "yearly",
+  "chaque jour": "daily",
+  "tous les jours": "daily",
+  quotidiennement: "daily",
+  "en semaine": "weekdays",
+  "chaque semaine": "weekly",
+  "toutes les semaines": "weekly",
+  "chaque mois": "monthly",
+  "tous les mois": "monthly",
+  mensuellement: "monthly",
+  "chaque année": "yearly",
+  "tous les ans": "yearly",
+  "ogni giorno": "daily",
+  "tutti i giorni": "daily",
+  quotidianamente: "daily",
+  "nei giorni feriali": "weekdays",
+  "ogni settimana": "weekly",
+  settimanalmente: "weekly",
+  "ogni mese": "monthly",
+  mensilmente: "monthly",
+  "ogni anno": "yearly",
+  annualmente: "yearly",
+  "elke dag": "daily",
+  dagelijks: "daily",
+  "op werkdagen": "weekdays",
+  "elke werkdag": "weekdays",
+  "elke week": "weekly",
+  wekelijks: "weekly",
+  "elke maand": "monthly",
+  maandelijks: "monthly",
+  "elk jaar": "yearly",
+  jaarlijks: "yearly",
+  codziennie: "daily",
+  "każdego dnia": "daily",
+  "co dzień": "daily",
+  "w dni robocze": "weekdays",
+  "co tydzień": "weekly",
+  "każdego tygodnia": "weekly",
+  "co miesiąc": "monthly",
+  "każdego miesiąca": "monthly",
+  "co roku": "yearly",
+  "każdego roku": "yearly",
+});
+
+const HABITUAL_WEEKDAYS = foldKeys({
+  sundays: 0,
+  mondays: 1,
+  tuesdays: 2,
+  wednesdays: 3,
+  thursdays: 4,
+  fridays: 5,
+  saturdays: 6,
+  неділях: 0,
+  понеділках: 1,
+  вівторках: 2,
+  середах: 3,
+  четвергах: 4,
+  "п’ятницях": 5,
+  суботах: 6,
+  sonntags: 0,
+  montags: 1,
+  dienstags: 2,
+  mittwochs: 3,
+  donnerstags: 4,
+  freitags: 5,
+  samstags: 6,
+  domingos: 0,
+  sábados: 6,
+  dimanches: 0,
+  lundis: 1,
+  mardis: 2,
+  mercredis: 3,
+  jeudis: 4,
+  vendredis: 5,
+  samedis: 6,
+  domeniche: 0,
+  sabati: 6,
+  zondagen: 0,
+  maandagen: 1,
+  dinsdagen: 2,
+  woensdagen: 3,
+  donderdagen: 4,
+  vrijdagen: 5,
+  zaterdagen: 6,
+  niedziele: 0,
+  poniedziałki: 1,
+  wtorki: 2,
+  środy: 3,
+  czwartki: 4,
+  piątki: 5,
+  soboty: 6,
+});
+
+const EVERY_WORDS = new Set(
+  [
+    "every",
+    "each",
+    "кожного",
+    "кожної",
+    "кожен",
+    "кожну",
+    "jeden",
+    "jede",
+    "jedes",
+    "cada",
+    "todos",
+    "todas",
+    "chaque",
+    "tous",
+    "toutes",
+    "ogni",
+    "tutti",
+    "tutte",
+    "elke",
+    "elk",
+    "każdy",
+    "każdą",
+    "każdego",
+    "co",
+  ].map(fold),
+);
+
+const REPEAT_FILLERS = new Set(
+  ["on", "the", "по", "у", "в", "los", "las", "les", "i", "le", "la", "w", "op", "am", "de"].map(fold),
+);
+
+const UKRAINIAN_EVERY = fold("що");
+
 const IN_DAYS = new RegExp(
   `^(?:${["in", "через", "en", "dentro de", "dans", "tra", "fra", "over", "za"].join("|")}) (\\d{1,3}) (?:${[
     "days?",
@@ -264,6 +447,53 @@ export const parseDatePhrase = (phrase: string, today: string): string | null =>
   return dayMonth ? parseDayMonth(dayMonth, today) : null;
 };
 
+const isRepeatFiller = (word: string) => EVERY_WORDS.has(word) || REPEAT_FILLERS.has(word);
+
+const weekdayOnOrAfter = (today: string, weekday: number) =>
+  addDays(today, (weekday - fromDateKey(today).getDay() + 7) % 7);
+
+export const parseRepeatPhrase = (phrase: string, today: string): { repeat: Repeat; start: string | null } | null => {
+  const normalized = fold(phrase.trim());
+  const interval = REPEAT_PHRASES.get(normalized);
+  if (interval) return { repeat: interval, start: null };
+
+  const words = normalized.split(" ");
+  const [single] = words;
+  if (words.length === 1 && single?.startsWith(UKRAINIAN_EVERY)) {
+    const weekday = WEEKDAYS.get(single.slice(UKRAINIAN_EVERY.length));
+    if (weekday !== undefined) return { repeat: "weekly", start: weekdayOnOrAfter(today, weekday) };
+  }
+
+  const habitual = words.flatMap((word) => {
+    const weekday = HABITUAL_WEEKDAYS.get(word);
+    return weekday === undefined ? [] : [weekday];
+  });
+  const [habitualDay] = habitual;
+  if (
+    habitual.length === 1 &&
+    habitualDay !== undefined &&
+    words.every((word) => HABITUAL_WEEKDAYS.has(word) || isRepeatFiller(word))
+  ) {
+    return { repeat: "weekly", start: weekdayOnOrAfter(today, habitualDay) };
+  }
+
+  const days = words.flatMap((word) => {
+    const weekday = WEEKDAYS.get(word);
+    return weekday === undefined ? [] : [weekday];
+  });
+  const [day] = days;
+  if (
+    days.length === 1 &&
+    day !== undefined &&
+    words.some((word) => EVERY_WORDS.has(word)) &&
+    words.every((word) => WEEKDAYS.has(word) || isRepeatFiller(word))
+  ) {
+    return { repeat: "weekly", start: weekdayOnOrAfter(today, day) };
+  }
+
+  return null;
+};
+
 const endsWithBlockedPhrase = (tokens: readonly string[], end: number) =>
   [2, 3].some((size) => end - size >= 0 && BLOCKED_ENDINGS.has(fold(tokens.slice(end - size, end).join(" "))));
 
@@ -271,28 +501,57 @@ export const parseQuickAdd = (input: string, today: string): QuickAddResult => {
   const tokens = input.trim().split(/\s+/).filter(Boolean);
   const tags: string[] = [];
   let important = false;
+  let dueDate: string | null = null;
+  let repeat: Repeat | null = null;
+  let repeatStart: string | null = null;
   let end = tokens.length;
+
+  const takePhrase = <Value>(parse: (phrase: string) => Value | null): Value | null => {
+    for (let size = MAX_PHRASE; size >= 1; size -= 1) {
+      if (end - size < 1) continue;
+      const value = parse(tokens.slice(end - size, end).join(" "));
+      if (value !== null) {
+        end -= size;
+        return value;
+      }
+    }
+    return null;
+  };
 
   while (end > 1) {
     const token = tokens[end - 1] ?? "";
-    if (IMPORTANT.test(token)) important = true;
-    else if (TAG.test(token)) tags.unshift(token);
-    else break;
-    end -= 1;
-  }
-
-  let dueDate: string | null = null;
-  if (!endsWithBlockedPhrase(tokens, end)) {
-    for (let size = MAX_PHRASE; size >= 1; size -= 1) {
-      if (end - size < 1) continue;
-      const date = parseDatePhrase(tokens.slice(end - size, end).join(" "), today);
-      if (date) {
-        dueDate = date;
-        end -= size;
-        break;
+    if (IMPORTANT.test(token)) {
+      important = true;
+      end -= 1;
+      continue;
+    }
+    if (TAG.test(token)) {
+      tags.unshift(token);
+      end -= 1;
+      continue;
+    }
+    if (repeat === null) {
+      const found = takePhrase((phrase) => parseRepeatPhrase(phrase, today));
+      if (found) {
+        repeat = found.repeat;
+        repeatStart = found.start;
+        continue;
       }
     }
+    if (dueDate === null && !endsWithBlockedPhrase(tokens, end)) {
+      const found = takePhrase((phrase) => parseDatePhrase(phrase, today));
+      if (found) {
+        dueDate = found;
+        continue;
+      }
+    }
+    break;
   }
 
-  return { title: [...tokens.slice(0, end), ...tags].join(" "), dueDate, important };
+  return {
+    title: [...tokens.slice(0, end), ...tags].join(" "),
+    dueDate: dueDate ?? repeatStart ?? (repeat ? today : null),
+    important,
+    repeat,
+  };
 };

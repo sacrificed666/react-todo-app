@@ -44,6 +44,23 @@ export const addDays = (key: string, days: number) => {
   return toDateKey(date);
 };
 
+export const addMonths = (key: string, months: number) => {
+  const date = fromDateKey(key);
+  const target = new Date(date.getFullYear(), date.getMonth() + months, 1);
+  const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+  target.setDate(Math.min(date.getDate(), lastDay));
+  return toDateKey(target);
+};
+
+export const formatMonth = (key: string, today: string, locale = "en") => {
+  const date = fromDateKey(key);
+  const sameYear = date.getFullYear() === fromDateKey(today).getFullYear();
+  return capitalize(
+    dateFormatter(locale, sameYear ? { month: "long" } : { month: "long", year: "numeric" }).format(date),
+    locale,
+  );
+};
+
 export const daysBetween = (from: string, to: string) =>
   Math.round((fromDateKey(to).getTime() - fromDateKey(from).getTime()) / DAY);
 

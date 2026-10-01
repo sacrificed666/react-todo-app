@@ -2,14 +2,11 @@
 
 .card {
   @include glass(var(--radius-xl));
+  container: overview / inline-size;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 16px;
-
-  @media (max-width: 899px) {
-    display: none;
-  }
 }
 
 .head {
@@ -48,9 +45,11 @@
 
 .stat {
   display: grid;
+  align-content: start;
   justify-items: start;
   gap: 2px;
-  padding: 10px;
+  min-inline-size: 0;
+  padding: 10px 8px 10px 10px;
   border-radius: var(--radius-md);
   background-color: var(--color-fill);
 
@@ -80,16 +79,20 @@
 }
 
 .label {
+  max-inline-size: 100%;
   font-size: 0.6875rem;
+  line-height: 1.25;
   color: var(--color-text-secondary);
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 .activityHead {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px 8px;
   margin-block-start: 6px;
 }
 
@@ -104,6 +107,7 @@
 .streak {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
   gap: 4px;
   padding: 2px 8px 2px 6px;
   border-radius: var(--radius-full);
@@ -122,7 +126,8 @@
   grid-template-columns: repeat(7, minmax(0, 1fr));
   align-items: end;
   gap: 6px;
-  block-size: 92px;
+  block-size: 108px;
+  padding-block-start: 16px;
   list-style: none;
 }
 
@@ -170,5 +175,37 @@
   .day[data-today] & {
     font-weight: 700;
     color: var(--color-text);
+  }
+}
+
+@container overview (max-width: 260px) {
+  .stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .stat {
+    grid-template-areas: "icon label value";
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 10px;
+    padding: 7px 12px 7px 10px;
+  }
+
+  .statIcon {
+    grid-area: icon;
+  }
+
+  .value {
+    grid-area: value;
+    font-size: 1rem;
+  }
+
+  .label {
+    grid-area: label;
+    overflow: hidden;
+    font-size: 0.8125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

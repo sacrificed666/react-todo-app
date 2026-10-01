@@ -9,6 +9,7 @@ import {
   selectCompletedIds,
   selectListCounts,
   selectListProgress,
+  selectTagCounts,
   selectVisibleTodos,
 } from "./selectors";
 
@@ -124,5 +125,22 @@ describe("selectActivity", () => {
     expect(selectActivity(stateWith([doneOn("a", "2026-09-30"), doneOn("b", "2026-09-29")]), today).streak).toBe(2);
     expect(selectActivity(stateWith([doneOn("a", "2026-09-29")]), today).streak).toBe(0);
     expect(selectActivity(stateWith([]), today).streak).toBe(0);
+  });
+});
+
+describe("selectTagCounts", () => {
+  it("counts tags of active tasks, case-insensitively and once per task", () => {
+    const state = stateWith([
+      makeTodo({ id: "a", title: "Slides #Work #work" }),
+      makeTodo({ id: "b", title: "Report #work #q4" }),
+      makeTodo({ id: "c", title: "Done #home", completed: true, completedAt: 1 }),
+      makeTodo({ id: "d", title: "Plan #q4" }),
+      makeTodo({ id: "e", title: "No tags" }),
+    ]);
+
+    expect(selectTagCounts(state)).toEqual([
+      { tag: "#q4", count: 2 },
+      { tag: "#Work", count: 2 },
+    ]);
   });
 });

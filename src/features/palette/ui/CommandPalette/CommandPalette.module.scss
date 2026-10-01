@@ -110,6 +110,10 @@
   transition: color var(--duration-fast) var(--ease-out);
 }
 
+.optionFlag {
+  margin-inline: 0 -2px;
+}
+
 .optionLabel {
   flex: 1;
   min-inline-size: 0;

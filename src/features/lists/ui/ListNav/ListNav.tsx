@@ -1,9 +1,6 @@
-import { useRef } from "react";
-
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { selectListCounts } from "@/features/todos/model/selectors";
-import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
 import { useToday } from "@/shared/hooks/useToday";
 import Icon from "@/shared/ui/Icon/Icon";
 
@@ -20,12 +17,9 @@ const ListNav = () => {
   const { t } = useI18n();
   const list = useAppSelector(selectList);
   const counts = useAppSelector((state) => selectListCounts(state, today));
-  const navRef = useRef<HTMLElement>(null);
-
-  useLiquidGlass(navRef, { bezel: 18, scale: 36 });
 
   return (
-    <nav ref={navRef} className={styles.nav} aria-label={t("lists.nav")} data-glass-light="">
+    <nav className={styles.nav} aria-label={t("lists.nav")}>
       <ul className={styles.list}>
         {LISTS.map((id) => (
           <li key={id}>

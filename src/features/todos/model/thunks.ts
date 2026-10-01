@@ -1,7 +1,7 @@
 import type { AppThunk } from "@/app/store";
 import { matchesList } from "@/features/lists/model/lists";
-import { selectList, selectQuery } from "@/features/lists/model/selectors";
-import { listChanged, queryChanged } from "@/features/lists/model/viewSlice";
+import { selectDetailsId, selectList, selectQuery } from "@/features/lists/model/selectors";
+import { detailsClosed, listChanged, queryChanged } from "@/features/lists/model/viewSlice";
 import { selectToast } from "@/features/notifications/model/selectors";
 import { toastDismissed, toastShown, type ToastMessage } from "@/features/notifications/model/toastSlice";
 import { toDateKey } from "@/shared/lib/date";
@@ -74,7 +74,10 @@ export const removeTodos =
     const [first] = removed;
     if (!first) return;
 
-    dispatch(todosRemoved(removed.map(({ todo }) => todo.id)));
+    const removedIds = removed.map(({ todo }) => todo.id);
+    dispatch(todosRemoved(removedIds));
+    const detailsId = selectDetailsId(getState());
+    if (detailsId !== null && removedIds.includes(detailsId)) dispatch(detailsClosed());
 
     const count = removed.length;
     const message: ToastMessage = cleared

@@ -58,6 +58,7 @@ const selectPreferences = (state: RootState): Preferences => ({
   appearance: state.settings.appearance,
   accent: state.settings.accent,
   locale: state.settings.locale,
+  effects: state.settings.effects,
 });
 
 export const loadPersistedState = (
@@ -66,12 +67,12 @@ export const loadPersistedState = (
 ): Partial<RootState> | undefined => {
   if (!storage) return undefined;
 
-  const { appearance, accent, locale, ...view } = loadPreferences(storage, languages);
+  const { appearance, accent, locale, effects, ...view } = loadPreferences(storage, languages);
 
   return {
     todos: todosAdapter.setAll(todosAdapter.getInitialState(), loadTodos(storage)),
     view: { ...initialViewState, ...view },
-    settings: { appearance, accent, locale },
+    settings: { appearance, accent, locale, effects },
   };
 };
 

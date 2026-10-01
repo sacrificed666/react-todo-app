@@ -1,7 +1,3 @@
-interface ImportMetaEnv {
-  readonly VITE_APP_VERSION: string;
-}
-
 interface TrustedTypePolicyOptions {
   createScriptURL?: (input: string) => string;
 }

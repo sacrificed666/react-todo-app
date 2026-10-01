@@ -2,8 +2,10 @@ import { useEffect, useId, useState, type KeyboardEvent } from "react";
 import { flushSync } from "react-dom";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { LOCALES } from "@/features/i18n/model/translate";
+import { LOCALE_NAMES } from "@/features/i18n/model/locales";
+import { LOCALES, type Locale } from "@/features/i18n/model/translate";
 import { useI18n } from "@/features/i18n/model/useI18n";
+import LocaleFlag from "@/features/i18n/ui/LocaleFlag/LocaleFlag";
 import { LIST_ICONS } from "@/features/lists/model/listIcons";
 import { LISTS } from "@/features/lists/model/lists";
 import { selectList, selectPaletteOpen, selectSort } from "@/features/lists/model/selectors";
@@ -17,8 +19,10 @@ import {
 } from "@/features/lists/model/viewSlice";
 import { formatMessage } from "@/features/notifications/model/format";
 import { selectSettings } from "@/features/settings/model/selectors";
-import { accentChanged, appearanceChanged, localeChanged } from "@/features/settings/model/settingsSlice";
+import { EFFECTS, resolveEffects } from "@/features/settings/model/settings";
+import { accentChanged, appearanceChanged, effectsChanged } from "@/features/settings/model/settingsSlice";
 import { ACCENTS, APPEARANCES } from "@/features/settings/model/theme";
+import { changeLocale } from "@/features/settings/model/thunks";
 import { selectHistory, selectListCounts, selectTodos } from "@/features/todos/model/selectors";
 import { clearCompleted, exportTodos, redo, undo } from "@/features/todos/model/thunks";
 import { allTodosMarked } from "@/features/todos/model/todosSlice";
@@ -48,6 +52,7 @@ interface Command {
   label: string;
   keywords?: string;
   icon: IconName;
+  flag?: Locale;
   hint?: string;
   current?: boolean;
   run: () => void;
@@ -195,14 +200,24 @@ const PaletteContent = () => {
       current: accent === settings.accent,
       run: () => dispatch(accentChanged(accent)),
     })),
+    ...EFFECTS.map((effects): Command => ({
+      id: `effects-${effects}`,
+      group: "appearance",
+      label: t("palette.effects", { mode: t(`effects.${effects}`) }),
+      keywords: `performance ${resolveEffects(effects)}`,
+      icon: "bolt",
+      current: effects === settings.effects,
+      run: () => dispatch(effectsChanged(effects)),
+    })),
     ...LOCALES.map((code): Command => ({
       id: `locale-${code}`,
       group: "language",
-      label: t("palette.locale", { language: t(`locale.${code}`) }),
-      keywords: "language мова",
+      label: t("palette.locale", { language: LOCALE_NAMES[code] }),
+      keywords: `language ${code}`,
       icon: "globe",
+      flag: code,
       current: code === settings.locale,
-      run: () => dispatch(localeChanged(code)),
+      run: () => void dispatch(changeLocale(code)),
     })),
   ];
 
@@ -264,7 +279,11 @@ const PaletteContent = () => {
         if (event.key === "Enter") run(command);
       }}
     >
-      <Icon name={command.icon} filled={command.icon === "star"} className={styles.optionIcon} />
+      {command.flag ? (
+        <LocaleFlag locale={command.flag} className={styles.optionFlag} />
+      ) : (
+        <Icon name={command.icon} filled={command.icon === "star"} className={styles.optionIcon} />
+      )}
       <span className={styles.optionLabel}>{command.label}</span>
       {command.current ? <Icon name="check" className={styles.current} /> : null}
       {command.hint ? <kbd className={styles.hint}>{command.hint}</kbd> : null}

@@ -1,0 +1,22 @@
+@use "@/shared/styles/mixins" as *;
+
+.panel {
+  @include glass(var(--radius-xl), var(--glass-tint-strong), var(--glass-blur-thick));
+  max-block-size: calc(100dvh - var(--header-height) - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    translate var(--duration-slow) var(--ease-spring);
+
+  @starting-style {
+    opacity: 0;
+    translate: 12px 0;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+}

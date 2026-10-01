@@ -2,16 +2,16 @@
 
 ## 🧱 Technology stack
 
-| Area             | Choice                                                                                      |
-| ---------------- | ------------------------------------------------------------------------------------------- |
-| ⚛️ UI            | React 19.3 with the React Compiler (automatic memoization)                                  |
-| 🗃️ State         | Redux Toolkit 2.13 and React Redux 9.3, with a custom history reducer for undo and redo     |
-| 🖐️ Drag and drop | dnd-kit (core, sortable, modifiers) with keyboard support and screen reader announcements   |
-| 🌍 i18n          | A tiny typed message layer on top of `Intl` (plural rules, dates, relative time)            |
-| 🎨 Styling       | Sass modules, CSS custom properties, `@property`, `@starting-style`, anchor positioning     |
-| ⚡ Build         | Vite 8 (Rolldown), `@vitejs/plugin-react` 6, `vite-plugin-pwa`                              |
-| 🔷 Language      | TypeScript 7 (native compiler) in strict mode with `noUncheckedIndexedAccess`               |
-| ✅ Quality       | Oxlint (type-aware, React Compiler, a11y and layer rules), Oxfmt, Vitest 5, Testing Library |
+| Area             | Choice                                                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| ⚛️ UI            | React 19.3 with the React Compiler (automatic memoization)                                                             |
+| 🗃️ State         | Redux Toolkit 2.13 and React Redux 9.3, with a custom history reducer for undo and redo                                |
+| 🖐️ Drag and drop | dnd-kit (core, sortable, modifiers) with keyboard support and screen reader announcements                              |
+| 🌍 i18n          | Eight languages on top of `Intl` (plural rules, dates, relative time), lazy-loaded per language                        |
+| 🎨 Styling       | Sass modules, CSS custom properties, `@property`, `@starting-style`, container queries, anchor positioning, Montserrat |
+| ⚡ Build         | Vite 8 (Rolldown), `@vitejs/plugin-react` 6, `vite-plugin-pwa`                                                         |
+| 🔷 Language      | TypeScript 7 (native compiler) in strict mode with `noUncheckedIndexedAccess`                                          |
+| ✅ Quality       | Oxlint (type-aware, React Compiler, a11y and layer rules), Oxfmt, Vitest 5, Testing Library                            |
 
 ## 🧭 Layers
 
@@ -20,7 +20,7 @@ The source code is organised by **feature**, in four layers. A layer may only im
 ```mermaid
 flowchart TB
   app["🚀 app<br/>entry point, store, persistence, launch, PWA, error boundary"]
-  widgets["🧩 widgets<br/>Header, Sidebar, Workspace, Footer, Backdrop"]
+  widgets["🧩 widgets<br/>Header, Sidebar, Workspace, Inspector, Footer, Backdrop"]
   features["✨ features<br/>todos, lists, search, palette, settings, i18n, notifications, actions"]
   shared["🧰 shared<br/>ui primitives, hooks, lib, styles"]
 
@@ -40,16 +40,16 @@ flowchart TB
 | ✨ Features | `src/features` | One folder per capability with a `model/` (state, logic) and a `ui/` (components)             | other features, shared, `@/app/hooks`, store types        |
 | 🧰 Shared   | `src/shared`   | Store-agnostic UI primitives, hooks, helpers and styles                                       | shared only                                               |
 
-| Feature            | Model                                                                                   | UI                                                                                |
-| ------------------ | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| ✅ `todos`         | `Todo` model, slice, selectors, thunks, history, quick add parser, checklists, transfer | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TodoDetails`, `DuePicker` |
-| 📚 `lists`         | Smart lists, sort orders, view slice, list shortcuts                                    | `ListNav`, `TabBar`, `ListHeader`, `SortMenu`, `Overview`                         |
-| 🔎 `search`        | —                                                                                       | `TodoSearch`                                                                      |
-| ⌘ `palette`        | Command ranking                                                                         | `CommandPalette`                                                                  |
-| 🎨 `settings`      | Appearance, accent and language, document sync                                          | `SettingsMenu`                                                                    |
-| 🌍 `i18n`          | Typed messages for English and Ukrainian, `translate()`, `useI18n()`                    | —                                                                                 |
-| 🔔 `notifications` | Toast slice and message formatting                                                      | `Toaster`                                                                         |
-| 🧰 `actions`       | —                                                                                       | `ActionsMenu`                                                                     |
+| Feature            | Model                                                                                                    | UI                                                                                                                                 |
+| ------------------ | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| ✅ `todos`         | `Todo` model, slice, selectors (incl. tags), thunks, history, quick add parser, checklists, transfer     | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskDetails`, `TodoDetails` (dialog), `DetailsPanel` (inline), `DuePicker` |
+| 📚 `lists`         | Smart lists, sort orders, view slice, list shortcuts                                                     | `ListNav`, `TagNav`, `TabBar`, `ListHeader`, `SortMenu`, `Overview`                                                                |
+| 🔎 `search`        | —                                                                                                        | `TodoSearch`                                                                                                                       |
+| ⌘ `palette`        | Command ranking                                                                                          | `CommandPalette`                                                                                                                   |
+| 🎨 `settings`      | Appearance, accent, language and effects, `changeLocale()`, document sync                                | `SettingsMenu`                                                                                                                     |
+| 🌍 `i18n`          | Typed messages for eight languages, the lazy catalog, native names and flags, `translate()`, `useI18n()` | `LocaleFlag`                                                                                                                       |
+| 🔔 `notifications` | Toast slice and message formatting                                                                       | `Toaster`                                                                                                                          |
+| 🧰 `actions`       | —                                                                                                        | `ActionsMenu`                                                                                                                      |
 
 ## 🔀 Data flow
 
@@ -80,7 +80,7 @@ interface RootState {
     detailsId: string | null;
     paletteOpen: boolean;
   };
-  settings: { appearance: Appearance; accent: Accent; locale: Locale };
+  settings: { appearance: Appearance; accent: Accent; locale: Locale; effects: "auto" | "full" | "lite" };
   toast: { current: Toast | null };
   history: { past: HistoryEntry[]; future: HistoryEntry[] };
 }
@@ -88,7 +88,7 @@ interface RootState {
 
 - 🗂️ `todos` is normalized with `createEntityAdapter`. The order of `ids` is the manual order, so drag and drop only rearranges `ids`.
 - 👁️ `view` holds the selected smart list, the search query, the sort order, whether the completed section is expanded, the task shown in the details sheet and whether the command palette is open. Only `list`, `sort` and `showCompleted` are persisted.
-- 🎨 `settings` holds the colour scheme, the accent colour and the interface language.
+- 🎨 `settings` holds the colour scheme, the accent colour, the interface language and the effects level.
 - 🔔 `toast` holds the current notification as a **message key with parameters**, so it is translated at render time and switches language together with the rest of the UI.
 - ↩️ `history` keeps up to 50 snapshots of the `todos` slice for undo and redo.
 
@@ -167,6 +167,7 @@ Action names follow the Redux style guide and describe events in the past tense.
 | `settings` | `appearanceChanged`          | Selects Auto, Light or Dark                                    |
 |            | `accentChanged`              | Selects the accent colour                                      |
 |            | `localeChanged`              | Selects English or Ukrainian                                   |
+|            | `effectsChanged`             | Selects Auto, Full or Reduced effects                          |
 | `toast`    | `toastShown`                 | Shows a notification with a tone and an optional action        |
 |            | `toastDismissed`             | Hides the notification if its id still matches                 |
 | `history`  | `undone` / `redone`          | Steps back or forward through the snapshots                    |
@@ -204,17 +205,18 @@ sequenceDiagram
 
 Thunks in `features/todos/model/thunks.ts` coordinate several slices:
 
-| Thunk                    | What it does                                                                                                             |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| ➕ `addTodo(draft)`      | Adds a todo and switches to **All tasks** or clears the search when they would hide it. Returns `false` for blank titles |
-| ✅ `toggleTodo(id, day)` | Toggles a todo and returns `true` when it was the last active task of the current list, after showing `toast.allDone`    |
-| 📄 `duplicateTodo(id)`   | Duplicates a todo, confirms it in a notification and returns the id of the copy                                          |
-| 🗑️ `removeTodos(ids)`    | Captures each todo with its index, removes them and shows a notification with a **Restore** action                       |
-| 🧹 `clearCompleted()`    | Removes every completed todo through `removeTodos`                                                                       |
-| ↩️ `undoRemoval()`       | Restores the todos stored in the current notification and dismisses it                                                   |
-| 📥 `importTodos(text)`   | Validates a file, merges new todos and reports the result                                                                |
-| 📤 `exportTodos()`       | Downloads every todo as `todos-YYYY-MM-DD.json`                                                                          |
-| ⏪ `undo()` / `redo()`   | Steps through the history and describes the step in a notification                                                       |
+| Thunk                     | What it does                                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| ➕ `addTodo(draft)`       | Adds a todo and switches to **All tasks** or clears the search when they would hide it. Returns `false` for blank titles |
+| ✅ `toggleTodo(id, day)`  | Toggles a todo and returns `true` when it was the last active task of the current list, after showing `toast.allDone`    |
+| 📄 `duplicateTodo(id)`    | Duplicates a todo, confirms it in a notification and returns the id of the copy                                          |
+| 🗑️ `removeTodos(ids)`     | Captures each todo with its index, removes them, closes their details and shows a notification with a **Restore** action |
+| 🧹 `clearCompleted()`     | Removes every completed todo through `removeTodos`                                                                       |
+| ↩️ `undoRemoval()`        | Restores the todos stored in the current notification and dismisses it                                                   |
+| 📥 `importTodos(text)`    | Validates a file, merges new todos and reports the result                                                                |
+| 📤 `exportTodos()`        | Downloads every todo as `todos-YYYY-MM-DD.json`                                                                          |
+| ⏪ `undo()` / `redo()`    | Steps through the history and describes the step in a notification                                                       |
+| 🌍 `changeLocale(locale)` | Loads the language's messages, then switches; reports a failure in a notification (settings feature)                     |
 
 ## 🎯 Selectors
 
@@ -251,11 +253,11 @@ flowchart LR
 
 `app/persistence.ts` is wired up once in `main.tsx`, which keeps the store itself free of browser APIs and easy to test.
 
-| Key                          | Content                                                                 |
-| ---------------------------- | ----------------------------------------------------------------------- |
-| `react-todo-app/todos`       | `{ "version": 4, "todos": Todo[] }`                                     |
-| `react-todo-app/preferences` | `{ "list", "sort", "showCompleted", "appearance", "accent", "locale" }` |
-| `toDoList`                   | Legacy data from version 1, migrated and removed on first launch        |
+| Key                          | Content                                                                            |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| `react-todo-app/todos`       | `{ "version": 4, "todos": Todo[] }`                                                |
+| `react-todo-app/preferences` | `{ "list", "sort", "showCompleted", "appearance", "accent", "locale", "effects" }` |
+| `toDoList`                   | Legacy data from version 1, migrated and removed on first launch                   |
 
 - 📂 **Loading** — `loadPersistedState()` reads both keys and falls back to safe defaults when data is missing or corrupted. The `filter` preference saved by version 2 is mapped to the matching list, and the language is detected from `navigator.languages` on the first launch.
 - 🛡️ **Validation** — everything read from storage, other tabs or imported files goes through `parseTodos()`. It accepts every earlier format, drops invalid entries and dates, replaces unsafe or duplicate ids and normalizes timestamps.
@@ -289,6 +291,7 @@ sequenceDiagram
   Main->>Store: setupStore(loadPersistedState())
   Main->>DOM: applySettings() before the first paint
   Main->>Store: startPersistence()
+  Main->>Main: await loadMessages(saved language)
   Main->>Store: applyLaunchIntent(?list, ?action, shared content)
   Main->>DOM: history.replaceState() removes the parameters
   Main->>React: render <ErrorBoundary><App /></ErrorBoundary>
@@ -299,6 +302,10 @@ sequenceDiagram
 
 - 🧯 `ErrorBoundary` catches rendering errors and shows a recovery screen with **Reload**, **Download a backup** (the raw stored tasks) and **Reset view settings**. It reads the language from `<html lang>`, so it works even when the store is the problem.
 - 🔗 `launch.ts` handles the web app manifest shortcuts (`?list=today`, `?action=new`) and the share target (`?title=…&text=…&url=…`), which becomes a new task with the link in its notes.
+
+## ⚡ Effects level
+
+`applySettings()` resolves the **Effects** setting (`auto` becomes `full` on capable Apple devices and `lite` elsewhere), writes it to `<html data-effects>` and hands it to a tiny external store in `shared/lib/effects.ts`. Styles key the aurora animation, blend modes, grain and pointer light off the attribute; `useLiquidGlass()` and `usePointerLight()` read the store with `useSyncExternalStore`, so switching levels attaches or removes refraction without a reload. The trade-offs are described in [Design system](./design.md#-effects-and-performance).
 
 ## 🔔 Notifications
 
@@ -315,20 +322,22 @@ App
 ├── Backdrop                 Aurora orbs in the accent palette, flow lines and grain
 ├── Header                   Full-width sticky glass bar, offline badge, / shortcut
 │   ├── TodoSearch           Search field (behind a toggle on phones)
-│   ├── SettingsMenu         Appearance, accent and language popover
+│   ├── SettingsMenu         Appearance, accent, language grid with flags and effects
 │   └── ActionsMenu          Undo, redo, bulk actions, import, export and the shortcut sheet
-├── Sidebar                  Sticky on desktop, below the list on phones
-│   ├── ListNav              Smart lists with counters (desktop only)
-│   └── Overview             Progress, stats, 7-day activity chart and streak
+├── Sidebar                  One glass panel, sticky on desktop, below the list on phones
+│   ├── ListNav              Smart lists with counters (not on phones)
+│   ├── TagNav               Tags of active tasks with counters
+│   └── Overview             Progress, stats, 7-day activity chart and streak (not on wide screens)
 ├── Workspace
 │   ├── ListHeader           Title, date, progress bar and SortMenu
 │   ├── TodoComposer         Quick add field with DuePicker and star, N shortcut
 │   └── TodoList             DndContext, empty states and announcements
-│       └── TodoSection      SortableContext per section, collapsible completed section
+│       └── TodoSection      SortableContext and one glass group per section
 │           └── TodoItem     Checkbox, title, chips, actions, swipe gestures, keyboard commands
+├── Inspector                Wide screens: Overview, or DetailsPanel with TaskDetails
 ├── Footer                   Full-width status bar
 ├── TabBar                   Bottom glass tab bar on phones
-├── TodoDetails              Details sheet: title, notes, checklist, dates, duplicate, delete
+├── TodoDetails              Dialog with TaskDetails below 1240 px
 ├── CommandPalette           ⌘K palette with fuzzy search over commands and tasks
 └── Toaster                  Notifications with Restore and Reload actions
 ```

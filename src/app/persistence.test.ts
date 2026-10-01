@@ -32,12 +32,14 @@ describe("loadPersistedState", () => {
       detailsId: null,
       paletteOpen: false,
     });
-    expect(store.getState().settings).toEqual({ appearance: "light", accent: "forest", locale: "en" });
+    expect(store.getState().settings).toEqual({ appearance: "light", accent: "forest", locale: "en", effects: "auto" });
   });
 
   it("detects the language on the first launch and keeps the saved one afterwards", () => {
     expect(loadPersistedState(localStorage, ["uk-UA", "en"])?.settings?.locale).toBe("uk");
-    expect(loadPersistedState(localStorage, ["de-DE"])?.settings?.locale).toBe("en");
+    expect(loadPersistedState(localStorage, ["de-DE"])?.settings?.locale).toBe("de");
+    expect(loadPersistedState(localStorage, ["pt-BR", "fr-CA"])?.settings?.locale).toBe("fr");
+    expect(loadPersistedState(localStorage, ["pt-BR"])?.settings?.locale).toBe("en");
 
     localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ locale: "en" }));
     expect(loadPersistedState(localStorage, ["uk-UA"])?.settings?.locale).toBe("en");
@@ -66,7 +68,7 @@ describe("loadPersistedState", () => {
 
     expect(selectTodos(state)).toEqual([]);
     expect(state.view).toMatchObject({ list: "all", sort: "manual", showCompleted: true });
-    expect(state.settings).toEqual({ appearance: "system", accent: "blue", locale: "en" });
+    expect(state.settings).toEqual({ appearance: "system", accent: "blue", locale: "en", effects: "auto" });
   });
 
   it("skips persistence when storage is unavailable", () => {
@@ -95,6 +97,7 @@ describe("startPersistence", () => {
       appearance: "dark",
       accent: "violet",
       locale: "uk",
+      effects: "auto",
     });
 
     stop();

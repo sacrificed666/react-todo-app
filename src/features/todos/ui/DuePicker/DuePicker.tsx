@@ -1,4 +1,5 @@
-import type { KeyboardEvent } from "react";
+import { useState, type KeyboardEvent } from "react";
+import { flushSync } from "react-dom";
 
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { useToday } from "@/shared/hooks/useToday";
@@ -31,7 +32,13 @@ const DuePicker = ({ value, onChange, variant, label, detected = false, classNam
   const today = useToday();
   const { t, locale } = useI18n();
   const popover = usePopover();
+  const [open, setOpen] = useState(false);
   const due = value ? describeDueDate(value, today, locale) : null;
+
+  const handleToggle = (next: boolean) => {
+    if (next) flushSync(() => setOpen(true));
+    else setOpen(false);
+  };
 
   const choose = (next: string | null) => {
     popover.close();
@@ -78,39 +85,44 @@ const DuePicker = ({ value, onChange, variant, label, detected = false, classNam
         anchorName={popover.anchorName}
         label={t("due.heading")}
         className={styles.panel}
+        onToggle={handleToggle}
       >
-        <p className={styles.heading}>{t("due.heading")}</p>
-        {QUICK_DATES.map((option) => {
-          const date = addDays(today, option.offset);
-          return (
-            <button
-              key={option.key}
-              type="button"
-              className={styles.option}
-              aria-pressed={value === date}
-              onClick={() => choose(date)}
-            >
-              <Icon name={option.icon} className={styles.optionIcon} />
-              <span className={styles.optionLabel}>{t(option.key)}</span>
-              <span className={styles.hint}>{formatWeekdayShort(date, locale)}</span>
-            </button>
-          );
-        })}
-        <label className={styles.custom}>
-          <span>{t("due.pick")}</span>
-          <input
-            type="date"
-            className={styles.date}
-            value={value ?? ""}
-            onChange={(event) => onChange(event.target.value || null)}
-            onKeyDown={handleDateKeyDown}
-          />
-        </label>
-        {value ? (
-          <button type="button" className={cx(styles.option, styles.remove)} onClick={() => choose(null)}>
-            <Icon name="xmark" className={styles.optionIcon} />
-            <span className={styles.optionLabel}>{t("due.remove")}</span>
-          </button>
+        {open ? (
+          <>
+            <p className={styles.heading}>{t("due.heading")}</p>
+            {QUICK_DATES.map((option) => {
+              const date = addDays(today, option.offset);
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  className={styles.option}
+                  aria-pressed={value === date}
+                  onClick={() => choose(date)}
+                >
+                  <Icon name={option.icon} className={styles.optionIcon} />
+                  <span className={styles.optionLabel}>{t(option.key)}</span>
+                  <span className={styles.hint}>{formatWeekdayShort(date, locale)}</span>
+                </button>
+              );
+            })}
+            <label className={styles.custom}>
+              <span>{t("due.pick")}</span>
+              <input
+                type="date"
+                className={styles.date}
+                value={value ?? ""}
+                onChange={(event) => onChange(event.target.value || null)}
+                onKeyDown={handleDateKeyDown}
+              />
+            </label>
+            {value ? (
+              <button type="button" className={cx(styles.option, styles.remove)} onClick={() => choose(null)}>
+                <Icon name="xmark" className={styles.optionIcon} />
+                <span className={styles.optionLabel}>{t("due.remove")}</span>
+              </button>
+            ) : null}
+          </>
         ) : null}
       </Popover>
     </>

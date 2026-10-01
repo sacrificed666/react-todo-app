@@ -13,15 +13,24 @@
   @include container;
   flex: 1;
   display: grid;
+  grid-template-areas: "sidebar main";
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   align-items: start;
-  gap: 28px;
-  padding-block: 28px 48px;
+  gap: 24px;
+  padding-block: 24px 48px;
+
+  @media (min-width: 1240px) {
+    grid-template-areas: "sidebar main inspector";
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--inspector-width);
+  }
 
   @media (max-width: 899px) {
+    grid-template-areas:
+      "main"
+      "sidebar";
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
-    padding-block: 16px 32px;
+    padding-block: 12px 32px;
   }
 }
 

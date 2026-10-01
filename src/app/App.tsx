@@ -14,10 +14,11 @@ import { usePointerLight } from "@/shared/hooks/usePointerLight";
 import { useShortcut } from "@/shared/hooks/useShortcut";
 import { useToday } from "@/shared/hooks/useToday";
 import { isRedoKey, isUndoKey } from "@/shared/lib/keyboard";
-import { COMPACT_LAYOUT } from "@/shared/lib/media";
+import { COMPACT_LAYOUT, WIDE_LAYOUT } from "@/shared/lib/media";
 import Backdrop from "@/widgets/Backdrop/Backdrop";
 import Footer from "@/widgets/Footer/Footer";
 import Header from "@/widgets/Header/Header";
+import Inspector from "@/widgets/Inspector/Inspector";
 import Sidebar from "@/widgets/Sidebar/Sidebar";
 import Workspace, { WORKSPACE_ID } from "@/widgets/Workspace/Workspace";
 
@@ -28,6 +29,7 @@ const App = () => {
   const today = useToday();
   const { t } = useI18n();
   const compact = useMediaQuery(COMPACT_LAYOUT);
+  const wide = useMediaQuery(WIDE_LAYOUT);
   const counts = useAppSelector((state) => selectListCounts(state, today));
 
   usePointerLight();
@@ -55,10 +57,11 @@ const App = () => {
       <div className={styles.body}>
         <Sidebar />
         <Workspace />
+        {wide ? <Inspector /> : null}
       </div>
       <Footer />
       {compact ? <TabBar /> : null}
-      <TodoDetails />
+      {wide ? null : <TodoDetails />}
       <CommandPalette />
       <Toaster />
     </div>

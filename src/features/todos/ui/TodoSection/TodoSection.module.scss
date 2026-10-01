@@ -11,7 +11,7 @@
   justify-content: space-between;
   gap: 12px;
   min-block-size: 44px;
-  padding: 8px 4px 8px 4px;
+  padding: 6px 4px 6px 8px;
   transition: opacity var(--duration-base) var(--ease-out);
 
   @starting-style {
@@ -70,10 +70,16 @@
 
 .list {
   container: todo-list / inline-size;
+  @include glass(var(--radius-xl));
   display: flex;
   flex-direction: column;
+  overflow: clip;
 
   &[hidden] {
+    display: none;
+  }
+
+  &:empty {
     display: none;
   }
 }

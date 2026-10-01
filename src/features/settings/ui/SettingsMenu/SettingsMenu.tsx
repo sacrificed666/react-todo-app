@@ -1,6 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { LOCALES, type Locale } from "@/features/i18n/model/translate";
+import { LOCALE_NAMES } from "@/features/i18n/model/locales";
+import { LOCALES } from "@/features/i18n/model/translate";
 import { useI18n } from "@/features/i18n/model/useI18n";
+import LocaleFlag from "@/features/i18n/ui/LocaleFlag/LocaleFlag";
 import Icon from "@/shared/ui/Icon/Icon";
 import IconButton from "@/shared/ui/IconButton/IconButton";
 import Popover from "@/shared/ui/Popover/Popover";
@@ -8,14 +10,16 @@ import { usePopover } from "@/shared/ui/Popover/usePopover";
 import SegmentedControl, { type SegmentedOption } from "@/shared/ui/SegmentedControl/SegmentedControl";
 
 import { selectSettings } from "../../model/selectors";
-import { accentChanged, appearanceChanged, localeChanged } from "../../model/settingsSlice";
+import { EFFECTS, resolveEffects, type Effects } from "../../model/settings";
+import { accentChanged, appearanceChanged, effectsChanged } from "../../model/settingsSlice";
 import { ACCENTS, APPEARANCES, type Appearance } from "../../model/theme";
+import { changeLocale } from "../../model/thunks";
 
 import styles from "./SettingsMenu.module.scss";
 
 const SettingsMenu = () => {
   const dispatch = useAppDispatch();
-  const { appearance, accent, locale } = useAppSelector(selectSettings);
+  const { appearance, accent, locale, effects } = useAppSelector(selectSettings);
   const { t } = useI18n();
   const popover = usePopover();
 
@@ -24,14 +28,14 @@ const SettingsMenu = () => {
     label: t(`appearance.${value}`),
   }));
 
-  const localeOptions: readonly SegmentedOption<Locale>[] = LOCALES.map((value) => ({
+  const effectsOptions: readonly SegmentedOption<Effects>[] = EFFECTS.map((value) => ({
     value,
-    label: t(`locale.${value}`),
+    label: t(`effects.${value}`),
   }));
 
   return (
     <>
-      <IconButton icon="palette" label={t("settings.open")} {...popover.triggerProps} />
+      <IconButton icon="sliders" label={t("settings.open")} {...popover.triggerProps} />
       <Popover
         id={popover.id}
         popoverRef={popover.ref}
@@ -47,6 +51,7 @@ const SettingsMenu = () => {
           options={appearanceOptions}
           onChange={(next) => dispatch(appearanceChanged(next))}
         />
+
         <p className={styles.heading}>{t("settings.accent")}</p>
         <div role="radiogroup" aria-label={t("settings.accentLabel")} className={styles.swatches}>
           {ACCENTS.map((option) => (
@@ -67,14 +72,42 @@ const SettingsMenu = () => {
           ))}
         </div>
         <p className={styles.caption}>{t(`accent.${accent}`)}</p>
+
         <p className={styles.heading}>{t("settings.language")}</p>
+        <div role="radiogroup" aria-label={t("settings.language")} className={styles.languages}>
+          {LOCALES.map((code) => (
+            <label key={code} className={styles.language}>
+              <input
+                type="radio"
+                name="locale"
+                className="visually-hidden"
+                value={code}
+                checked={code === locale}
+                onChange={() => void dispatch(changeLocale(code))}
+              />
+              <LocaleFlag locale={code} />
+              <span className={styles.languageName} lang={code}>
+                {LOCALE_NAMES[code]}
+              </span>
+              <Icon name="check" className={styles.languageCheck} />
+            </label>
+          ))}
+        </div>
+
+        <p className={styles.heading}>{t("settings.effects")}</p>
         <SegmentedControl
-          label={t("settings.language")}
-          name="locale"
-          value={locale}
-          options={localeOptions}
-          onChange={(next) => dispatch(localeChanged(next))}
+          label={t("settings.effects")}
+          name="effects"
+          value={effects}
+          options={effectsOptions}
+          onChange={(next) => dispatch(effectsChanged(next))}
         />
+        {effects === "auto" ? (
+          <p className={styles.caption}>
+            <Icon name="bolt" className={styles.captionIcon} />
+            {t("effects.autoHint", { mode: t(`effects.${resolveEffects(effects)}`) })}
+          </p>
+        ) : null}
       </Popover>
     </>
   );

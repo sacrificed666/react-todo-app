@@ -15,7 +15,7 @@ import { flushSync } from "react-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { matchesList } from "@/features/lists/model/lists";
-import { selectList } from "@/features/lists/model/selectors";
+import { selectDetailsId, selectList } from "@/features/lists/model/selectors";
 import { detailsOpened, queryChanged } from "@/features/lists/model/viewSlice";
 import { useToday } from "@/shared/hooks/useToday";
 import { celebrate } from "@/shared/lib/celebrate";
@@ -86,6 +86,7 @@ const TodoItem = ({ todo, previousId, nextId, sortable }: TodoItemProps) => {
   const today = useToday();
   const { t, locale } = useI18n();
   const list = useAppSelector(selectList);
+  const selected = useAppSelector(selectDetailsId) === todo.id;
   const itemRef = useRef<HTMLLIElement>(null);
   const editorRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLButtonElement>(null);
@@ -348,7 +349,7 @@ const TodoItem = ({ todo, previousId, nextId, sortable }: TodoItemProps) => {
           data-completed={checked || undefined}
           data-dragging={isDragging || undefined}
           data-editing={editing || undefined}
-          data-glass-light=""
+          data-selected={selected || undefined}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}

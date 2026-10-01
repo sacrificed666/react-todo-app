@@ -1,8 +1,7 @@
 @use "@/shared/styles/mixins" as *;
 
 .nav {
-  @include glass(var(--radius-xl), var(--glass-tint), var(--glass-blur-control));
-  padding: 8px;
+  display: block;
 }
 
 .list {

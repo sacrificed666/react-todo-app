@@ -3,6 +3,7 @@
   inset: 0;
   z-index: -1;
   overflow: hidden;
+  contain: strict;
   background-color: var(--color-backdrop);
   background-image: var(--backdrop-base);
   transition: background-color var(--duration-slow) var(--ease-out);
@@ -21,11 +22,15 @@
   margin: calc(var(--size) / -2);
   border-radius: 50%;
   background: radial-gradient(closest-side, var(--tone), transparent);
-  mix-blend-mode: var(--orb-blend);
   opacity: var(--orb-opacity);
-  animation: drift var(--duration) var(--ease-in-out) var(--delay) infinite alternate;
-  will-change: translate, scale;
   transition: opacity var(--duration-slow) var(--ease-out);
+
+  :root[data-effects="full"] & {
+    opacity: var(--orb-opacity-rich);
+    mix-blend-mode: var(--orb-blend);
+    animation: drift var(--duration) var(--ease-in-out) var(--delay) infinite alternate;
+    will-change: translate, scale;
+  }
 
   &[data-orb="1"] {
     --tone: var(--orb-1);
@@ -92,11 +97,16 @@
 }
 
 .grain {
+  display: none;
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
   opacity: var(--grain-opacity);
+
+  :root[data-effects="full"] & {
+    display: block;
+  }
 }
 
 @keyframes drift {
@@ -117,7 +127,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .orb {
+  :root[data-effects="full"] .orb {
     animation: none;
   }
 }

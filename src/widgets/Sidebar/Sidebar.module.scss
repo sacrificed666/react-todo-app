@@ -1,6 +1,9 @@
+@use "@/shared/styles/mixins" as *;
+
 .sidebar {
+  grid-area: sidebar;
   position: sticky;
-  inset-block-start: calc(var(--header-height) + 28px);
+  inset-block-start: calc(var(--header-height) + 24px);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -8,6 +11,13 @@
 
   @media (max-width: 899px) {
     position: static;
-    order: 1;
   }
+}
+
+.panel {
+  @include glass(var(--radius-xl), var(--glass-tint), var(--glass-blur-control));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
 }

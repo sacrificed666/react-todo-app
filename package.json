@@ -1,6 +1,6 @@
 {
   "name": "react-todo-app",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": true,
   "description": "A Liquid Glass ToDo application built with React, Redux Toolkit and Vite.",
   "homepage": "https://sacrificed666.github.io/react-todo-app/",
@@ -30,6 +30,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@fontsource-variable/montserrat": "^5.3.0",
     "@reduxjs/toolkit": "^2.13.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

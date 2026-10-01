@@ -36,6 +36,7 @@
   border: 0;
   background: none;
   font-size: 1.0625rem;
+  text-overflow: ellipsis;
   outline: none;
 
   &::placeholder {

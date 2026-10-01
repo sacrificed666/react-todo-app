@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import type { Locale } from "@/features/i18n/model/translate";
 
-import { DEFAULT_SETTINGS } from "./settings";
+import { DEFAULT_SETTINGS, type Effects } from "./settings";
 import type { Accent, Appearance } from "./theme";
 
 export const settingsSlice = createSlice({
@@ -18,7 +18,10 @@ export const settingsSlice = createSlice({
     localeChanged(state, action: PayloadAction<Locale>) {
       state.locale = action.payload;
     },
+    effectsChanged(state, action: PayloadAction<Effects>) {
+      state.effects = action.payload;
+    },
   },
 });
 
-export const { appearanceChanged, accentChanged, localeChanged } = settingsSlice.actions;
+export const { appearanceChanged, accentChanged, localeChanged, effectsChanged } = settingsSlice.actions;

@@ -28,6 +28,10 @@
   }
 
   &::after {
+    background: var(--glass-sheen);
+  }
+
+  :root[data-effects="full"] &::after {
     background:
       radial-gradient(
         160px circle at var(--light-x) var(--light-y),

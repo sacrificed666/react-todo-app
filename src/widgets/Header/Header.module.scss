@@ -14,9 +14,13 @@
   grid-template-areas: "brand search actions";
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: 28px;
+  column-gap: 24px;
   min-block-size: var(--header-height);
   padding-block: 10px;
+
+  @media (min-width: 1240px) {
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--inspector-width);
+  }
 
   @media (max-width: 899px) {
     grid-template-columns: auto minmax(0, 1fr) auto;

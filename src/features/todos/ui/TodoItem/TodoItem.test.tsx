@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { selectTodos } from "@/features/todos/model/selectors";
@@ -92,7 +92,7 @@ describe("TodoItem content", () => {
     expect(screen.getByText("1 of 2 subtasks")).toBeInTheDocument();
     expect(screen.getByText("Has notes")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Show tasks tagged #work" }));
+    await user.click(within(section(/^To do/)).getByRole("button", { name: "Show tasks tagged #work" }));
     expect(store.getState().view.query).toBe("#work");
     expect(itemTitles(section(/^To do/))).toEqual(["Prepare slides #work #q4"]);
   });

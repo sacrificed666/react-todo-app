@@ -33,7 +33,6 @@ const Footer = () => {
           >
             {t("footer.source")}
           </a>
-          <span className={styles.version}>v{import.meta.env.VITE_APP_VERSION}</span>
         </p>
       </div>
     </footer>

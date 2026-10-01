@@ -1,6 +1,5 @@
 import type { ReactNode, RefObject, ToggleEvent } from "react";
 
-import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
 import { cx } from "@/shared/lib/cx";
 
 import styles from "./Popover.module.scss";
@@ -19,8 +18,6 @@ interface PopoverProps {
 const GAP = 10;
 
 const Popover = ({ id, popoverRef, anchorName, label, align = "end", className, onToggle, children }: PopoverProps) => {
-  useLiquidGlass(popoverRef, { bezel: 22, scale: 40 });
-
   const handleBeforeToggle = (event: ToggleEvent<HTMLDialogElement>) => {
     const open = event.newState === "open";
     onToggle?.(open);

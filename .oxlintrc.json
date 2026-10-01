@@ -32,7 +32,7 @@
     "import/no-unassigned-import": [
       "error",
       {
-        "allow": ["**/*.scss", "@testing-library/jest-dom/vitest"]
+        "allow": ["**/*.scss", "@testing-library/jest-dom/vitest", "@fontsource-variable/*"]
       }
     ],
     "react/rules-of-hooks": "error",

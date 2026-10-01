@@ -5,7 +5,7 @@ import { TOAST_DURATION } from "@/features/notifications/ui/Toaster/Toaster";
 import { selectTodos } from "@/features/todos/model/selectors";
 import { parseTodos } from "@/features/todos/model/todo";
 import { dayFromToday, makeTodo, todayKey } from "@/test/factories";
-import { itemTitles, openPopover, renderApp, section, type User } from "@/test/render";
+import { itemTitles, mockMediaQueries, openPopover, renderApp, section, type User } from "@/test/render";
 
 const notification = () => screen.getByRole("status", { name: "Notification" });
 
@@ -68,7 +68,7 @@ describe("App shell", () => {
     await user.click(panel.getByRole("radio", { name: "Light" }));
     await user.click(panel.getByRole("radio", { name: "Forest" }));
 
-    expect(store.getState().settings).toEqual({ appearance: "light", accent: "forest", locale: "en" });
+    expect(store.getState().settings).toEqual({ appearance: "light", accent: "forest", locale: "en", effects: "auto" });
     expect(document.documentElement.dataset).toMatchObject({ appearance: "light", accent: "forest" });
   });
 
@@ -93,19 +93,7 @@ describe("App shell", () => {
   });
 
   it("uses a bottom tab bar on narrow screens", async () => {
-    vi.spyOn(window, "matchMedia").mockImplementation(
-      (query) =>
-        ({
-          matches: query === "(max-width: 899px)" || query.includes("prefers-reduced-motion"),
-          media: query,
-          onchange: null,
-          addListener() {},
-          removeListener() {},
-          addEventListener() {},
-          removeEventListener() {},
-          dispatchEvent: () => false,
-        }) satisfies MediaQueryList,
-    );
+    mockMediaQueries(["(max-width: 899px)"]);
     const { user } = renderApp(plannedTodos);
 
     const tabs = screen.getByRole("navigation", { name: "Lists" });
@@ -115,6 +103,80 @@ describe("App shell", () => {
     await user.click(within(tabs).getByRole("button", { name: "Important (1)" }));
     expect(screen.getByRole("heading", { level: 1, name: "Important" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Overview" })).toBeInTheDocument();
+  });
+});
+
+describe("Layout", () => {
+  it("keeps the footer free of version numbers", () => {
+    renderApp();
+    expect(screen.getByRole("contentinfo")).not.toHaveTextContent(/v\d+\.\d+/);
+  });
+
+  it("filters by tag from the sidebar", async () => {
+    const { user, store } = renderApp([
+      makeTodo({ id: "a", title: "Slides #work" }),
+      makeTodo({ id: "b", title: "Report #work" }),
+      makeTodo({ id: "c", title: "Groceries #home" }),
+    ]);
+
+    const tags = screen.getByRole("navigation", { name: "Tags" });
+    const work = within(tags).getByRole("button", { name: "Show tasks tagged #work" });
+    expect(work).toHaveTextContent("work2");
+
+    await user.click(work);
+    expect(store.getState().view.query).toBe("#work");
+    expect(work).toHaveAttribute("aria-pressed", "true");
+    expect(itemTitles(section(/^To do/))).toEqual(["Slides #work", "Report #work"]);
+
+    await user.click(work);
+    expect(store.getState().view.query).toBe("");
+  });
+
+  it("shows task details next to the list on wide screens", async () => {
+    mockMediaQueries(["(min-width: 1240px)"]);
+    const { user } = renderApp();
+
+    expect(screen.getByRole("heading", { name: "Overview" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Details for “Buy milk”" }));
+
+    const panel = screen.getByRole("region", { name: "Task details" });
+    expect(panel).toHaveFocus();
+    expect(screen.queryByRole("dialog", { name: "Task details" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Overview" })).not.toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Buy milk" }).parentElement).toHaveAttribute("data-selected");
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("region", { name: "Task details" })).not.toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Buy milk" })).toHaveFocus();
+  });
+
+  it("switches to any of the eight languages", async () => {
+    const { user, store } = renderApp(plannedTodos);
+
+    const panel = await openPopover(user, screen.getByRole("button", { name: "Settings" }));
+    expect(
+      panel.getAllByRole("radio", { name: /English|Українська|Deutsch|Español|Français|Italiano|Nederlands|Polski/ }),
+    ).toHaveLength(8);
+    await user.click(panel.getByRole("radio", { name: "Deutsch" }));
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Alle Aufgaben" })).toBeInTheDocument();
+    expect(store.getState().settings.locale).toBe("de");
+    expect(document.documentElement.lang).toBe("de");
+    expect(screen.getByRole("textbox", { name: "Neue Aufgabe" })).toBeInTheDocument();
+  });
+
+  it("switches the effects level", async () => {
+    const { user, store } = renderApp();
+
+    const panel = await openPopover(user, screen.getByRole("button", { name: "Settings" }));
+    expect(panel.getByText("On this device: Reduced")).toBeInTheDocument();
+
+    await user.click(panel.getByRole("radio", { name: "Full" }));
+    expect(store.getState().settings.effects).toBe("full");
+    expect(document.documentElement.dataset.effects).toBe("full");
+
+    await user.click(panel.getByRole("radio", { name: "Reduced" }));
+    expect(document.documentElement.dataset.effects).toBe("lite");
   });
 });
 

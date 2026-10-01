@@ -1,6 +1,6 @@
 # 🛡️ Security
 
-ToDo App is a static, local-first web app: no backend, no accounts, no cookies, no analytics and no third-party requests. That removes whole classes of problems, but the browser still handles untrusted data — imported files, shared content, URL parameters and data written by other tabs — so the app treats all of it as hostile until validated.
+ToDo App is a static, local-first web app: no backend, no accounts, no cookies and no analytics. The only request to another origin is for language flag images from flagcdn.com. That removes whole classes of problems, but the browser still handles untrusted data — imported files, shared content, URL parameters and data written by other tabs — so the app treats all of it as hostile until validated.
 
 To report a vulnerability, follow the [security policy](../.github/SECURITY.md).
 
@@ -26,6 +26,8 @@ flowchart LR
     React["⚛️ React rendering<br/>text only, auto-escaped"]
   end
 
+  Flags["🏳️ flagcdn.com<br/>images only, no referrer"]
+
   File --> Limits --> Parse
   Storage --> Parse
   Share --> Normalize
@@ -33,24 +35,25 @@ flowchart LR
   Parse --> Store
   Normalize --> Store
   Store --> React
+  React -. "img src" .-> Flags
 ```
 
 ## 🧱 Content Security Policy
 
 GitHub Pages cannot send custom headers, so the production build injects a CSP `<meta>` tag as the very first element of `<head>` (the `security-headers` plugin in `vite.config.ts`). The development server stays without it because Vite's hot reload relies on inline scripts.
 
-| Directive                                               | Value                | Why                                                               |
-| ------------------------------------------------------- | -------------------- | ----------------------------------------------------------------- |
-| `default-src`                                           | `'self'`             | 🔒 Nothing is loaded from other origins                           |
-| `script-src`                                            | `'self'`             | 🚫 No inline scripts, no `eval`, no third-party code              |
-| `style-src`                                             | `'self'`             | 🎨 Only the bundled stylesheet; dynamic values use the CSSOM      |
-| `img-src`                                               | `'self' data: blob:` | 🖼️ Icons, SVG masks and the refraction maps generated on a canvas |
-| `connect-src`, `font-src`, `manifest-src`, `worker-src` | `'self'`             | 📡 Only the app's own files and service worker                    |
-| `object-src`                                            | `'none'`             | 🧩 No plugins                                                     |
-| `base-uri`, `form-action`                               | `'self'`             | 🧭 Prevents base tag and form hijacking                           |
-| `require-trusted-types-for`                             | `'script'`           | 🛂 DOM XSS sinks only accept Trusted Types                        |
-| `trusted-types`                                         | `default`            | 📜 Only the app's own policy may create them                      |
-| `upgrade-insecure-requests`                             | —                    | 🔐 Any accidental `http:` URL is upgraded                         |
+| Directive                                               | Value                                    | Why                                                                                   |
+| ------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------- |
+| `default-src`                                           | `'self'`                                 | 🔒 Nothing is loaded from other origins                                               |
+| `script-src`                                            | `'self'`                                 | 🚫 No inline scripts, no `eval`, no third-party code                                  |
+| `style-src`                                             | `'self'`                                 | 🎨 Only the bundled stylesheet; dynamic values use the CSSOM                          |
+| `img-src`                                               | `'self' data: blob: https://flagcdn.com` | 🖼️ Icons, SVG masks, the refraction maps generated on a canvas and the language flags |
+| `connect-src`, `font-src`, `manifest-src`, `worker-src` | `'self'`                                 | 📡 Only the app's own files and service worker                                        |
+| `object-src`                                            | `'none'`                                 | 🧩 No plugins                                                                         |
+| `base-uri`, `form-action`                               | `'self'`                                 | 🧭 Prevents base tag and form hijacking                                               |
+| `require-trusted-types-for`                             | `'script'`                               | 🛂 DOM XSS sinks only accept Trusted Types                                            |
+| `trusted-types`                                         | `default`                                | 📜 Only the app's own policy may create them                                          |
+| `upgrade-insecure-requests`                             | —                                        | 🔐 Any accidental `http:` URL is upgraded                                             |
 
 A `referrer` meta tag sets `strict-origin-when-cross-origin`, and external links use `rel="noreferrer"`.
 
@@ -79,6 +82,14 @@ installScriptUrlPolicy([`${import.meta.env.BASE_URL}sw.js`]);
 | 🎨 Preferences             | Every value is checked against the list of allowed appearances, accents, languages, lists and sort orders              |
 
 Objects are rebuilt field by field, so unknown properties — including `__proto__` — never reach the store.
+
+## 🏳️ Flag images
+
+The language picker shows flags from `https://flagcdn.com`, the only third-party origin the app talks to.
+
+- 🖼️ They are plain `<img>` elements — an SVG loaded as an image cannot run scripts or reach the page — and the CSP allows nothing else from that origin.
+- 🕵️ `referrerpolicy="no-referrer"` keeps the app's address out of the requests, and nothing about your tasks is ever sent.
+- 💤 `loading="lazy"` inside closed menus means no request is made until the settings or the palette's language commands are opened; the service worker then serves them from its `flags` cache.
 
 ## 🗄️ Data on the device
 
@@ -109,5 +120,5 @@ flowchart LR
 
 - [ ] Never render user content with `dangerouslySetInnerHTML` or assign HTML strings to the DOM.
 - [ ] Route every new kind of input through a parser that rebuilds the data and caps its size.
-- [ ] Do not add requests to other origins; if one is unavoidable, extend the CSP deliberately and explain why in the pull request.
+- [ ] Do not add requests to other origins; if one is unavoidable, extend the CSP as narrowly as possible (like `https://flagcdn.com` for images only) and explain why in the pull request.
 - [ ] Keep workflow permissions minimal and pass `persist-credentials: false` to new checkouts.

@@ -2,6 +2,30 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## 3.1.0 — 2026-10-01
+
+### ✨ Added
+
+- 🌍 **Six new languages** — Deutsch, Español, Français, Italiano, Nederlands and Polski, with flags from flagcdn, native names, correct plurals and typography, browser language detection and quick add phrases for each.
+- ⚡ **Effects setting** — Auto, Full or Reduced. Reduced keeps the glass but stops the aurora, refraction and pointer light; Auto uses it everywhere except capable Apple devices.
+- 🧾 **Inspector column** on screens from 1240 px: the overview, or the selected task's details right next to the list.
+- 🏷️ **Tag cloud** in the sidebar with counters; click a tag to filter, click again to clear.
+- 🔤 **Montserrat** as the interface font, self-hosted and precached.
+
+### 🔄 Changed
+
+- 🧱 Tasks sit on one grouped glass panel per section with hairline separators instead of a glass card per row.
+- 📚 Lists and tags share one sidebar panel; the overview moves to the inspector on wide screens and below the list on phones.
+- 🚀 Big performance work for Windows and integrated graphics: no per-row blur, a still backdrop without blend modes, pointer light batched per frame, lazy menus and translations, a shared day timer. Worst-case scrolling went from 25 fps with 40 % janky frames to 54 fps with none.
+- 🎛️ The settings button uses a sliders icon and the language picker became a grid of flags.
+- 🔚 The footer no longer shows the app version.
+
+### 🐛 Fixed
+
+- 📱 The overview card was hidden on phones.
+- 🚀 The **New task** app shortcut now reliably focuses the composer.
+- 🔤 Long translations no longer overflow the overview stats.
+
 ## 3.0.0 — 2026-10-01
 
 ### ✨ Added

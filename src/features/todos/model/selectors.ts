@@ -6,7 +6,7 @@ import { selectList, selectQuery, selectSort } from "@/features/lists/model/sele
 import { sortTodos } from "@/features/lists/model/sort";
 import { addDays, toDateKey } from "@/shared/lib/date";
 
-import { createMatcher } from "./todo";
+import { createMatcher, extractTags } from "./todo";
 import { todosAdapter } from "./todosSlice";
 
 const todoSelectors = todosAdapter.getSelectors((state: RootState) => state.todos);
@@ -85,4 +85,25 @@ export const selectActivity = createSelector([selectTodos, selectToday], (todos,
   }
 
   return { days, streak };
+});
+
+export interface TagCount {
+  tag: string;
+  count: number;
+}
+
+export const selectTagCounts = createSelector([selectTodos], (todos): TagCount[] => {
+  const counts = new Map<string, TagCount>();
+  for (const todo of todos) {
+    if (todo.completed) continue;
+    const seen = new Set<string>();
+    for (const tag of extractTags(todo.title)) {
+      const key = tag.toLocaleLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const entry = counts.get(key);
+      counts.set(key, { tag: entry?.tag ?? tag, count: (entry?.count ?? 0) + 1 });
+    }
+  }
+  return [...counts.values()].toSorted((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
 });

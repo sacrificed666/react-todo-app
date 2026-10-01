@@ -1,13 +1,27 @@
 const openPopovers = new WeakSet<HTMLElement>();
 
+const dispatchToggle = (element: HTMLElement, type: "beforetoggle" | "toggle", newState: "open" | "closed") => {
+  const event = Object.assign(new Event(type, { cancelable: type === "beforetoggle" }), {
+    newState,
+    oldState: newState === "open" ? "closed" : "open",
+  });
+  element.dispatchEvent(event);
+};
+
 const show = (element: HTMLElement) => {
+  if (openPopovers.has(element)) return;
+  dispatchToggle(element, "beforetoggle", "open");
   element.style.display = "block";
   openPopovers.add(element);
+  dispatchToggle(element, "toggle", "open");
 };
 
 const hide = (element: HTMLElement) => {
+  if (!openPopovers.has(element)) return;
+  dispatchToggle(element, "beforetoggle", "closed");
   element.style.removeProperty("display");
   openPopovers.delete(element);
+  dispatchToggle(element, "toggle", "closed");
 };
 
 export const installPopoverPolyfill = () => {

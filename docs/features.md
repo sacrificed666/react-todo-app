@@ -2,15 +2,15 @@
 
 ## 🧭 Layout
 
-| Area           | Desktop and tablet                                                                                  | Phone (narrower than 900 px)                                      |
-| -------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 🔝 Header      | Full-width glass bar: logo, search, command palette, settings and the **⋯** actions menu            | Search moves behind a 🔍 button below 720 px                      |
-| 📚 Lists       | Sidebar with the smart lists and live counters                                                      | A floating glass **tab bar** at the bottom with a badge for Today |
-| 📊 Overview    | Below the lists: progress, overdue, today and important counts, a 7-day activity chart and a streak | Moves below the task list                                         |
-| 📝 Main column | List title with today's date and progress, sort menu, composer and the task list                    | Same, rows switch to a compact two-line layout                    |
-| 🔚 Footer      | Full-width status bar with task totals, overdue count, author, source link and app version          | Stacked and centred                                               |
+| Area           | Wide screens (1240 px and more)                                                          | Laptops and tablets (900–1239 px) | Phones (narrower than 900 px)                                |
+| -------------- | ---------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------ |
+| 🔝 Header      | Full-width glass bar: logo, search, command palette, settings and the **⋯** actions menu | Same                              | Search moves behind a 🔍 button below 720 px                 |
+| 📚 Sidebar     | One glass panel with the smart lists, live counters and your **tags**                    | Same, with the overview below it  | Lists move to a floating **tab bar**; tags go below the list |
+| 📝 Main column | List title with today's date and progress, sort menu, composer and the grouped task list | Same                              | Same, rows switch to a compact layout                        |
+| 🧾 Inspector   | A third column with the **overview**, replaced by the **task details** when one is open  | Details open as a dialog          | Details open as a bottom sheet                               |
+| 🔚 Footer      | Status bar with task totals, overdue count, author and the source link                   | Same                              | Stacked and centred above the tab bar                        |
 
-![Desktop, dark appearance](./images/desktop-dark.jpg)
+![Wide screen, dark appearance](./images/desktop-dark.jpg)
 
 ## 📚 Smart lists
 
@@ -46,34 +46,37 @@ On narrow screens the calendar and trash buttons are hidden from the rows to lea
 
 ## ⚡ Quick add
 
-The composer understands a few words at the **end** of the title. A ✨ chip shows what it recognised before you press <kbd>Enter</kbd>.
+The composer understands a few words at the **end** of the title in all eight languages, whatever language the interface uses. A ✨ chip shows what it recognised before you press <kbd>Enter</kbd>.
 
-| You type                          | You get                                                     |
-| --------------------------------- | ----------------------------------------------------------- |
-| `Call mom tomorrow`               | **Call mom**, due tomorrow                                  |
-| `Pay rent in 3 days !`            | **Pay rent**, due in three days, ⭐ important               |
-| `Team sync next friday #work`     | **Team sync #work**, due next Friday                        |
-| `Купити квіти через 2 дні`        | **Купити квіти**, due in two days                           |
-| `Подзвонити в банк у п’ятницю !!` | **Подзвонити в банк**, due on Friday, ⭐ important          |
-| `Renew passport 20.10`            | **Renew passport**, due on 20 October (next year if passed) |
+| You type                       | You get                                              |
+| ------------------------------ | ---------------------------------------------------- |
+| `Call mom tomorrow`            | **Call mom**, due tomorrow                           |
+| `Pay rent in 3 days !`         | **Pay rent**, due in three days, ⭐ important        |
+| `Team sync next friday #work`  | **Team sync #work**, due next Friday                 |
+| `Купити квіти через 2 дні`     | **Купити квіти**, due in two days                    |
+| `Teammeeting am Freitag !!`    | **Teammeeting**, due on Friday, ⭐ important         |
+| `Reunión el próximo lunes`     | **Reunión**, due next Monday                         |
+| `Rapport la semaine prochaine` | **Rapport**, due in a week                           |
+| `Spotkanie w piątek`           | **Spotkanie**, due on Friday                         |
+| `Urlaub 24.12.`                | **Urlaub**, due on 24 December (next year if passed) |
 
-| Kind             | English                                                   | Українська                                                        |
-| ---------------- | --------------------------------------------------------- | ----------------------------------------------------------------- |
-| 📅 Relative days | `today`, `tonight`, `tomorrow`, `day after tomorrow`      | `сьогодні`, `завтра`, `післязавтра`                               |
-| 🗓️ Weeks         | `next week`, `in a week`                                  | `наступного тижня`, `через тиждень`                               |
-| 🔢 In N days     | `in 5 days`                                               | `через 5 днів`                                                    |
-| 📆 Weekdays      | `monday` … `sunday`, optionally with `on`, `next`, `this` | `понеділок` … `неділя`, also `у п’ятницю`, `наступного вівторка`* |
-| 🧮 Exact dates   | `2026-10-20`, `20.10`, `20.10.2026`                       | the same formats                                                  |
-| ⭐ Importance    | `!`, `!!` or `!!!` at the end                             | the same                                                          |
-| 🏷️ Tags          | `#tags` at the end are kept in the title                  | the same                                                          |
+| Kind             | Examples                                                                                                                                                                                                       |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 📅 Relative days | `today` `tomorrow` `day after tomorrow` · `сьогодні` `завтра` · `heute` `morgen` `übermorgen` · `hoy` `mañana` · `aujourd’hui` `demain` · `oggi` `domani` · `vandaag` `overmorgen` · `dziś` `jutro` `pojutrze` |
+| 🗓️ Weeks         | `next week` · `наступного тижня` · `nächste Woche` · `la próxima semana` · `la semaine prochaine` · `la prossima settimana` · `volgende week` · `w przyszłym tygodniu`                                         |
+| 🔢 In N days     | `in 5 days` · `через 5 днів` · `in 5 Tagen` · `en 5 días` · `dans 5 jours` · `tra 5 giorni` · `over 5 dagen` · `za 5 dni`                                                                                      |
+| 📆 Weekdays      | Any weekday name, alone or with words like `on`, `next`, `this`, `у`, `наступного`, `am`, `nächsten`, `el próximo`, `prochain`, `prossimo`, `op`, `volgende`, `w`, `przyszły`                                  |
+| 🧮 Exact dates   | `2026-10-20`, `20.10`, `20.10.`, `20.10.2026`                                                                                                                                                                  |
+| ⭐ Importance    | `!`, `!!` or `!!!` at the end                                                                                                                                                                                  |
+| 🏷️ Tags          | `#tags` at the end are kept in the title                                                                                                                                                                       |
 
-\* Weekday names are matched in the nominative, accusative and genitive case (`середа`, `середу`, `середи`) with the prefixes `у`, `в`, `цей`, `цю`, `цього`, `цієї`, `наступний`, `наступну`, `наступного` and `наступної`. Both `'` and `’` work as the apostrophe.
+Phrases are matched without diacritics (`mercoledi` works like `mercoledì`), Ukrainian weekdays in the nominative, accusative and genitive case, and both `'` and `’` count as the apostrophe. Endings that mean _in the morning_ — `por la mañana`, `am Morgen` — are not mistaken for tomorrow.
 
 The recognised date overrides the calendar chip only while it is in the text, and the title always keeps at least one word, so `Tomorrow` alone is a task called “Tomorrow”.
 
 ## 🗒️ Details, notes and checklists
 
-The ⓘ button, the <kbd>I</kbd> key or a task found in the command palette opens the **details sheet** — a centred glass dialog on desktop and a bottom sheet on phones.
+The ⓘ button, the <kbd>I</kbd> key or a task found in the command palette opens the task's **details**. On wide screens they appear in the inspector column next to the list, with the task highlighted; on smaller screens they open as a centred dialog or, on phones, as a bottom sheet. <kbd>Esc</kbd> closes them and returns focus to the task.
 
 ![Task details](./images/details.jpg)
 
@@ -87,7 +90,10 @@ The ⓘ button, the <kbd>I</kbd> key or a task found in the command palette open
 
 ## 🏷️ Tags
 
-Any `#word` in a title is a tag. Tags are shown as chips instead of being repeated in the title, and clicking a chip searches for it, for example `#work`. Tags work in any script — `#дім`, `#travel`, `#q4`.
+Any `#word` in a title is a tag. Tags are shown as chips instead of being repeated in the title, and work in any script — `#дім`, `#travel`, `#q4`.
+
+- 🧭 The sidebar lists every tag of your active tasks with a counter, most used first.
+- 🔎 Clicking a tag — in the sidebar, on a task or in the details — filters the list; clicking the highlighted tag in the sidebar clears the filter.
 
 ## 🔀 Sorting
 
@@ -119,7 +125,7 @@ Press <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> or the ⌘ button in the heade
 - 🧭 **Lists** — jump to any smart list.
 - ⚡ **Actions** — new task, undo and redo (with a description of the step), complete all or mark all as active, clear completed and export.
 - ✅ **Tasks** — type to find tasks by title or notes; <kbd>Enter</kbd> opens their details.
-- 🔀 **Sort**, 🎨 **Appearance** and 🌍 **Language** — change the sort order, colour scheme, accent and language without opening a menu. The current choice is marked with ✓.
+- 🔀 **Sort**, 🎨 **Appearance** and 🌍 **Language** — change the sort order, colour scheme, accent, effects and language without opening a menu. Languages show their flags, and the current choice is marked with ✓.
 - 🔎 **Search for “…”** — the last option always applies the typed text as the list search.
 
 Matching is fuzzy: `gtt` finds **Go to Today** and `srt` finds **Sort by**. Use <kbd>↑</kbd>/<kbd>↓</kbd> to move, <kbd>Enter</kbd> to run and <kbd>Esc</kbd> to close.
@@ -140,16 +146,20 @@ Every change to your tasks can be undone — completing, renaming, starring, sch
 - 🔥 A **streak** counts the consecutive days with at least one completed task.
 - 🎊 Completing the last active task of a list shows “Everything in Today is done!” and a burst of confetti in your accent colours (skipped with reduced motion).
 
-## 🎨 Appearance and 🌍 language
+## 🎨 Appearance, 🌍 language and ⚡ effects
 
-The palette button in the header opens the settings:
+The sliders button in the header opens the settings:
 
 - 🌗 **Auto**, **Light** or **Dark** colour scheme — Auto follows the operating system and switches live.
-- 🎨 Five accents — 🔵 Ocean blue, 🟣 Aurora violet, 🟠 Sunset, 🟢 Forest and ⚪ Graphite. The accent tints checkboxes, buttons, progress bars and the animated backdrop.
-- 🌍 **English** or **Українська** — the whole interface, dates, plurals, notifications and quick add switch instantly. On the first visit the language follows your browser.
-- 💾 All three choices are saved and applied before the first paint, so the app never flashes the wrong theme.
+- 🎨 Five accents — 🔵 Ocean blue, 🟣 Aurora violet, 🟠 Sunset, 🟢 Forest and ⚪ Graphite. The accent tints checkboxes, buttons, progress bars and the backdrop.
+- 🌍 Eight languages with flags — 🇬🇧 English, 🇺🇦 Українська, 🇩🇪 Deutsch, 🇪🇸 Español, 🇫🇷 Français, 🇮🇹 Italiano, 🇳🇱 Nederlands and 🇵🇱 Polski. The whole interface, dates, plurals, notifications and quick add switch instantly; on the first visit the language follows your browser. See [Localization](./i18n.md).
+- ⚡ **Effects** — **Auto**, **Full** or **Reduced**:
+  - **Full** adds the drifting aurora, edge refraction and the pointer light;
+  - **Reduced** keeps the glass but makes the backdrop still and lightens the blur, for smooth scrolling on any computer;
+  - **Auto** picks Full on recent Macs and iPads and Reduced everywhere else — the settings show which one is in use.
+- 💾 All choices are saved and applied before the first paint, so the app never flashes the wrong theme.
 
-![Phone, light appearance](./images/mobile-light.jpg)
+![Settings with the language grid](./images/settings.jpg)
 
 ## 🧰 More actions menu
 
@@ -199,7 +209,7 @@ Importing never deletes anything:
 - 💾 Tasks, the selected list, sort order, the completed section state, appearance and language are saved to `localStorage` after every change.
 - 🔄 Changes made in another tab of the same browser appear immediately.
 - 🕰️ Data saved by earlier versions of the app is migrated to the new format on first launch.
-- 🔒 Nothing leaves your device: there is no account, no server and no analytics.
+- 🔒 Your tasks never leave your device: there is no account, no server and no analytics. The only outside request is for the language flags, made when you open the language list.
 
 ## 📱 Install, offline and app integration
 
@@ -234,6 +244,8 @@ ToDo App is a Progressive Web App:
 Global shortcuts are ignored while you type in a text field. Task commands work when focus is anywhere inside a task row.
 
 ## 👆 Touch gestures
+
+![Phone, light appearance in German](./images/mobile-light.jpg)
 
 | Gesture              | Action                                            |
 | -------------------- | ------------------------------------------------- |

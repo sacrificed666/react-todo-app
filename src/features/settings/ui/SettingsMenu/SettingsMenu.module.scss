@@ -1,8 +1,11 @@
 @use "@/shared/styles/mixins" as *;
 
 .panel {
-  inline-size: min(18.5rem, calc(100vw - 24px));
+  inline-size: min(21rem, calc(100vw - 24px));
+  max-block-size: calc(100dvh - var(--popover-top, 72px) - 16px);
   padding: 10px 12px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .heading {
@@ -91,8 +94,68 @@
 }
 
 .caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   margin-block-start: 8px;
   font-size: 0.8125rem;
   text-align: center;
   color: var(--color-text-secondary);
+}
+
+.captionIcon {
+  font-size: 0.875rem;
+  color: var(--color-accent-bright);
+}
+
+.languages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.language {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-block-size: 40px;
+  padding-inline: 10px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background-color: var(--color-fill);
+  }
+
+  &:has(:checked) {
+    background-color: var(--color-accent-soft);
+    font-weight: 600;
+  }
+
+  &:has(:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: -2px;
+  }
+}
+
+.languageName {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.languageCheck {
+  flex: none;
+  font-size: 0.875rem;
+  color: var(--color-accent-bright);
+  opacity: 0;
+
+  .language:has(:checked) & {
+    opacity: 1;
+  }
 }

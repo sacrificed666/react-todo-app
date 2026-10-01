@@ -2,6 +2,9 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach } from "vitest";
 
+import { loadMessages } from "@/features/i18n/model/catalog";
+import { LOCALES } from "@/features/i18n/model/translate";
+
 import { installDialogPolyfill } from "./dialog";
 import { installPopoverPolyfill } from "./popover";
 
@@ -27,6 +30,8 @@ Object.assign(Element.prototype, {
   releasePointerCapture() {},
   hasPointerCapture: () => false,
 });
+
+await Promise.all(LOCALES.map(loadMessages));
 
 afterEach(() => {
   cleanup();

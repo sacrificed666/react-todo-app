@@ -24,8 +24,8 @@ The HTML coverage report is written to `coverage/index.html`.
 
 ```mermaid
 flowchart TB
-  UI["🖥️ UI flows · ~50 tests<br/>App, palette, details, rows, composer, error screen"]
-  Model["🧠 Model · ~115 tests<br/>slices, history, selectors, thunks, quick add, persistence"]
+  UI["🖥️ UI flows · ~55 tests<br/>App, layouts, palette, details, rows, composer, error screen"]
+  Model["🧠 Model · ~130 tests<br/>slices, history, selectors, thunks, quick add in 8 languages, translations, settings"]
   Lib["🧰 Shared helpers · ~30 tests<br/>dates, keyboard, fuzzy search, refraction, Trusted Types"]
   UI --> Model --> Lib
 ```
@@ -51,7 +51,8 @@ Tests sit next to the code they cover as `*.test.ts(x)`:
 `src/test/setup.ts` prepares jsdom for the app:
 
 - 🐢 **`matchMedia`** is mocked to report `prefers-reduced-motion: reduce`. The app then skips its delays, transitions and confetti, so tests never wait for animations. Individual tests can override it, for example to render the phone layout with the tab bar.
-- 🪟 **Popover API** — jsdom hides `[popover]` elements but cannot open them. `src/test/popover.ts` adds `showPopover()`, `hidePopover()`, `togglePopover()` and `popovertarget` handling.
+- 🪟 **Popover API** — jsdom hides `[popover]` elements but cannot open them. `src/test/popover.ts` adds `showPopover()`, `hidePopover()`, `togglePopover()` and `popovertarget` handling, and fires `beforetoggle` and `toggle` events like a browser, so menus that render their content lazily work in tests.
+- 🌍 **Translations** — the setup preloads every language with `loadMessages()`, so tests can switch languages synchronously.
 - 🗔 **Dialogs** — jsdom has no `showModal()`. `src/test/dialog.ts` implements `show()`, `showModal()` and `close()` with focus on the first control, focus restoration, the `close` event and <kbd>Esc</kbd> handling.
 - 👆 **Pointer capture and scrolling** — `setPointerCapture()`, `releasePointerCapture()` and `scrollIntoView()` are stubbed, so swipe and palette tests run unchanged.
 - 🧹 **Cleanup** — the DOM is unmounted and `localStorage` is cleared after every test.

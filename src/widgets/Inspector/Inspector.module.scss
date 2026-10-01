@@ -1,0 +1,9 @@
+.inspector {
+  grid-area: inspector;
+  position: sticky;
+  inset-block-start: calc(var(--header-height) + 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}

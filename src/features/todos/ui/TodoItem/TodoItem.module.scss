@@ -3,14 +3,10 @@
 .item {
   display: grid;
   grid-template-rows: 1fr;
-  padding-block-end: 8px;
-  transition:
-    grid-template-rows var(--duration-base) var(--ease-in-out),
-    padding-block-end var(--duration-base) var(--ease-in-out);
+  transition: grid-template-rows var(--duration-base) var(--ease-in-out);
 
   &[data-leaving] {
     grid-template-rows: 0fr;
-    padding-block-end: 0;
     pointer-events: none;
   }
 }
@@ -25,7 +21,7 @@
 }
 
 .row {
-  @include glass(var(--radius-lg));
+  position: relative;
   display: grid;
   grid-template-areas:
     "check title actions"
@@ -34,48 +30,67 @@
   align-content: center;
   align-items: center;
   column-gap: 12px;
-  min-block-size: 58px;
+  min-block-size: 56px;
   padding: 8px 8px 8px 16px;
   touch-action: pan-y;
   transition:
     opacity var(--duration-base) var(--ease-out),
-    scale var(--duration-slow) var(--ease-spring),
     translate var(--duration-slow) var(--ease-spring),
     background-color var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-base) var(--ease-out),
-    --light-strength var(--duration-slow) var(--ease-out);
+    box-shadow var(--duration-base) var(--ease-out);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 54px 0;
+    block-size: 1px;
+    background-color: var(--color-separator);
+    pointer-events: none;
+
+    .item:first-child & {
+      display: none;
+    }
+  }
 
   @starting-style {
     opacity: 0;
-    scale: 0.97;
-    translate: 0 -6px;
+    translate: 0 -4px;
   }
 
   @include hover {
-    background-color: var(--glass-tint-hover);
-    --light-strength: 0.1;
+    background-color: var(--color-fill);
   }
 
   .item[data-leaving] & {
     opacity: 0;
-    scale: 0.96;
+  }
+
+  &[data-selected] {
+    background-color: color-mix(in srgb, var(--color-accent) 16%, transparent);
+    box-shadow: inset 3px 0 0 var(--color-accent);
   }
 
   &[data-dragging] {
     z-index: 2;
-    scale: 1.02;
-    background-color: var(--glass-tint-pressed);
-    box-shadow: var(--glass-shadow-lifted), var(--glass-edge);
+    background-color: var(--color-surface);
+    box-shadow:
+      var(--glass-shadow-lifted),
+      inset 0 0 0 1px var(--color-separator);
   }
 
   &[data-editing] {
-    background-color: var(--glass-tint-hover);
+    background-color: var(--color-fill);
   }
 
   .item[data-swipe] & {
     translate: var(--swipe, 0) 0;
-    background-color: var(--glass-tint-strong);
+    background-color: var(--color-surface);
     transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  &:not(:has(.meta)) {
+    grid-template-areas: "check title actions";
   }
 
   @container todo-list (max-width: 560px) {
@@ -88,6 +103,10 @@
         ". meta actions";
       row-gap: 2px;
       padding-block: 10px 6px;
+    }
+
+    &::before {
+      inset-inline-start: 52px;
     }
   }
 }
@@ -226,7 +245,6 @@
   align-items: center;
   justify-content: space-between;
   padding-inline: 22px;
-  border-radius: var(--radius-lg);
   font-size: 0.875rem;
   font-weight: 700;
   opacity: 0;

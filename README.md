@@ -3,7 +3,7 @@
 [![CI/CD](https://github.com/sacrificed666/react-todo-app/actions/workflows/ci.yml/badge.svg)](https://github.com/sacrificed666/react-todo-app/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/sacrificed666/react-todo-app/actions/workflows/codeql.yml/badge.svg)](https://github.com/sacrificed666/react-todo-app/actions/workflows/codeql.yml)
 
-A task manager wrapped in Apple-inspired **Liquid Glass**: translucent, refractive controls floating over a living aurora backdrop. Built with React 19, Redux Toolkit and Vite 8 — fast, offline-first, bilingual and private by design.
+A task manager wrapped in Apple-inspired **Liquid Glass**: translucent, refractive controls floating over an aurora backdrop. Built with React 19, Redux Toolkit and Vite 8 — smooth on any computer, offline-first, available in eight languages and private by design.
 
 **[🌐 Live demo](https://sacrificed666.github.io/react-todo-app/)**
 
@@ -14,23 +14,27 @@ A task manager wrapped in Apple-inspired **Liquid Glass**: translucent, refracti
 
 ## ✨ Highlights
 
-- 🫧 **Liquid Glass UI** — full-width glass header and footer, floating panels with specular rims, pointer light, spring motion and real edge refraction in Chromium
-- ⚡ **Quick add** — type `Call mom tomorrow !` or `Купити квіти через 2 дні` and the date and importance are filled in for you
+- 🫧 **Liquid Glass UI** — glass header, sidebar and inspector, grouped task panels with specular rims, spring motion and real edge refraction in Chromium
+- 🖥️ **Three-pane layout** — lists and tags on the left, tasks in the middle, an inspector with the overview or the open task on the right; a tab bar and bottom sheets on phones
+- ⚡ **Fast everywhere** — an **Effects** setting (Auto, Full, Reduced) that keeps Windows laptops at 60 fps; Auto chooses for you
+- 🌍 **Eight languages with flags** — English, Українська, Deutsch, Español, Français, Italiano, Nederlands and Polski, with correct plurals, dates and typography, loaded on demand
+- ✍️ **Quick add** — type `Call mom tomorrow !`, `Teammeeting am Freitag` or `Купити квіти через 2 дні` and the date and importance are filled in for you
 - ⌘ **Command palette** — <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> to jump anywhere, run any action or find any task with fuzzy search
-- 🗒️ **Details and checklists** — notes, `- [ ]` checklists with progress chips, `#tags`, duplicate and delete
+- 🗒️ **Details and checklists** — notes, `- [ ]` checklists with progress chips, `#tags` with a tag cloud, duplicate and delete
 - ↩️ **Undo everything** — 50 steps of undo and redo with a description of each change
 - 📚 **Smart lists** — All tasks, Today, Upcoming, Important and Completed with live counters, an activity chart and a streak
-- 📱 **Made for phones too** — a floating tab bar, swipe to complete or delete, haptics and a bottom sheet for details
-- 🌍 **English and Українська** — plurals, dates and typography done right, switching instantly
-- 🎨 **Themes** — Auto, Light and Dark with five accents that also recolour the aurora
+- 📱 **Made for phones too** — swipe to complete or delete, haptics, a floating tab bar
+- 🔤 **Montserrat** — self-hosted variable font with Latin, Polish and Cyrillic coverage
 - 💾 **Local-first PWA** — autosave, cross-tab sync, JSON import and export, offline mode, app shortcuts, share target and update prompts
 - 🛡️ **Secure by default** — strict CSP with Trusted Types, validated imports, CodeQL and signed dependencies
 - ♿ **Accessible** — full keyboard control, focus management, screen reader announcements, reduced motion, transparency and contrast support
 
 <p align="center">
   <img src="./docs/images/mobile-dark.jpg" alt="The app on a phone with the tab bar" width="260" />
-  <img src="./docs/images/palette.jpg" alt="The command palette" width="420" />
+  <img src="./docs/images/settings.jpg" alt="Settings with eight languages and the effects switch" width="300" />
 </p>
+
+![Task details in the inspector column](./docs/images/desktop-details.jpg)
 
 ## ⚛️ Front-end
 
@@ -46,7 +50,7 @@ A task manager wrapped in Apple-inspired **Liquid Glass**: translucent, refracti
 ![Vitest](https://skillicons.dev/icons?i=vitest)
 ![GitHub Actions](https://skillicons.dev/icons?i=githubactions)
 
-TypeScript 7 · Oxlint · Oxfmt · Vitest 5 · Testing Library · React Compiler · CodeQL · GitHub Pages
+TypeScript 7 · Oxlint · Oxfmt · Vitest 5 · Testing Library · React Compiler · Montserrat · CodeQL · GitHub Pages
 
 ## 🚀 Quick start
 

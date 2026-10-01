@@ -6,8 +6,8 @@ Only the latest release, deployed to [GitHub Pages](https://sacrificed666.github
 
 | Version | Supported |
 | ------- | --------- |
-| 3.x     | ✅        |
-| < 3.0   | ❌        |
+| 3.1.x   | ✅        |
+| < 3.1   | ❌        |
 
 ## 📮 Reporting a vulnerability
 
@@ -21,7 +21,7 @@ You can expect an acknowledgement within **3 working days** and a status update 
 
 ## 🎯 Scope
 
-ToDo App is a static, offline-first web app: there is no backend, no account and no network traffic apart from loading the app itself. Reports are especially welcome about:
+ToDo App is a static, offline-first web app: there is no backend, no account and no network traffic apart from loading the app itself and the language flag images from flagcdn.com. Reports are especially welcome about:
 
 - 💉 script injection through task titles, notes, imported files, shared content or URL parameters;
 - 🧱 ways to bypass the Content Security Policy or Trusted Types;

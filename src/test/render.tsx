@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import type { ReactElement, ReactNode } from "react";
 import { Provider } from "react-redux";
+import { vi } from "vitest";
 
 import App from "@/app/App";
 import { setupStore, type AppStore, type RootState } from "@/app/store";
@@ -41,3 +42,18 @@ export const itemTitles = (region: HTMLElement) =>
   within(region)
     .queryAllByRole("checkbox")
     .map((checkbox) => checkbox.getAttribute("aria-label"));
+
+export const mockMediaQueries = (matching: readonly string[]) =>
+  vi.spyOn(window, "matchMedia").mockImplementation(
+    (query) =>
+      ({
+        matches: matching.includes(query) || query.includes("prefers-reduced-motion"),
+        media: query,
+        onchange: null,
+        addListener() {},
+        removeListener() {},
+        addEventListener() {},
+        removeEventListener() {},
+        dispatchEvent: () => false,
+      }) satisfies MediaQueryList,
+  );

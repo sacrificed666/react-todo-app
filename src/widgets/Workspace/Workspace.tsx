@@ -1,0 +1,23 @@
+import { useAppSelector } from "@/app/hooks";
+import { selectList } from "@/features/lists/model/selectors";
+import ListHeader from "@/features/lists/ui/ListHeader/ListHeader";
+import TodoComposer from "@/features/todos/ui/TodoComposer/TodoComposer";
+import TodoList from "@/features/todos/ui/TodoList/TodoList";
+
+import styles from "./Workspace.module.scss";
+
+export const WORKSPACE_ID = "tasks";
+
+const Workspace = () => {
+  const list = useAppSelector(selectList);
+
+  return (
+    <main id={WORKSPACE_ID} className={styles.main} tabIndex={-1}>
+      <ListHeader />
+      {list === "completed" ? null : <TodoComposer key={list} list={list} />}
+      <TodoList />
+    </main>
+  );
+};
+
+export default Workspace;

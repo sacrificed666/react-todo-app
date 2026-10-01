@@ -1,0 +1,332 @@
+@use "@/shared/styles/mixins" as *;
+
+.item {
+  display: grid;
+  grid-template-rows: 1fr;
+  padding-block-end: 8px;
+  transition:
+    grid-template-rows var(--duration-base) var(--ease-in-out),
+    padding-block-end var(--duration-base) var(--ease-in-out);
+
+  &[data-leaving] {
+    grid-template-rows: 0fr;
+    padding-block-end: 0;
+    pointer-events: none;
+  }
+}
+
+.collapse {
+  position: relative;
+  min-block-size: 0;
+
+  .item[data-leaving] & {
+    overflow: hidden;
+  }
+}
+
+.row {
+  @include glass(var(--radius-lg));
+  display: grid;
+  grid-template-areas:
+    "check title actions"
+    "check meta actions";
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-content: center;
+  align-items: center;
+  column-gap: 12px;
+  min-block-size: 58px;
+  padding: 8px 8px 8px 16px;
+  touch-action: pan-y;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    scale var(--duration-slow) var(--ease-spring),
+    translate var(--duration-slow) var(--ease-spring),
+    background-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out),
+    --light-strength var(--duration-slow) var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+    scale: 0.97;
+    translate: 0 -6px;
+  }
+
+  @include hover {
+    background-color: var(--glass-tint-hover);
+    --light-strength: 0.1;
+  }
+
+  .item[data-leaving] & {
+    opacity: 0;
+    scale: 0.96;
+  }
+
+  &[data-dragging] {
+    z-index: 2;
+    scale: 1.02;
+    background-color: var(--glass-tint-pressed);
+    box-shadow: var(--glass-shadow-lifted), var(--glass-edge);
+  }
+
+  &[data-editing] {
+    background-color: var(--glass-tint-hover);
+  }
+
+  .item[data-swipe] & {
+    translate: var(--swipe, 0) 0;
+    background-color: var(--glass-tint-strong);
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  @container todo-list (max-width: 560px) {
+    grid-template-areas: "check title actions";
+    padding: 8px 6px 8px 14px;
+
+    &:has(.meta) {
+      grid-template-areas:
+        "check title title"
+        ". meta actions";
+      row-gap: 2px;
+      padding-block: 10px 6px;
+    }
+  }
+}
+
+.checkbox {
+  grid-area: check;
+}
+
+.title {
+  grid-area: title;
+  justify-self: start;
+  max-inline-size: 100%;
+  margin: -2px -6px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: start;
+  overflow-wrap: anywhere;
+  cursor: text;
+  text-decoration: line-through;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1.5px;
+  transition:
+    color var(--duration-base) var(--ease-out),
+    text-decoration-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background-color: var(--color-fill);
+  }
+
+  .row[data-completed] & {
+    color: var(--color-text-tertiary);
+    text-decoration-color: var(--color-text-tertiary);
+  }
+}
+
+.editor {
+  grid-area: title;
+  min-inline-size: 0;
+  block-size: 38px;
+  margin-inline-start: -6px;
+  padding-inline: 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-fill);
+  box-shadow:
+    inset 0 1px 2px var(--color-shade),
+    0 0 0 1px var(--color-separator);
+  font-size: 1rem;
+  outline: none;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      inset 0 1px 2px var(--color-shade),
+      0 0 0 2px var(--color-focus);
+  }
+}
+
+.meta {
+  grid-area: meta;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-block-start: 4px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-block-size: 22px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-fill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+
+  &[data-tone="today"] {
+    background-color: var(--color-warning-soft);
+    color: var(--color-warning);
+  }
+
+  &[data-tone="overdue"] {
+    background-color: var(--color-danger-soft);
+    color: var(--color-danger);
+  }
+
+  &[data-tone="upcoming"] {
+    color: var(--color-accent-bright);
+  }
+
+  &[data-tone="done"] {
+    background-color: var(--color-success-soft);
+    color: var(--color-success);
+  }
+}
+
+.chipIcon {
+  font-size: 0.875rem;
+}
+
+.tag {
+  padding-inline: 8px;
+  color: var(--color-accent-bright);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+  @include pressable(0.94);
+
+  @include hover {
+    background-color: var(--color-accent-soft);
+  }
+}
+
+.actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 2px;
+}
+
+.star[aria-pressed="true"] {
+  color: var(--color-star);
+}
+
+.swipe {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 22px;
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+
+  .item[data-swipe] & {
+    opacity: 1;
+  }
+
+  .item[data-swipe="complete"] & {
+    background-color: var(--color-success-soft);
+    color: var(--color-success);
+  }
+
+  .item[data-swipe="delete"] & {
+    background-color: var(--color-danger-soft);
+    color: var(--color-danger);
+  }
+
+  .item[data-swipe="complete"][data-armed] & {
+    background-color: var(--color-success);
+    color: var(--color-on-accent);
+  }
+
+  .item[data-swipe="delete"][data-armed] & {
+    background-color: var(--color-danger);
+    color: var(--color-on-accent);
+  }
+}
+
+.swipeIcon {
+  font-size: 1.375rem;
+  opacity: 0;
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    scale var(--duration-base) var(--ease-bounce);
+
+  .item[data-armed] & {
+    scale: 1.25;
+  }
+}
+
+.item[data-swipe="complete"] .swipeIcon:first-child,
+.item[data-swipe="delete"] .swipeIcon:last-child {
+  opacity: 1;
+}
+
+@container todo-list (max-width: 560px) {
+  .schedule,
+  .delete {
+    display: none;
+  }
+}
+
+.handle {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-tertiary);
+  font-size: 1.0625rem;
+  cursor: grab;
+  touch-action: none;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    color: var(--color-text);
+    background-color: var(--color-fill);
+  }
+
+  .row[data-dragging] & {
+    color: var(--color-text);
+    cursor: grabbing;
+  }
+
+  @media (pointer: coarse) {
+    inline-size: 40px;
+    block-size: 40px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .action {
+    opacity: 0;
+  }
+
+  .star[aria-pressed="true"],
+  .action[aria-expanded="true"],
+  .row:hover .action,
+  .row:focus-within .action,
+  .row[data-dragging] .action {
+    opacity: 1;
+  }
+}

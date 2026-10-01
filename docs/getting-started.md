@@ -36,39 +36,51 @@ The dev server prints a local URL. The app is served under the `/react-todo-app/
 | `npm run test:coverage` | 📊 Runs the tests with V8 coverage and enforces the coverage thresholds       |
 | `npm run check`         | ✅ Lint, format check, type check and tests in one go — run it before pushing |
 
+After `npm run build`, `node scripts/build-report.mjs` prints the bundle sizes and verifies the security headers, exactly as the pipeline does.
+
 ## 🗂️ Project layout
 
 ```text
 react-todo-app/
 ├── .github/
-│   ├── dependabot.yml          Weekly dependency and GitHub Actions updates
-│   └── workflows/ci.yml        CI/CD pipeline: verify, build, review, deploy
-├── docs/                       This documentation
-├── lint/no-comments.js         Custom Oxlint rule that forbids comments
-├── public/                     Favicons and PWA icons copied as-is
-├── scripts/                    Node scripts used by the pipeline
+│   ├── ISSUE_TEMPLATE/              Bug report and feature request forms
+│   ├── workflows/ci.yml             CI/CD: verify, build, dependency review, deploy
+│   ├── workflows/codeql.yml         CodeQL code scanning
+│   ├── dependabot.yml               Weekly dependency and GitHub Actions updates
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── SECURITY.md                  How to report vulnerabilities
+├── docs/                            This documentation and its screenshots
+├── lint/no-comments.js              Custom Oxlint rule that forbids comments
+├── public/                          Favicons and PWA icons copied as-is
+├── scripts/                         Coverage summary and build report for the pipeline
 ├── src/
-│   ├── assets/                 Flow-lines artwork used by the backdrop
-│   ├── components/
-│   │   ├── feedback/           Toaster with undo
-│   │   ├── layout/             Backdrop, Header, Sidebar, Main, ListHeader, Footer
-│   │   ├── todo/               Lists, overview, composer, due picker, search, sort and theme menus, list, sections, items
-│   │   └── ui/                 Reusable primitives: Icon, IconButton, Popover, SegmentedControl, ProgressBar, EmptyState
-│   ├── hooks/                  Liquid glass, shortcuts, pointer light, current day, theme sync
-│   ├── lib/                    Framework-free helpers: todo model, dates, smart lists, sorting, theme, storage, refraction
-│   ├── store/                  Redux store, slices, selectors, thunks and persistence
-│   ├── styles/                 Design tokens, glass mixins and global styles
-│   ├── test/                   Test setup, factories and render helpers
-│   ├── types/                  Global type augmentations
-│   ├── App.tsx
-│   └── main.tsx
+│   ├── app/                         Entry point, App shell, store, persistence, launch intents, PWA, error screen
+│   ├── widgets/                     Header, Sidebar, Workspace, Footer, Backdrop
+│   ├── features/
+│   │   ├── todos/                   Task model, history, quick add, checklists, transfer; composer, list, rows, details
+│   │   ├── lists/                   Smart lists, sorting, view state; navigation, tab bar, list header, overview
+│   │   ├── palette/                 Command ranking and the ⌘K palette
+│   │   ├── search/                  Search field
+│   │   ├── settings/                Appearance, accent and language
+│   │   ├── i18n/                    English and Ukrainian messages and the translator
+│   │   ├── notifications/           Toast state and the Toaster
+│   │   └── actions/                 The ⋯ menu
+│   ├── shared/
+│   │   ├── ui/                      Icon, IconButton, Checkbox, Popover, Dialog, SegmentedControl, ProgressBar, EmptyState
+│   │   ├── hooks/                   Liquid glass, shortcuts, media queries, online status, app badge, today, pointer light
+│   │   ├── lib/                     Dates, keyboard, fuzzy search, storage, motion, refraction, haptics, confetti, Trusted Types
+│   │   ├── styles/                  Design tokens, glass mixins and global styles
+│   │   └── assets/                  Flow-lines artwork used by the backdrop
+│   ├── test/                        Test setup, polyfills, factories and render helpers
+│   └── types/                       Global type declarations
+├── CHANGELOG.md
 ├── index.html
-├── vite.config.ts              Vite, React Compiler, PWA and Vitest configuration
-├── .oxlintrc.json              Lint rules
-└── .oxfmtrc.json               Formatting rules
+├── vite.config.ts                   Vite, React Compiler, PWA, CSP and Vitest configuration
+├── .oxlintrc.json                   Lint rules and layer boundaries
+└── .oxfmtrc.json                    Formatting rules
 ```
 
-Every component lives in its own folder next to its CSS module, for example `components/todo/TodoItem/TodoItem.tsx` and `TodoItem.module.scss`. Tests sit next to the code they cover as `*.test.ts(x)`.
+Every feature has a `model/` folder for state and logic and a `ui/` folder with one folder per component, for example `features/todos/ui/TodoItem/TodoItem.tsx` and `TodoItem.module.scss`. Tests sit next to the code they cover as `*.test.ts(x)`. The layers and their rules are explained in [Architecture](./architecture.md#-layers).
 
 ## 💻 Editor setup
 
@@ -82,3 +94,4 @@ Editor settings are not committed. For the best experience in VS Code, install:
 
 - ✨ Learn what the app can do in [Features](./features.md).
 - 🏗️ Understand how data flows through the app in [Architecture](./architecture.md).
+- 🌍 Add or change texts with the [Localization](./i18n.md) guide.

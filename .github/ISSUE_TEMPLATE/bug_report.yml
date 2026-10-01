@@ -1,0 +1,51 @@
+name: 🐞 Bug report
+description: Something does not work as expected
+title: "🐞 "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a problem! Please check the existing issues first.
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 What happened?
+      description: A clear description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to reproduce
+      placeholder: |
+        1. Open the Today list
+        2. Add a task called "Call mom tomorrow"
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected behaviour
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 💻 Browser and device
+      placeholder: Chrome 140 on macOS 26, Safari on iPhone 17…
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: 📱 How do you use the app?
+      options:
+        - In a browser tab
+        - Installed as an app (PWA)
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: 📎 Screenshots or extra context

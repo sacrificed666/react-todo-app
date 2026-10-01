@@ -2,6 +2,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach } from "vitest";
 
+import { installDialogPolyfill } from "./dialog";
 import { installPopoverPolyfill } from "./popover";
 
 const matchMedia = (query: string): MediaQueryList => ({
@@ -18,6 +19,14 @@ const matchMedia = (query: string): MediaQueryList => ({
 Object.defineProperty(window, "matchMedia", { configurable: true, writable: true, value: matchMedia });
 
 installPopoverPolyfill();
+installDialogPolyfill();
+
+Object.assign(Element.prototype, {
+  scrollIntoView() {},
+  setPointerCapture() {},
+  releasePointerCapture() {},
+  hasPointerCapture: () => false,
+});
 
 afterEach(() => {
   cleanup();

@@ -20,46 +20,61 @@
 
 The HTML coverage report is written to `coverage/index.html`.
 
+## 🔺 Shape of the suite
+
+```mermaid
+flowchart TB
+  UI["🖥️ UI flows · ~50 tests<br/>App, palette, details, rows, composer, error screen"]
+  Model["🧠 Model · ~115 tests<br/>slices, history, selectors, thunks, quick add, persistence"]
+  Lib["🧰 Shared helpers · ~30 tests<br/>dates, keyboard, fuzzy search, refraction, Trusted Types"]
+  UI --> Model --> Lib
+```
+
+Most behaviour is pinned down by fast unit tests of pure functions and reducers; UI tests render the whole `App` and drive it like a user.
+
 ## 📁 Where tests live
 
-Tests sit next to the code they cover:
+Tests sit next to the code they cover as `*.test.ts(x)`:
 
-| File                                  | Covers                                                                                                                                            |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/App.test.tsx`                    | End-to-end flows: shell, smart lists, composer options, editing, starring, scheduling, undo, sorting, search, appearance, menu, import and export |
-| `src/store/slices/todosSlice.test.ts` | Every reducer, including importance, scheduling, reordering and restoring positions                                                               |
-| `src/store/selectors.test.ts`         | List counters, smart lists, search, sorting, progress and memoization                                                                             |
-| `src/store/thunks.test.ts`            | Adding with list switching, removal with undo, clearing and importing                                                                             |
-| `src/store/persistence.test.ts`       | Loading, legacy migrations, corrupted data, saving preferences and cross-tab sync                                                                 |
-| `src/lib/todo.test.ts`                | Title normalization, search matching and data parsing                                                                                             |
-| `src/lib/date.test.ts`                | Date keys, day arithmetic and friendly due labels                                                                                                 |
-| `src/lib/lists.test.ts`               | Smart list rules and overdue detection                                                                                                            |
-| `src/lib/sort.test.ts`                | All sort orders and their stability                                                                                                               |
-| `src/lib/theme.test.ts`               | Theme validation and applying it to the document                                                                                                  |
-| `src/lib/refraction.test.ts`          | Displacement maths and feature detection                                                                                                          |
-| `src/lib/keyboard.test.ts`            | Shortcut matching and editable targets                                                                                                            |
-| `src/lib/motion.test.ts`              | Waiting for transitions and the safety timeout                                                                                                    |
+| Area                           | Files                                                                                       | Covers                                                                                                                               |
+| ------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 🚀 App                         | `app/App.test.tsx`                                                                          | Shell, smart lists, tab bar on phones, language switch, skip link, composer, editing, undo, sorting, search, menu, import and export |
+|                                | `app/persistence.test.ts`, `app/launch.test.ts`, `app/ErrorBoundary.test.tsx`               | Loading, migrations, language detection, cross-tab sync, URL shortcuts, share target, recovery screen                                |
+| ✅ Todos model                 | `todo`, `todosSlice`, `history`, `selectors`, `thunks`, `quickAdd`, `checklist`, `transfer` | Parsing and validation, every reducer, undo and redo, counters and activity, quick add grammar, checklists, import limits            |
+| ✅ Todos UI                    | `TodoItem`, `TodoDetails`, `TodoComposer`                                                   | Keyboard commands, swipes, tags and chips, the details sheet, quick add recognition                                                  |
+| ⌘ Palette                      | `rank.test.ts`, `CommandPalette.test.tsx`                                                   | Ranking and grouping, shortcut, arrow keys, running commands, finding tasks                                                          |
+| 📚 Lists, 🎨 settings, 🌍 i18n | `lists`, `sort`, `theme`, `translate`                                                       | Smart list rules, sort orders, theme validation, plurals and interpolation                                                           |
+| 🧰 Shared                      | `date`, `keyboard`, `motion`, `refraction`, `text`, `trustedTypes`                          | Date keys and labels, shortcut matchers, transitions, displacement maths, fuzzy search, the URL policy                               |
 
 ## 🌐 Test environment
 
 `src/test/setup.ts` prepares jsdom for the app:
 
-- 🐢 **`matchMedia`** is mocked to report `prefers-reduced-motion: reduce`. The app then skips its delays and transitions, so tests never wait for animations.
-- 🪟 **Popover API** — jsdom hides `[popover]` elements but cannot open them. `src/test/popover.ts` adds `showPopover()`, `hidePopover()`, `togglePopover()` and `popovertarget` handling, so tests open the menu exactly like a user.
+- 🐢 **`matchMedia`** is mocked to report `prefers-reduced-motion: reduce`. The app then skips its delays, transitions and confetti, so tests never wait for animations. Individual tests can override it, for example to render the phone layout with the tab bar.
+- 🪟 **Popover API** — jsdom hides `[popover]` elements but cannot open them. `src/test/popover.ts` adds `showPopover()`, `hidePopover()`, `togglePopover()` and `popovertarget` handling.
+- 🗔 **Dialogs** — jsdom has no `showModal()`. `src/test/dialog.ts` implements `show()`, `showModal()` and `close()` with focus on the first control, focus restoration, the `close` event and <kbd>Esc</kbd> handling.
+- 👆 **Pointer capture and scrolling** — `setPointerCapture()`, `releasePointerCapture()` and `scrollIntoView()` are stubbed, so swipe and palette tests run unchanged.
 - 🧹 **Cleanup** — the DOM is unmounted and `localStorage` is cleared after every test.
 
-Helpers:
+## 🛠️ Helpers
 
-- 🏗️ `renderWithStore(ui, { preloadedState })` in `src/test/render.tsx` renders with a fresh store and returns `{ store, user, ...queries }`.
-- 🏭 `makeTodo()`, `makeState()`, `sampleTodos`, `todayKey()` and `dayFromToday()` in `src/test/factories.ts` build consistent fixtures, including due dates relative to the current day.
+| Helper                                     | File                    | Purpose                                                              |
+| ------------------------------------------ | ----------------------- | -------------------------------------------------------------------- |
+| `renderWithStore(ui, { preloadedState })`  | `src/test/render.tsx`   | Renders with a fresh store and returns `{ store, user, ...queries }` |
+| `renderApp(todos, list)`                   | `src/test/render.tsx`   | Renders the whole app with the given todos and selected list         |
+| `openPopover(user, trigger)`               | `src/test/render.tsx`   | Clicks a popover trigger and returns queries scoped to the panel     |
+| `section(name)`, `itemTitles(region)`      | `src/test/render.tsx`   | Finds a task section and lists the titles in it                      |
+| `makeTodo()`, `makeState()`, `sampleTodos` | `src/test/factories.ts` | Consistent fixtures                                                  |
+| `todayKey()`, `dayFromToday(offset)`       | `src/test/factories.ts` | Due dates relative to the current day                                |
 
 ## 📐 Conventions
 
 - 🎯 Query by role and accessible name (`getByRole("button", { name: "Delete “Buy milk”" })`). If an element is hard to find this way, it is probably hard to use with a screen reader too.
-- 🖱️ Drive the UI with `userEvent`, not `fireEvent`.
+- 🖱️ Drive the UI with `userEvent`. Use `fireEvent` only for low-level input that user-event cannot express, such as touch swipes.
 - 👀 Test behaviour, not implementation: assert on what the user sees or on the store, never on component state.
-- ⚡ Keep reducers and helpers covered by fast unit tests, and use `App.test.tsx` for flows that cross components.
-- 🌐 Browser-only effects (refraction, pointer light, the aurora) are verified visually; their pure logic, such as `displacementAt()`, is unit tested.
+- 🌍 Assert translated text through `formatMessage(createTranslator(locale), message)` in model tests, so both languages are checked without rendering.
+- 🫥 Popover content is in the DOM even while closed; scope queries with `openPopover()` or ignore it with `{ ignore: "[popover] *" }`.
+- 🌐 Browser-only effects (refraction, pointer light, the aurora, real CSP enforcement) are verified in Chrome; their pure logic is unit tested.
 
 ## 📊 Coverage thresholds
 
@@ -67,9 +82,9 @@ Helpers:
 
 | Metric     | Threshold |
 | ---------- | --------- |
-| Statements | 80 %      |
-| Branches   | 75 %      |
-| Functions  | 80 %      |
-| Lines      | 80 %      |
+| Statements | 88 %      |
+| Branches   | 85 %      |
+| Functions  | 85 %      |
+| Lines      | 88 %      |
 
 The CI pipeline runs the same command and publishes a coverage table on the workflow summary page.

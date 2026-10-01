@@ -14,11 +14,13 @@ The interface follows the ideas behind Apple's **Liquid Glass**: controls are ma
 | Part       | Treatment                                                                                                                                                          |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 🔝 Header  | A full-width, sticky glass bar (`glass-bar` mixin) with thick blur and a hairline shadow. Content scrolling underneath is blurred and refracted at its bottom edge |
-| 📚 Sidebar | A floating glass panel with the smart lists and an overview card; it sticks below the header on desktop and becomes a row of glass chips on phones                 |
+| 📚 Sidebar | A floating glass panel with the smart lists and an overview card that sticks below the header on desktop                                                           |
 | 📝 Content | List header, composer and task rows in a column next to the sidebar                                                                                                |
+| 📱 Tab bar | Below 900 px the lists move into a floating capsule at the bottom, like an iOS tab bar, with a glass indicator that slides between tabs on a spring                |
 | 🔚 Footer  | A full-width glass status bar mirroring the header                                                                                                                 |
+| 🗔 Overlays | Menus are anchored glass popovers; the command palette and the details sheet are modal glass dialogs, and the details sheet becomes a bottom sheet on phones       |
 
-Header, sidebar and content share one 72 rem container, so the logo lines up with the sidebar and the search field with the content column.
+Header, sidebar and content share one 72 rem container, so the logo lines up with the sidebar and the search field with the content column. On phones the overview card moves below the list and `--tabbar-offset` lifts notifications and the footer above the tab bar.
 
 ## 🎨 Colour system
 
@@ -53,20 +55,20 @@ Tokens are defined for a dark and a light appearance. `<html data-appearance>` s
 
 ## 🌌 Backdrop
 
-`components/layout/Backdrop` paints a fixed, decorative layer behind the app. It has four parts:
+`widgets/Backdrop` paints a fixed, decorative layer behind the app. It has four parts:
 
-| Layer         | Implementation                                                                                                                                                                         |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🌑 Base       | The appearance's base gradient                                                                                                                                                         |
-| 🌌 Aurora     | Five large radial-gradient orbs in the accent palette, blended with `screen` in dark mode, drifting on 38–50 s loops                                                                   |
-| 〰️ Flow lines | `src/assets/waves.svg`: 30 smooth contour curves generated from layered sine waves, inverted to dark ink in light mode. Their crisp strokes make the refraction at glass edges visible |
-| 🎞️ Grain      | A tiny tiled `feTurbulence` noise blended with `overlay`, which adds texture and prevents gradient banding                                                                             |
+| Layer         | Implementation                                                                                                                                                                                |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🌑 Base       | The appearance's base gradient                                                                                                                                                                |
+| 🌌 Aurora     | Five large radial-gradient orbs in the accent palette, blended with `screen` in dark mode, drifting on 38–50 s loops                                                                          |
+| 〰️ Flow lines | `src/shared/assets/waves.svg`: 30 smooth contour curves generated from layered sine waves, inverted to dark ink in light mode. Their crisp strokes make the refraction at glass edges visible |
+| 🎞️ Grain      | A tiny tiled `feTurbulence` noise blended with `overlay`, which adds texture and prevents gradient banding                                                                                    |
 
 The orbs only animate `translate` and `scale`, which the browser composites on the GPU. The animation stops completely when the user prefers reduced motion.
 
 ## 🔬 Anatomy of the glass material
 
-The `glass()` mixin in `src/styles/_mixins.scss` builds every glass surface from the same layers:
+The `glass()` mixin in `src/shared/styles/_mixins.scss` builds every glass surface from the same layers:
 
 1. 🎨 **Tint** — a translucent background colour (`--glass-tint`).
 2. 🌫️ **Backdrop filter** — `blur()` → optional refraction → `saturate()` → `brightness()`.
@@ -82,18 +84,18 @@ The `glass()` mixin in `src/styles/_mixins.scss` builds every glass surface from
 
 ### 📏 Thickness levels
 
-| Level      | Blur                          | Used for                                     | Refraction |
-| ---------- | ----------------------------- | -------------------------------------------- | ---------- |
-| 🔘 Control | `--glass-blur-control` (8 px) | Composer, list navigation, segmented control | Yes        |
-| 📄 Content | `--glass-blur` (14 px)        | Task rows, overview, empty states, buttons   | No         |
-| 🪟 Overlay | `--glass-blur-thick` (26 px)  | Popovers and notifications, denser tint      | Yes        |
-| 🔝 Bar     | `--glass-blur-thick` (26 px)  | Header and footer (`glass-bar` mixin)        | Header     |
+| Level      | Blur                          | Used for                                         | Refraction |
+| ---------- | ----------------------------- | ------------------------------------------------ | ---------- |
+| 🔘 Control | `--glass-blur-control` (8 px) | Composer, list navigation, segmented control     | Yes        |
+| 📄 Content | `--glass-blur` (14 px)        | Task rows, overview, empty states, buttons       | No         |
+| 🪟 Overlay | `--glass-blur-thick` (26 px)  | Popovers, dialogs, the tab bar and notifications | Yes        |
+| 🔝 Bar     | `--glass-blur-thick` (26 px)  | Header and footer (`glass-bar` mixin)            | Header     |
 
 Thin glass keeps the refraction readable, content glass keeps text legible over a busy backdrop, and thick glass makes overlays stand apart from what they cover.
 
 ## 🔍 Refraction
 
-`lib/refraction.ts` and the `useLiquidGlass()` hook bend the backdrop near the edges of a surface, like light passing through the rounded rim of a glass lens.
+`shared/lib/refraction.ts` and the `useLiquidGlass()` hook bend the backdrop near the edges of a surface, like light passing through the rounded rim of a glass lens.
 
 1. The hook measures the element with a `ResizeObserver` and reads its corner radius.
 2. `displacementAt()` computes, for every pixel, the signed distance to the rounded rectangle and the surface normal. Within the bezel (the outer 16–22 px) the displacement grows quadratically toward the edge and points inward.
@@ -110,21 +112,21 @@ Things worth knowing:
 
 ## 🎛️ Design tokens
 
-Tokens live in `src/styles/_tokens.scss` as CSS custom properties.
+Tokens live in `src/shared/styles/_tokens.scss` as CSS custom properties.
 
-| Group         | Tokens                                                                                                                                                        |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🔤 Typography | `--font-sans`, `--font-display` — the system stack, which resolves to SF Pro on Apple devices                                                                 |
-| 🖋️ Text       | `--color-text`, `--color-text-secondary`, `--color-text-tertiary`                                                                                             |
-| 🎨 Accent     | `--color-accent` and derived `--color-accent-bright`, `--color-accent-soft`, `--color-accent-glow`, `--color-on-accent`                                       |
-| 🚦 Semantic   | `--color-danger`, `--color-warning`, `--color-success`, `--color-star` and their `-soft` / `-glow` variants                                                   |
-| 🏷️ Lists      | `--tone-all`, `--tone-today`, `--tone-upcoming`, `--tone-important`, `--tone-completed`                                                                       |
-| 🧱 Surfaces   | `--color-fill`, `--color-fill-strong`, `--color-shade`, `--color-separator`, `--color-focus`                                                                  |
-| 🫧 Glass      | `--glass-tint*`, `--glass-blur*`, `--glass-saturate`, `--glass-brightness`, `--glass-rim`, `--glass-sheen`, `--glass-edge`, `--glass-shadow*`, `--bar-shadow` |
-| 🌌 Backdrop   | `--backdrop-base`, `--orb-1` … `--orb-5`, `--orb-opacity`, `--orb-blend`, `--waves-filter`, `--waves-opacity`, `--grain-opacity`                              |
-| ⭕ Shape      | `--radius-sm` 12 px, `--radius-md` 16 px, `--radius-lg` 22 px, `--radius-xl` 28 px, `--radius-full`                                                           |
-| 🌊 Motion     | `--ease-out`, `--ease-in-out`, `--ease-spring`, `--ease-bounce`, `--duration-fast`, `--duration-base`, `--duration-slow`                                      |
-| 📐 Layout     | `--layout-width` (72 rem), `--sidebar-width` (17 rem), `--header-height` (64 px)                                                                              |
+| Group         | Tokens                                                                                                                                                               |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔤 Typography | `--font-sans`, `--font-display` — the system stack, which resolves to SF Pro on Apple devices                                                                        |
+| 🖋️ Text       | `--color-text`, `--color-text-secondary`, `--color-text-tertiary`                                                                                                    |
+| 🎨 Accent     | `--color-accent` and derived `--color-accent-bright`, `--color-accent-soft`, `--color-accent-glow`, `--color-on-accent`                                              |
+| 🚦 Semantic   | `--color-danger`, `--color-warning`, `--color-success`, `--color-star` and their `-soft` / `-glow` variants (`--color-success-soft` tints swipe and checklist chips) |
+| 🏷️ Lists      | `--tone-all`, `--tone-today`, `--tone-upcoming`, `--tone-important`, `--tone-completed`                                                                              |
+| 🧱 Surfaces   | `--color-fill`, `--color-fill-strong`, `--color-shade`, `--color-separator`, `--color-focus`                                                                         |
+| 🫧 Glass      | `--glass-tint*`, `--glass-blur*`, `--glass-saturate`, `--glass-brightness`, `--glass-rim`, `--glass-sheen`, `--glass-edge`, `--glass-shadow*`, `--bar-shadow`        |
+| 🌌 Backdrop   | `--backdrop-base`, `--orb-1` … `--orb-5`, `--orb-opacity`, `--orb-blend`, `--waves-filter`, `--waves-opacity`, `--grain-opacity`                                     |
+| ⭕ Shape      | `--radius-sm` 12 px, `--radius-md` 16 px, `--radius-lg` 22 px, `--radius-xl` 28 px, `--radius-full`                                                                  |
+| 🌊 Motion     | `--ease-out`, `--ease-in-out`, `--ease-spring`, `--ease-bounce`, `--duration-fast`, `--duration-base`, `--duration-slow`                                             |
+| 📐 Layout     | `--layout-width` (72 rem), `--sidebar-width` (17 rem), `--header-height` (64 px), `--tabbar-offset` (0, or 76 px below 900 px)                                       |
 
 ## 🌊 Motion
 
@@ -142,6 +144,10 @@ Notable interactions:
 - 🍂 **Leaving rows** fade out while their grid track collapses from `1fr` to `0fr`, letting neighbours glide into place.
 - 👆 **Glass presses** — glass buttons grow slightly and brighten when pressed, as the material "flexes".
 - 📋 **Popovers** — native `<dialog popover>` panels positioned with CSS anchor positioning (with a JavaScript fallback) that scale in from their button.
+- 🗔 **Dialogs** — the palette drops in near the top of the screen, the details sheet rises from the bottom on phones; both fade the page behind a blurred backdrop.
+- 👉 **Swipes** — rows follow the finger with rubber-band resistance past 132 px. A tinted layer underneath reveals ✓ or 🗑️, which grows and fills with colour once the action is armed; releasing springs the row back.
+- 🧭 **Tab bar** — the selected tab's glass pill slides on `--ease-spring`, and the Today badge turns red when something is overdue.
+- 🎊 **Confetti** — finishing a list releases particles in the accent and aurora colours from the checkbox, animated with the Web Animations API.
 
 ## ♿ Accessibility
 
@@ -154,12 +160,24 @@ Notable interactions:
 
 Additionally:
 
-- 🎯 focus is always visible through a 2 px ring;
-- 👆 touch devices get 40 px hit targets for the row actions and always-visible controls;
+- 🎯 focus is always visible through a 2 px ring, except for text fields that are the only control of their surface (the palette and search inputs), where the surface itself shows the state;
+- ⏭️ a **Skip to tasks** link appears at the top-left on the first <kbd>Tab</kbd>;
+- 👆 touch devices get 40 px hit targets for the row actions and always-visible controls, and narrow rows hide secondary actions instead of shrinking them;
 - 🔤 secondary text keeps at least 70 % opacity in both appearances, and the accent colour of each theme is tuned separately for light and dark.
 
 ## 🖼️ Iconography
 
-Icons are inline SVG paths drawn on a 24 px grid with 2 px round strokes, in the spirit of SF Symbols (`components/ui/Icon/icons.ts`). They inherit `currentColor` and scale with `font-size`.
+Icons are inline SVG paths drawn on a 24 px grid with 2 px round strokes, in the spirit of SF Symbols (`shared/ui/Icon/icons.ts`). They inherit `currentColor` and scale with `font-size`.
 
 The app icon repeats the backdrop in miniature — aurora glow, flow lines and a glass disc with a check mark — and ships as an SVG favicon, a multi-size ICO, PWA icons and a maskable variant.
+
+## 🧩 Surfaces at a glance
+
+| Surface           | Material                  | Notes                                                                                 |
+| ----------------- | ------------------------- | ------------------------------------------------------------------------------------- |
+| ⌘ Command palette | Overlay glass, refraction | Search field on top, grouped results, keyboard hints in the footer (hidden on touch)  |
+| 🗒️ Details sheet  | Overlay glass, refraction | Title as large display text, chips for date, star and tags, notes, live checklist     |
+| 📱 Tab bar        | Overlay glass, refraction | Five tabs with tone-coloured icons; only the active star is filled                    |
+| ✅ Task row       | Content glass             | Chips for date, checklist progress, notes and tags; actions appear on hover or focus  |
+| 🔔 Notification   | Overlay glass             | Sparkle for success, warning sign for errors, an accent capsule for Undo or Reload    |
+| ☑️ Checkbox       | Filled accent circle      | Shared `Checkbox` component in two sizes; the check is revealed with a clip-path wipe |

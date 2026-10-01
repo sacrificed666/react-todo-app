@@ -99,10 +99,83 @@
       }
     },
     {
+      "files": ["src/shared/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/app/**", "@/features/**", "@/widgets/**"],
+                "message": "Shared code must not depend on the app, features or widgets layers."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/features/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/widgets/**"],
+                "message": "Features must not depend on widgets."
+              },
+              {
+                "group": ["@/app/**", "!@/app/hooks", "!@/app/store"],
+                "message": "Only the typed hooks and store types may be imported from the app layer."
+              }
+            ],
+            "paths": [
+              {
+                "name": "@/app/store",
+                "allowTypeImports": true,
+                "message": "Import only types from the app store."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/widgets/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/app/**", "!@/app/hooks", "!@/app/store"],
+                "message": "Only the typed hooks and store types may be imported from the app layer."
+              }
+            ],
+            "paths": [
+              {
+                "name": "@/app/store",
+                "allowTypeImports": true,
+                "message": "Import only types from the app store."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["**/*.test.ts", "**/*.test.tsx", "src/test/**"],
       "rules": {
         "typescript/no-non-null-assertion": "off",
-        "typescript/no-unnecessary-condition": "off"
+        "typescript/no-unnecessary-condition": "off",
+        "no-restricted-imports": "off"
+      }
+    },
+    {
+      "files": ["src/features/palette/**"],
+      "rules": {
+        "jsx-a11y/prefer-tag-over-role": "off"
       }
     }
   ]

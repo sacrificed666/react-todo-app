@@ -1,59 +1,98 @@
 # 🚀 Deployment
 
-The app is deployed to **GitHub Pages** at <https://sacrificed666.github.io/react-todo-app/> by the workflow in `.github/workflows/ci.yml`.
+The app is deployed to **GitHub Pages** at <https://sacrificed666.github.io/react-todo-app/> by `.github/workflows/ci.yml`. A second workflow, `.github/workflows/codeql.yml`, scans the code for vulnerabilities.
 
 ## 🔁 Pipeline
 
 ```mermaid
 flowchart LR
-  Trigger{{push to main / pull request / manual run}} --> Verify
+  Trigger{{"push to main · pull request · manual run"}} --> Verify
   Trigger --> Build
-  Trigger -. pull requests only .-> Review[Dependency review]
-  Verify --> Deploy
+  Trigger -. pull requests only .-> Review[🛡️ Dependency review]
+  Trigger --> CodeQL[🔬 CodeQL]
+  Weekly{{"every Monday"}} --> CodeQL
+
+  subgraph Verify[🔍 verify]
+    direction TB
+    V1[npm ci] --> V2[npm audit signatures] --> V3[Oxlint] --> V4[Oxfmt] --> V5[TypeScript] --> V6[Vitest + coverage]
+  end
+
+  subgraph Build[🛠️ build]
+    direction TB
+    B1[npm ci] --> B2[vite build] --> B3[build report] --> B4[Pages artifact]
+  end
+
+  Verify --> Deploy[🚀 Deploy to GitHub Pages]
   Build --> Deploy
-  Deploy[Deploy to GitHub Pages]
 ```
 
-| Job                    | Runs on                       | What it does                                                                                                                  |
-| ---------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| 🔍 `verify`            | every trigger                 | `npm ci`, Oxlint with GitHub annotations, Oxfmt check, TypeScript, Vitest with coverage, coverage summary and report artifact |
-| 🛠️ `build`             | every trigger                 | Production build; on `main` it also uploads the `dist/` folder as the Pages artifact                                          |
-| 🛡️ `dependency-review` | pull requests                 | Fails the pull request if it introduces dependencies with high-severity vulnerabilities                                       |
-| 🚀 `deploy`            | `main` pushes and manual runs | Waits for `verify` and `build`, then publishes the artifact to the `github-pages` environment                                 |
+| Job                    | Runs on                       | What it does                                                                                                                                 |
+| ---------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔍 `verify`            | every trigger                 | `npm ci`, `npm audit signatures`, Oxlint with GitHub annotations, Oxfmt check, TypeScript, Vitest with coverage, coverage summary and report |
+| 🛠️ `build`             | every trigger                 | Production build and `scripts/build-report.mjs`; on `main` it also uploads `dist/` as the Pages artifact                                     |
+| 🛡️ `dependency-review` | pull requests                 | Fails the pull request if it introduces dependencies with high-severity vulnerabilities                                                      |
+| 🔬 `analyze` (CodeQL)  | pushes, pull requests, weekly | Scans TypeScript and the workflow files with the `security-extended` query suite                                                             |
+| 🚀 `deploy`            | `main` pushes and manual runs | Waits for `verify` and `build`, then publishes the artifact to the `github-pages` environment                                                |
 
 Details:
 
 - ⚡ `verify` and `build` run in parallel, so feedback arrives quickly while deployment still requires both to pass.
+- 📏 The build report lists every file with its gzip size on the run's summary page and **fails** the job if the CSP, Trusted Types, the service worker, the manifest shortcuts or the share target are missing, or if an inline script appears.
 - 🛑 Pull request runs cancel superseded runs of the same branch; deployments are never cancelled halfway.
-- 🔐 The default token is read-only. Only the `deploy` job receives `pages: write` and `id-token: write`.
+- 🔐 The default token is read-only, checkouts use `persist-credentials: false`, and only the `deploy` job receives `pages: write` and `id-token: write`.
 - 🟢 Node.js is installed from `.nvmrc` and npm downloads are cached.
 
 ## ⚙️ One-time GitHub setup
 
-1. Open **Settings → Pages** in the repository.
-2. Set **Source** to **GitHub Actions**.
+1. Open **Settings → Pages** and set **Source** to **GitHub Actions**.
+2. Open **Settings → Code security** and enable **Private vulnerability reporting**, **Dependabot alerts** and **Code scanning** (CodeQL uploads its results there).
 3. Push to `main` or start the workflow manually from the **Actions** tab.
 
 The workflow creates the `github-pages` environment on its first run.
 
 ## 🧭 Base path
 
-The site is served from a sub-path, configured in `vite.config.ts`:
+The site is served from a sub-path, configured once in `vite.config.ts`:
 
 ```ts
-base: "/react-todo-app/",
+const base = "/react-todo-app/";
 ```
 
-If the repository is renamed or the app is hosted at a domain root, update `base` and the PWA manifest `id` together.
+The same constant feeds the manifest `id`, `scope`, `start_url`, shortcuts and share target. If the repository is renamed or the app is hosted at a domain root, change it in this one place.
 
 ## 📱 Progressive Web App
 
-`vite-plugin-pwa` generates the manifest and a Workbox service worker during the build.
+`vite-plugin-pwa` generates the manifest and a Workbox service worker during the build; `app/pwa.ts` registers it in production builds.
 
-- 📦 **Precache** — HTML, JavaScript, CSS, icons and the AVIF backdrop, so the app starts offline after the first visit.
+| Manifest feature      | Value                                                                                      |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| 🪟 `display_override` | `window-controls-overlay`, then `standalone`                                               |
+| 🚀 `shortcuts`        | **New task** (`?action=new`), **Today** (`?list=today`), **Important** (`?list=important`) |
+| 📤 `share_target`     | `GET` with `title`, `text` and `url`, turned into a task by `app/launch.ts`                |
+| 🏷️ `categories`       | `productivity`, `utilities`                                                                |
+| 🖼️ Icons              | 64, 192 and 512 px PNGs plus a maskable 512 px icon                                        |
+
+- 📦 **Precache** — HTML, JavaScript, CSS, icons and the backdrop artwork, so the app starts offline after the first visit.
 - 🖼️ **Runtime cache** — other images use a cache-first strategy (up to 32 entries for a year).
-- 🔄 **Updates** — `registerType: "autoUpdate"` installs new versions in the background; outdated caches are cleaned automatically.
 - 🧪 The service worker is not active during `npm run dev`. Use `npm run build && npm run preview` to test offline behaviour.
+
+### 🔄 Update flow
+
+Updates use the **prompt** strategy, so a new version never replaces the running one while you work:
+
+```mermaid
+sequenceDiagram
+  participant Page
+  participant SW as Waiting service worker
+  actor User
+  Page->>SW: registerSW() finds a new sw.js
+  SW-->>Page: onNeedRefresh
+  Page->>User: "A new version is available" · Reload
+  User->>Page: Reload
+  Page->>SW: updateServiceWorker(true) → skipWaiting
+  SW-->>Page: controller changes, page reloads
+  Note over Page: First install only:<br/>"Ready to work offline"
+```
 
 ## 🤖 Dependency updates
 
@@ -63,7 +102,7 @@ If the repository is renamed or the app is hosted at a domain root, update `base
 - ⚙️ GitHub Actions updates are grouped into a single pull request;
 - 📝 commit messages follow the project convention (`chore(deps): …`, `ci(deps): …`).
 
-Every Dependabot pull request goes through the same pipeline, including the dependency review.
+Every Dependabot pull request goes through the same pipeline, including the dependency review and CodeQL.
 
 ## 🖐️ Manual deployment
 

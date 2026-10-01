@@ -1,0 +1,98 @@
+@use "@/shared/styles/mixins" as *;
+
+.panel {
+  inline-size: min(18.5rem, calc(100vw - 24px));
+  padding: 10px 12px 12px;
+}
+
+.heading {
+  padding: 6px 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+
+  &:not(:first-child) {
+    margin-block-start: 10px;
+  }
+}
+
+.swatches {
+  display: flex;
+  justify-content: space-between;
+  padding-inline: 4px;
+}
+
+.swatch {
+  --swatch: #0a84ff;
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+
+  &[data-accent="violet"] {
+    --swatch: #8b6cff;
+  }
+
+  &[data-accent="sunset"] {
+    --swatch: #ff6b3d;
+  }
+
+  &[data-accent="forest"] {
+    --swatch: #22b35e;
+  }
+
+  &[data-accent="graphite"] {
+    --swatch: #8a93a6;
+  }
+
+  &:has(:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+  }
+}
+
+.dot {
+  display: grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(circle at 30% 25%, rgb(255 255 255 / 45%), transparent 55%), var(--swatch);
+  box-shadow:
+    0 4px 12px -4px var(--swatch),
+    inset 0 1px 0 rgb(255 255 255 / 35%);
+  color: #ffffff;
+  transition: scale var(--duration-slow) var(--ease-bounce);
+
+  .swatch:hover & {
+    scale: 1.08;
+  }
+
+  .swatch:has(:checked) & {
+    box-shadow:
+      0 0 0 3px var(--glass-tint-strong),
+      0 0 0 5px var(--swatch),
+      inset 0 1px 0 rgb(255 255 255 / 35%);
+  }
+}
+
+.check {
+  font-size: 1rem;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  .swatch:has(:checked) & {
+    opacity: 1;
+  }
+}
+
+.caption {
+  margin-block-start: 8px;
+  font-size: 0.8125rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}

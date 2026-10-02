@@ -7,6 +7,13 @@ export interface QuickAddResult {
   dueDate: string | null;
   important: boolean;
   repeat: Repeat | null;
+  projectId: string | null;
+}
+
+export interface QuickAddProject {
+  id: string;
+  name: string;
+  label?: string;
 }
 
 const fold = (value: string) =>
@@ -497,8 +504,38 @@ export const parseRepeatPhrase = (phrase: string, today: string): { repeat: Repe
 const endsWithBlockedPhrase = (tokens: readonly string[], end: number) =>
   [2, 3].some((size) => end - size >= 0 && BLOCKED_ENDINGS.has(fold(tokens.slice(end - size, end).join(" "))));
 
-export const parseQuickAdd = (input: string, today: string): QuickAddResult => {
-  const tokens = input.trim().split(/\s+/).filter(Boolean);
+const MENTION = /(^|\s)@/gu;
+
+const sameText = (a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: "base" }) === 0;
+
+export const findProjectMention = (input: string, projects: readonly QuickAddProject[]) => {
+  const names = projects
+    .flatMap((project) => [project.name, project.label ?? project.name].map((name) => ({ id: project.id, name })))
+    .filter(({ name }) => name !== "")
+    .toSorted((a, b) => b.name.length - a.name.length);
+  if (names.length === 0) return null;
+
+  for (const match of input.matchAll(MENTION)) {
+    const at = match.index + (match[1] ?? "").length;
+    const rest = input.slice(at + 1);
+    for (const { id, name } of names) {
+      const next = rest.charAt(name.length);
+      if (sameText(rest.slice(0, name.length), name) && (next === "" || /\s/u.test(next))) {
+        return { projectId: id, start: at, end: at + 1 + name.length };
+      }
+    }
+  }
+  return null;
+};
+
+export const parseQuickAdd = (
+  input: string,
+  today: string,
+  projects: readonly QuickAddProject[] = [],
+): QuickAddResult => {
+  const mention = findProjectMention(input, projects);
+  const text = mention ? `${input.slice(0, mention.start)} ${input.slice(mention.end)}` : input;
+  const tokens = text.trim().split(/\s+/).filter(Boolean);
   const tags: string[] = [];
   let important = false;
   let dueDate: string | null = null;
@@ -553,5 +590,6 @@ export const parseQuickAdd = (input: string, today: string): QuickAddResult => {
     dueDate: dueDate ?? repeatStart ?? (repeat ? today : null),
     important,
     repeat,
+    projectId: mention?.projectId ?? null,
   };
 };

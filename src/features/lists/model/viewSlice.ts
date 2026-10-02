@@ -1,15 +1,23 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { ListId } from "./lists";
+import { projectRemoved } from "@/features/projects/model/projectsSlice";
+
+import { projectView, type ViewId } from "./lists";
 import type { SortMode } from "./sort";
 
+export type Overlay =
+  | { kind: "palette" }
+  | { kind: "settings" }
+  | { kind: "lists" }
+  | { kind: "project"; projectId: string | null };
+
 export interface ViewState {
-  list: ListId;
+  list: ViewId;
   query: string;
   sort: SortMode;
   showCompleted: boolean;
   detailsId: string | null;
-  paletteOpen: boolean;
+  overlay: Overlay | null;
 }
 
 export type ViewPreferences = Pick<ViewState, "list" | "sort" | "showCompleted">;
@@ -20,15 +28,16 @@ export const initialViewState: ViewState = {
   sort: "manual",
   showCompleted: true,
   detailsId: null,
-  paletteOpen: false,
+  overlay: null,
 };
 
 export const viewSlice = createSlice({
   name: "view",
   initialState: initialViewState,
   reducers: {
-    listChanged(state, action: PayloadAction<ListId>) {
+    listChanged(state, action: PayloadAction<ViewId>) {
       state.list = action.payload;
+      state.query = "";
     },
     queryChanged(state, action: PayloadAction<string>) {
       state.query = action.payload;
@@ -45,9 +54,18 @@ export const viewSlice = createSlice({
     detailsClosed(state) {
       state.detailsId = null;
     },
-    paletteToggled(state, action: PayloadAction<boolean>) {
-      state.paletteOpen = action.payload;
+    overlayOpened(state, action: PayloadAction<Overlay>) {
+      state.overlay = action.payload;
     },
+    overlayClosed(state, action: PayloadAction<Overlay["kind"]>) {
+      if (state.overlay?.kind === action.payload) state.overlay = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(projectRemoved, (state, action) => {
+      if (state.list === projectView(action.payload)) state.list = "all";
+      if (state.overlay?.kind === "project" && state.overlay.projectId === action.payload) state.overlay = null;
+    });
   },
 });
 
@@ -58,5 +76,6 @@ export const {
   completedVisibilityToggled,
   detailsOpened,
   detailsClosed,
-  paletteToggled,
+  overlayOpened,
+  overlayClosed,
 } = viewSlice.actions;

@@ -1,7 +1,11 @@
 import { useId } from "react";
 
-import { useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
+import { projectView } from "@/features/lists/model/lists";
+import { listChanged } from "@/features/lists/model/viewSlice";
+import { splitProjectName } from "@/features/projects/model/project";
+import ProjectIcon from "@/features/projects/ui/ProjectIcon/ProjectIcon";
 import { selectListCounts } from "@/features/todos/model/selectors";
 import { useToday } from "@/shared/hooks/useToday";
 import { formatWeekdayShort } from "@/shared/lib/date";
@@ -9,7 +13,7 @@ import Icon from "@/shared/ui/Icon/Icon";
 import type { IconName } from "@/shared/ui/Icon/icons";
 import ProgressBar from "@/shared/ui/ProgressBar/ProgressBar";
 
-import { selectActivity } from "../../model/selectors";
+import { selectActivity, selectProjectProgress } from "../../model/selectors";
 
 import styles from "./Overview.module.scss";
 
@@ -21,10 +25,12 @@ interface Stat {
 }
 
 const Overview = () => {
+  const dispatch = useAppDispatch();
   const today = useToday();
   const { t, locale } = useI18n();
   const counts = useAppSelector((state) => selectListCounts(state, today));
   const { days, streak } = useAppSelector((state) => selectActivity(state, today));
+  const projects = useAppSelector(selectProjectProgress);
   const percent = counts.total > 0 ? Math.round((counts.completed / counts.total) * 100) : 0;
   const busiest = Math.max(1, ...days.map((day) => day.count));
   const titleId = useId();
@@ -93,6 +99,35 @@ const Overview = () => {
           );
         })}
       </ol>
+      {projects.length > 0 ? (
+        <>
+          <h3 className={styles.projectsTitle}>{t("projects.title")}</h3>
+          <ul className={styles.projects}>
+            {projects.map(({ project, done, total }) => {
+              const { label } = splitProjectName(project.name);
+              const progress = t("listHeader.progress", { done, total });
+              return (
+                <li key={project.id}>
+                  <button
+                    type="button"
+                    className={styles.project}
+                    data-project-color={project.color}
+                    aria-label={`${label}, ${progress}`}
+                    onClick={() => dispatch(listChanged(projectView(project.id)))}
+                  >
+                    <ProjectIcon name={project.name} color={project.color} size="small" />
+                    <span className={styles.projectName}>{label}</span>
+                    <span className={styles.projectCount} aria-hidden="true">
+                      {done}/{total}
+                    </span>
+                    <span className={styles.projectBar} style={{ "--value": done / total }} aria-hidden="true" />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      ) : null}
     </section>
   );
 };

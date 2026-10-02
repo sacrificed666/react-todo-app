@@ -17,7 +17,7 @@ flowchart LR
 
   subgraph Gate["🛂 Validation"]
     Limits["Size limits<br/>2 MB, 5000 tasks"]
-    Parse["parseTodos()<br/>types, ids, dates, lengths"]
+    Parse["parseData()<br/>tasks, projects, links, ids, dates, lengths"]
     Normalize["normalizeTitle() / normalizeNotes()"]
   end
 
@@ -71,15 +71,17 @@ installScriptUrlPolicy([`${import.meta.env.BASE_URL}sw.js`]);
 
 ## ✅ Input validation
 
-| Input                      | Protection                                                                                                             |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 📥 Imported files          | Rejected above 2 MB, parsed with `JSON.parse` in a `try`, limited to 5000 tasks, validated by `parseTodos()`           |
-| 🗄️ Stored data, other tabs | Read through `readJson()` and `parseTodos()`; corrupted data falls back to defaults instead of crashing                |
-| 🆔 Ids                     | Must match `[A-Za-z0-9_-]{1,64}`; anything else, or a duplicate, is replaced with a fresh `nanoid()`                   |
-| 📝 Titles and notes        | Whitespace-normalized and cut to 200 and 2000 characters, counted in Unicode code points                               |
-| 📅 Dates                   | Only real calendar dates in `YYYY-MM-DD`; `2026-02-30` is dropped                                                      |
-| 🔗 URL parameters          | Only `list`, `action`, `title`, `text` and `url` are read; they become plain text and are removed from the address bar |
-| 🎨 Preferences             | Every value is checked against the list of allowed appearances, accents, languages, lists and sort orders              |
+| Input                      | Protection                                                                                                                                                                         |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 📥 Imported files          | Rejected above 2 MB, parsed with `JSON.parse` in a `try`, limited to 5000 tasks and 200 projects, validated by `parseData()`                                                       |
+| 🗄️ Stored data, other tabs | Read through `readJson()` and `parseData()`; corrupted data falls back to defaults instead of crashing                                                                             |
+| 📁 Projects                | Names normalized and cut to 40 characters, colours checked against the fixed list, duplicates dropped                                                                              |
+| 🔗 Links                   | A task's `projectId` must be a valid id of a project in the same document, otherwise the task keeps no project                                                                     |
+| 🆔 Ids                     | Must match `[A-Za-z0-9_-]{1,64}`; anything else, or a duplicate, is replaced with a fresh `nanoid()`                                                                               |
+| 📝 Titles and notes        | Whitespace-normalized and cut to 200 and 2000 characters, counted in Unicode code points                                                                                           |
+| 📅 Dates                   | Only real calendar dates in `YYYY-MM-DD`; `2026-02-30` is dropped                                                                                                                  |
+| 🔗 URL parameters          | Only `list`, `action`, `title`, `text` and `url` are read; they become plain text and are removed from the address bar                                                             |
+| 🎨 Preferences             | Every value is checked against the allowed appearances, accents, backgrounds, glass styles, languages, effects and sort orders; a saved project view must name an existing project |
 
 Objects are rebuilt field by field, so unknown properties — including `__proto__` — never reach the store.
 
@@ -93,7 +95,8 @@ The language picker shows flags from `https://flagcdn.com`, the only third-party
 
 ## 🗄️ Data on the device
 
-- 💾 Tasks and preferences live in `localStorage` of the site's origin and never leave the device.
+- 💾 Tasks, projects and preferences live in `localStorage` of the site's origin and never leave the device.
+- ⬅️ The history entries that let **Back** close sheets carry only a random marker — never task data — and are removed when the sheet closes.
 - 🧹 Clearing the site data in the browser removes everything; the error screen offers **Download a backup** first.
 - 🔄 The service worker only caches the app's own files and asks before activating an update.
 

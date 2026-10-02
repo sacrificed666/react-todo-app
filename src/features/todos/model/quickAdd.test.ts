@@ -11,6 +11,7 @@ describe("parseQuickAdd", () => {
       dueDate: "2026-10-02",
       important: false,
       repeat: null,
+      projectId: null,
     });
     expect(parseQuickAdd("Подзвонити мамі завтра", today).dueDate).toBe("2026-10-02");
     expect(parseQuickAdd("Renew passport in 10 days", today).dueDate).toBe("2026-10-11");
@@ -40,6 +41,7 @@ describe("parseQuickAdd", () => {
       dueDate: "2026-10-02",
       important: true,
       repeat: null,
+      projectId: null,
     });
   });
 
@@ -49,12 +51,14 @@ describe("parseQuickAdd", () => {
       dueDate: null,
       important: false,
       repeat: null,
+      projectId: null,
     });
     expect(parseQuickAdd("Tomorrow", today)).toEqual({
       title: "Tomorrow",
       dueDate: null,
       important: false,
       repeat: null,
+      projectId: null,
     });
     expect(parseQuickAdd("Enjoy the sun", today).dueDate).toBeNull();
   });
@@ -182,11 +186,55 @@ describe("parseQuickAdd repeats", () => {
       dueDate: "2026-10-05",
       important: true,
       repeat: "monthly",
+      projectId: null,
     });
   });
 
   it("does not treat single weekdays as repeats", () => {
     expect(parseQuickAdd("Dentist friday", today)).toMatchObject({ repeat: null, dueDate: "2026-10-02" });
     expect(parseQuickAdd("Reunión el lunes", today)).toMatchObject({ repeat: null, dueDate: "2026-10-05" });
+  });
+});
+
+describe("parseQuickAdd projects", () => {
+  const projects = [
+    { id: "work", name: "Work" },
+    { id: "home", name: "🏠 Home", label: "Home" },
+    { id: "trip", name: "Trip to Lviv" },
+  ];
+
+  it("assigns the project mentioned with @ anywhere in the title", () => {
+    expect(parseQuickAdd("Send slides @work tomorrow", today, projects)).toEqual({
+      title: "Send slides",
+      dueDate: "2026-10-02",
+      important: false,
+      repeat: null,
+      projectId: "work",
+    });
+    expect(parseQuickAdd("@Home Fix the shelf", today, projects)).toMatchObject({
+      title: "Fix the shelf",
+      projectId: "home",
+    });
+  });
+
+  it("matches names with spaces, accents and different case", () => {
+    expect(parseQuickAdd("Pack bags @trip to lviv !", today, projects)).toMatchObject({
+      title: "Pack bags",
+      important: true,
+      projectId: "trip",
+    });
+    expect(parseQuickAdd("Café @WÖRK", today, [{ id: "w", name: "Work" }]).projectId).toBe("w");
+  });
+
+  it("leaves e-mail addresses and unknown mentions alone", () => {
+    expect(parseQuickAdd("Write to anna@work.com", today, projects)).toMatchObject({
+      title: "Write to anna@work.com",
+      projectId: null,
+    });
+    expect(parseQuickAdd("Ask @olena about it", today, projects)).toMatchObject({
+      title: "Ask @olena about it",
+      projectId: null,
+    });
+    expect(parseQuickAdd("Sync with @workshop team", today, projects).projectId).toBeNull();
   });
 });

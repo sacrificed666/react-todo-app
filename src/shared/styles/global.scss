@@ -75,3 +75,43 @@ svg {
 .visually-hidden {
   @include mixins.visually-hidden;
 }
+
+[data-project-color="blue"] {
+  --project-color: var(--project-blue);
+}
+
+[data-project-color="indigo"] {
+  --project-color: var(--project-indigo);
+}
+
+[data-project-color="violet"] {
+  --project-color: var(--project-violet);
+}
+
+[data-project-color="pink"] {
+  --project-color: var(--project-pink);
+}
+
+[data-project-color="red"] {
+  --project-color: var(--project-red);
+}
+
+[data-project-color="orange"] {
+  --project-color: var(--project-orange);
+}
+
+[data-project-color="yellow"] {
+  --project-color: var(--project-yellow);
+}
+
+[data-project-color="green"] {
+  --project-color: var(--project-green);
+}
+
+[data-project-color="teal"] {
+  --project-color: var(--project-teal);
+}
+
+[data-project-color="gray"] {
+  --project-color: var(--project-gray);
+}

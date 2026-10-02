@@ -1,8 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { exportData, redo, selectHistory, undo } from "@/features/data/model/thunks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { formatMessage } from "@/features/notifications/model/format";
-import { selectHistory, selectListCounts } from "@/features/todos/model/selectors";
-import { clearCompleted, exportTodos, redo, undo } from "@/features/todos/model/thunks";
+import { selectListCounts } from "@/features/todos/model/selectors";
+import { clearCompleted } from "@/features/todos/model/thunks";
 import { allTodosMarked } from "@/features/todos/model/todosSlice";
 import { useToday } from "@/shared/hooks/useToday";
 import { isApplePlatform } from "@/shared/lib/keyboard";
@@ -68,7 +69,7 @@ export const useTaskCommands = (): readonly TaskCommand[] => {
       keywords: "json backup",
       icon: "download",
       disabled: counts.total === 0,
-      run: () => dispatch(exportTodos()),
+      run: () => dispatch(exportData()),
     },
   ];
 };

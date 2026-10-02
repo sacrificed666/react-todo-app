@@ -96,6 +96,59 @@
   opacity: var(--waves-opacity);
 }
 
+.stars {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 24px 36px, var(--star-color), transparent),
+    radial-gradient(1px 1px at 118px 92px, var(--star-color), transparent),
+    radial-gradient(1.5px 1.5px at 206px 168px, var(--star-color), transparent),
+    radial-gradient(1px 1px at 296px 44px, var(--star-color), transparent),
+    radial-gradient(1px 1px at 64px 226px, var(--star-color), transparent),
+    radial-gradient(1.5px 1.5px at 262px 262px, var(--star-color), transparent),
+    radial-gradient(1px 1px at 172px 12px, var(--star-color), transparent),
+    radial-gradient(1px 1px at 330px 190px, var(--star-color), transparent);
+  background-size: 360px 300px;
+  opacity: 0.8;
+}
+
+:root[data-backdrop="spectrum"] .backdrop,
+:root[data-backdrop="sunset"] .backdrop,
+:root[data-backdrop="ocean"] .backdrop,
+:root[data-backdrop="nebula"] .backdrop {
+  background-image: linear-gradient(
+    165deg,
+    color-mix(in oklab, var(--color-backdrop) 84%, var(--orb-1)) 0%,
+    var(--color-backdrop) 52%,
+    color-mix(in oklab, var(--color-backdrop) 86%, var(--orb-3)) 100%
+  );
+}
+
+:root[data-backdrop="nebula"] {
+  .stars {
+    display: block;
+  }
+
+  .waves {
+    display: none;
+  }
+}
+
+:root[data-backdrop="plain"] {
+  .backdrop {
+    background-image:
+      radial-gradient(120% 80% at 10% 0%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 60%),
+      radial-gradient(90% 70% at 100% 100%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 65%);
+  }
+
+  .aurora,
+  .waves,
+  .grain {
+    display: none;
+  }
+}
+
 .grain {
   display: none;
   position: absolute;

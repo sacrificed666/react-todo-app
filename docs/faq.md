@@ -2,31 +2,51 @@
 
 ### 💾 Where are my tasks stored?
 
-In your browser's `localStorage`, on your device only. There is no account and no server; the only request to another site loads the language flags from flagcdn.com, without your tasks or even the page address. See [Security](./security.md#️-data-on-the-device).
+In your browser's `localStorage`, on your device only — tasks and projects together. There is no account and no server; the only request to another site loads the language flags from flagcdn.com, without your tasks or even the page address. See [Security](./security.md#️-data-on-the-device).
 
 ### 📲 How do I move my tasks to another device or browser?
 
-Open **⋯ → Export tasks** on the old device and **⋯ → Import tasks** on the new one. Importing only adds tasks that are not there yet, so it is safe to import the same file twice.
+Open **⋯ → Export tasks** on the old device and **⋯ → Import tasks** on the new one. The file contains your tasks and projects. Importing only adds what is not there yet, so it is safe to import the same file twice.
+
+### 📁 What is the difference between projects and tags?
+
+A task belongs to **one project** at most — Work, 🏠 Home, Trip to Lviv — and each project has its own page, colour and icon in the sidebar. **Tags** are `#words` in the title: a task can have many, and clicking one searches every list for it. Use projects for areas of your life and tags for themes that cut across them, like `#calls` or `#urgent`.
+
+### 🗑️ What happens to the tasks when I delete a project?
+
+They are deleted with it — the dialog tells you how many before you confirm. If you change your mind, press **Undo** in the notification or <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd>: the project comes back with every task. To keep the tasks, move them to another project first, for example by dragging them onto it in the sidebar.
 
 ### 🧯 The app shows “Something went wrong”. Are my tasks gone?
 
-No. The error screen sits on top of your data: **Download a backup** saves the stored tasks as a JSON file, **Reset view settings** clears only the selected list, sort order and theme, and **Reload the app** starts over. If the problem persists, please [open an issue](https://github.com/sacrificed666/react-todo-app/issues/new/choose).
+No. The error screen sits on top of your data: **Download a backup** saves the stored tasks and projects as a JSON file, **Reset view settings** clears only your preferences — the selected list, sort order, theme and language — and **Reload the app** starts over. If the problem persists, please [open an issue](https://github.com/sacrificed666/react-todo-app/issues/new/choose).
 
 ### 🐢 The app feels slow on my computer. What can I do?
 
-Open **Settings → Effects** and choose **Reduced**. It keeps the glass look but stops the moving aurora, the refraction and the pointer light, which are what slows down computers without a strong graphics chip. **Auto** already does this everywhere except recent Macs and iPads. See [Design system](./design.md#-effects-and-performance).
+Open **Settings → Performance** and choose **Reduced**. It keeps the glass look but stops the moving background, the refraction and the pointer light, which are what slows down computers without a strong graphics chip. **Auto** already does this everywhere except recent Macs and iPads. The **Plain** background is the lightest of all. Long lists are not a problem: the app stays responsive with thousands of tasks. See [Design system](./design.md#-effects-and-performance).
+
+### 🖼️ How do I change the colours or the background?
+
+Open **Settings** with the sliders button. Pick one of ten **accents**, one of six **backgrounds** — Aurora, Spectrum, Sunset, Ocean, Nebula or Plain — and the **glass** style. **Tinted** glass is denser and easier to read on bright backgrounds. The command palette can switch all of them too: type `background`, `accent` or `glass`.
 
 ### 🔮 Why do the glass edges bend the background only in some browsers?
 
 The refraction uses an SVG filter inside `backdrop-filter`, which only Chromium-based browsers render, and only with **Full** effects. Safari and Firefox get the same frosted glass without the lens effect. See [Design system](./design.md#-refraction).
 
+### 🖱️ Is there a right-click menu?
+
+Yes. Right-click a task — or press and hold it on a phone, or press <kbd>⇧</kbd>+<kbd>F10</kbd> — to schedule it with one tap, pick a date in the calendar, star or complete it, move it to a project, rename, duplicate or delete it. See [Features](./features.md#️-context-menu).
+
 ### ⚡ Which words does quick add understand?
 
-Dates like `tomorrow`, `next friday`, `in 3 days`, `20.10` and their equivalents in all eight languages (`morgen`, `mañana`, `demain`, `domani`, `jutro`…), and `!` for important — always at the end of the title. The full list is in [Features](./features.md#-quick-add).
+Dates like `tomorrow`, `next friday`, `in 3 days`, `20.10` and their equivalents in all eight languages (`morgen`, `mañana`, `demain`, `domani`, `jutro`…), repeats like `every monday` or `щотижня`, `!` for important at the end of the title and `@project` anywhere in it. The full list is in [Features](./features.md#-quick-add).
 
 ### 🔁 How do repeating tasks work?
 
-Open a task's details and pick **Repeat**, or end its title with a phrase like `every friday` or `щотижня`. When you complete it, the finished occurrence moves to **Completed** and the next one appears right away with its new date. See [Features](./features.md#-repeating-tasks).
+Open a task's details and pick **Repeat**, or end its title with a phrase like `every friday` or `щотижня`. When you complete it, the finished occurrence moves to **Completed** and the next one appears right away with its new date. Monthly tasks remember their day: rent due on the 31st is due on 28 February and back on 31 March. See [Features](./features.md#-repeating-tasks).
+
+### ⬅️ Why does the Back button close windows instead of leaving the app?
+
+On phones and in the installed app, the settings, the Lists sheet, task details and the palette behave like screens: **Back** closes the one that is open, and only then leaves the app. This is how native apps on Android work.
 
 ### ⌨️ Is there a list of keyboard shortcuts?
 
@@ -42,4 +62,4 @@ The app checks for updates in the background. When one is ready, a notification 
 
 ### 🗑️ How do I delete everything?
 
-Clear the site data in your browser settings, or select all completed tasks with **Complete all** and then **Clear completed**. Export a backup first if you might need the tasks again.
+Clear the site data in your browser settings. Inside the app, deleting a project removes its tasks, and **Complete all** followed by **Clear completed** removes the rest. Export a backup first if you might need the tasks again.

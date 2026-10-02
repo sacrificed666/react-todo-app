@@ -1,7 +1,7 @@
 .inspector {
   grid-area: inspector;
   position: sticky;
-  inset-block-start: calc(var(--header-height) + 24px);
+  inset-block-start: calc(var(--titlebar-height) + 16px);
   display: flex;
   flex-direction: column;
   gap: 16px;

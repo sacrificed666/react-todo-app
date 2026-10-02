@@ -6,7 +6,8 @@ import { vi } from "vitest";
 
 import App from "@/app/App";
 import { setupStore, type AppStore, type RootState } from "@/app/store";
-import type { ListId } from "@/features/lists/model/lists";
+import type { ViewId } from "@/features/lists/model/lists";
+import type { Project } from "@/features/projects/model/project";
 import type { Todo } from "@/features/todos/model/todo";
 
 import { makeState, sampleTodos } from "./factories";
@@ -26,8 +27,11 @@ export const renderWithStore = (
   return { store, user: userEvent.setup(), ...render(ui, { wrapper: Wrapper }) };
 };
 
-export const renderApp = (todos: readonly Todo[] = sampleTodos, list: ListId = "all") =>
-  renderWithStore(<App />, { preloadedState: makeState(todos, list) });
+export const renderApp = (
+  todos: readonly Todo[] = sampleTodos,
+  list: ViewId = "all",
+  projects: readonly Project[] = [],
+) => renderWithStore(<App />, { preloadedState: makeState(todos, list, "", projects) });
 
 export const openPopover = async (user: User, trigger: HTMLElement) => {
   await user.click(trigger);

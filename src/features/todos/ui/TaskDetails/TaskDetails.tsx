@@ -3,6 +3,7 @@ import { useId, useState, type KeyboardEvent } from "react";
 import { useAppDispatch } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { queryChanged } from "@/features/lists/model/viewSlice";
+import ProjectPicker from "@/features/projects/ui/ProjectPicker/ProjectPicker";
 import { useToday } from "@/shared/hooks/useToday";
 import { formatDateTime } from "@/shared/lib/date";
 import Checkbox from "@/shared/ui/Checkbox/Checkbox";
@@ -15,6 +16,7 @@ import { extractTags, MAX_NOTES_LENGTH, MAX_TITLE_LENGTH, normalizeTitle, type T
 import {
   todoImportanceToggled,
   todoNoted,
+  todoProjectChanged,
   todoRenamed,
   todoRepeatChanged,
   todoScheduled,
@@ -109,6 +111,10 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
           label={t("details.dueDate")}
         />
         <RepeatPicker value={todo.repeat} onChange={(repeat) => dispatch(todoRepeatChanged(todo.id, repeat))} />
+        <ProjectPicker
+          value={todo.projectId}
+          onChange={(projectId) => dispatch(todoProjectChanged(todo.id, projectId))}
+        />
         <button
           type="button"
           className={styles.toggleButton}

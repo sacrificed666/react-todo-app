@@ -2,7 +2,15 @@ import { detectLocale, isLocale, type Locale } from "@/features/i18n/model/trans
 import { prefersRichEffects, setEffectsLevel, type EffectsLevel } from "@/shared/lib/effects";
 import { isRecord } from "@/shared/lib/guards";
 
-import { applyTheme, DEFAULT_THEME, isAccent, isAppearance, type ThemeSettings } from "./theme";
+import {
+  applyTheme,
+  DEFAULT_THEME,
+  isAccent,
+  isAppearance,
+  isBackdrop,
+  isGlassStyle,
+  type ThemeSettings,
+} from "./theme";
 
 export const EFFECTS = ["auto", "full", "lite"] as const;
 
@@ -28,6 +36,8 @@ export const readSettings = (stored: unknown, languages: readonly string[]): Set
   return {
     appearance: isAppearance(value.appearance) ? value.appearance : DEFAULT_SETTINGS.appearance,
     accent: isAccent(value.accent) ? value.accent : DEFAULT_SETTINGS.accent,
+    backdrop: isBackdrop(value.backdrop) ? value.backdrop : DEFAULT_SETTINGS.backdrop,
+    glass: isGlassStyle(value.glass) ? value.glass : DEFAULT_SETTINGS.glass,
     locale: isLocale(value.locale) ? value.locale : detectLocale(languages),
     effects: isEffects(value.effects) ? value.effects : DEFAULT_SETTINGS.effects,
   };

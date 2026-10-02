@@ -1,8 +1,8 @@
-import { fireEvent, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, fireEvent, screen, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import { selectTodos } from "@/features/todos/model/selectors";
-import { dayFromToday, makeTodo, sampleTodos } from "@/test/factories";
+import { dayFromToday, makeProject, makeTodo, sampleTodos } from "@/test/factories";
 import { itemTitles, renderApp, section } from "@/test/render";
 
 const swipe = (row: Element, distance: number) => {
@@ -142,5 +142,75 @@ describe("TodoItem swipes", () => {
 
     expect(selectTodos(store.getState())).toEqual(sampleTodos);
     expect(row.closest("li")?.dataset.swipe).toBeUndefined();
+  });
+});
+
+const menu = () => screen.getByRole("menu", { name: /^Actions for/ });
+
+describe("TodoItem context menu", () => {
+  it("opens on right click and runs an action", async () => {
+    const { user, store } = renderApp();
+
+    fireEvent.contextMenu(rowOf("Buy milk"), { clientX: 120, clientY: 80 });
+    expect(menu()).toHaveAccessibleName("Actions for “Buy milk”");
+    expect(within(menu()).getByRole("menuitemradio", { name: /^Today,/ })).toHaveFocus();
+
+    await user.click(within(menu()).getByRole("menuitem", { name: "Mark as important" }));
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(selectTodos(store.getState())[0]?.important).toBe(true);
+  });
+
+  it("opens with Shift+F10 and moves a task to a project", async () => {
+    const { user, store } = renderApp([makeTodo({ id: "deck", title: "Slides" })], "all", [
+      makeProject({ id: "work", name: "Work" }),
+    ]);
+
+    screen.getByRole("checkbox", { name: "Slides" }).focus();
+    await user.keyboard("{Shift>}{F10}{/Shift}");
+    await user.click(within(menu()).getByRole("menuitem", { name: "Move to project" }));
+    expect(within(menu()).getByRole("menuitem", { name: "Back" })).toHaveFocus();
+
+    await user.click(within(menu()).getByRole("menuitemradio", { name: "Work" }));
+    expect(selectTodos(store.getState())[0]?.projectId).toBe("work");
+    expect(screen.getByRole("checkbox", { name: "Slides" })).toHaveFocus();
+  });
+
+  it("schedules from the calendar page and navigates items with arrows", async () => {
+    const { user, store } = renderApp([makeTodo({ id: "deck", title: "Slides" })]);
+
+    fireEvent.contextMenu(rowOf("Slides"), { clientX: 10, clientY: 10 });
+    await user.keyboard("{End}");
+    expect(within(menu()).getByRole("menuitem", { name: "Delete" })).toHaveFocus();
+    await user.keyboard("{Home}{ArrowDown}");
+    expect(within(menu()).getByRole("menuitemradio", { name: /^Tomorrow,/ })).toHaveFocus();
+
+    await user.click(within(menu()).getByRole("menuitem", { name: "Pick a date" }));
+    const target = dayFromToday(2);
+    await user.click(menu().querySelector(`[data-date="${target}"]`)!);
+    expect(selectTodos(store.getState())[0]?.dueDate).toBe(target);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
+
+  it("opens with a long press and ignores the release that opened it", async () => {
+    vi.useFakeTimers();
+    const { store } = renderApp();
+    const row = rowOf("Call grandma");
+
+    fireEvent.pointerDown(row, { pointerId: 1, pointerType: "touch", isPrimary: true, clientX: 50, clientY: 40 });
+    await act(async () => {
+      vi.advanceTimersByTime(600);
+    });
+    expect(menu()).toHaveAccessibleName("Actions for “Call grandma”");
+
+    fireEvent.click(within(menu()).getByRole("menuitem", { name: "Delete" }));
+    expect(selectTodos(store.getState())).toHaveLength(3);
+
+    fireEvent.pointerUp(window, { pointerId: 1, pointerType: "touch" });
+    await act(async () => {
+      vi.advanceTimersByTime(200);
+    });
+    fireEvent.click(within(menu()).getByRole("menuitem", { name: "Mark as important" }));
+    expect(selectTodos(store.getState()).find((todo) => todo.id === "call")?.important).toBe(true);
+    vi.useRealTimers();
   });
 });

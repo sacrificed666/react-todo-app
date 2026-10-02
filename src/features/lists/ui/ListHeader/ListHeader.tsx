@@ -1,42 +1,78 @@
-import { useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
-import { selectListProgress } from "@/features/todos/model/selectors";
+import ProjectIcon from "@/features/projects/ui/ProjectIcon/ProjectIcon";
+import { selectListProgress, selectVisibleTodos } from "@/features/todos/model/selectors";
 import { useToday } from "@/shared/hooks/useToday";
 import { formatHeadline } from "@/shared/lib/date";
 import Icon from "@/shared/ui/Icon/Icon";
+import IconButton from "@/shared/ui/IconButton/IconButton";
 import ProgressBar from "@/shared/ui/ProgressBar/ProgressBar";
 
 import { LIST_ICONS } from "../../model/listIcons";
-import { selectList } from "../../model/selectors";
+import { useViewInfo } from "../../model/useViewInfo";
+import { overlayOpened, queryChanged } from "../../model/viewSlice";
 import SortMenu from "../SortMenu/SortMenu";
 
 import styles from "./ListHeader.module.scss";
 
+export const LIST_TITLE_ID = "list-title";
+
 const ListHeader = () => {
+  const dispatch = useAppDispatch();
   const today = useToday();
   const { t, locale } = useI18n();
-  const list = useAppSelector(selectList);
+  const view = useViewInfo();
   const { done, total } = useAppSelector((state) => selectListProgress(state, today));
-  const title = t(`lists.${list}`);
-  const showProgress = total > 0 && list !== "completed" && list !== "upcoming";
+  const results = useAppSelector((state) => {
+    const { active, completed } = selectVisibleTodos(state, today);
+    return active.length + completed.length;
+  });
+  const showProgress =
+    view.kind !== "search" && total > 0 && !(view.kind === "list" && ["completed", "upcoming"].includes(view.list));
 
   return (
     <div className={styles.header}>
       <div className={styles.row}>
-        <span className={styles.icon} data-tone={list}>
-          <Icon name={LIST_ICONS[list]} filled={list === "important"} />
-        </span>
+        {view.kind === "project" ? (
+          <ProjectIcon name={view.project.name} color={view.project.color} size="large" />
+        ) : (
+          <span className={styles.icon} data-tone={view.kind === "search" ? "search" : view.list}>
+            <Icon
+              name={view.kind === "search" ? "search" : LIST_ICONS[view.list]}
+              filled={view.kind === "list" && view.list === "important"}
+            />
+          </span>
+        )}
         <div className={styles.headings}>
-          <h1 className={styles.title}>{title}</h1>
+          <h1 id={LIST_TITLE_ID} className={styles.title}>
+            {view.title}
+          </h1>
           <p className={styles.subtitle}>
-            <time dateTime={today}>{formatHeadline(today, locale)}</time>
+            {view.kind === "search" ? (
+              t("search.results", { count: results, query: view.query })
+            ) : (
+              <time dateTime={today}>{formatHeadline(today, locale)}</time>
+            )}
             {showProgress ? <span>{t("listHeader.progress", { done, total })}</span> : null}
           </p>
         </div>
-        <SortMenu />
+        <div className={styles.tools}>
+          {view.kind === "project" ? (
+            <IconButton
+              icon="pencil"
+              label={t("project.edit")}
+              onClick={() => dispatch(overlayOpened({ kind: "project", projectId: view.project.id }))}
+            />
+          ) : null}
+          {view.kind === "search" ? (
+            <IconButton icon="xmark" label={t("search.clear")} onClick={() => dispatch(queryChanged(""))} />
+          ) : (
+            <SortMenu />
+          )}
+        </div>
       </div>
       {showProgress ? (
-        <ProgressBar value={done} max={total} label={t("listHeader.progressLabel", { list: title })} />
+        <ProgressBar value={done} max={total} label={t("listHeader.progressLabel", { list: view.title })} />
       ) : null}
     </div>
   );

@@ -1,7 +1,7 @@
 import { nanoid } from "@reduxjs/toolkit";
 
 import { isDateKey, toDateKey } from "@/shared/lib/date";
-import { isRecord } from "@/shared/lib/guards";
+import { isEntityId, isRecord, readTimestamp } from "@/shared/lib/guards";
 import { normalizeForSearch } from "@/shared/lib/text";
 
 export const REPEATS = ["daily", "weekdays", "weekly", "monthly", "yearly"] as const;
@@ -15,6 +15,8 @@ export interface Todo {
   important: boolean;
   dueDate: string | null;
   repeat: Repeat | null;
+  repeatAnchor: string | null;
+  projectId: string | null;
   notes: string;
   createdAt: number;
   updatedAt: number;
@@ -26,6 +28,7 @@ export interface TodoDraft {
   important?: boolean;
   dueDate?: string | null;
   repeat?: Repeat | null;
+  projectId?: string | null;
   notes?: string;
 }
 
@@ -36,7 +39,6 @@ export const MAX_TITLE_LENGTH = 200;
 export const MAX_NOTES_LENGTH = 2000;
 
 const TAG = /(^|\s)#([\p{L}\p{N}_-]+)/gu;
-const ID_PATTERN = /^[\w-]{1,64}$/;
 
 export const normalizeTitle = (value: string) =>
   Array.from(value.replaceAll(/\s+/g, " ").trim()).slice(0, MAX_TITLE_LENGTH).join("").trim();
@@ -54,28 +56,25 @@ export const createMatcher = (query: string) => {
 };
 
 export const createTodo = (
-  { title, important = false, dueDate = null, repeat = null, notes = "" }: TodoDraft,
+  { title, important = false, dueDate = null, repeat = null, projectId = null, notes = "" }: TodoDraft,
   now: number,
   id: string = nanoid(),
 ): Todo => {
-  const validDate = isDateKey(dueDate) ? dueDate : null;
+  const date = isDateKey(dueDate) ? dueDate : repeat ? toDateKey(new Date(now)) : null;
   return {
     id,
     title: normalizeTitle(title),
     completed: false,
     important,
-    dueDate: validDate ?? (repeat ? toDateKey(new Date(now)) : null),
+    dueDate: date,
     repeat,
+    repeatAnchor: repeat ? date : null,
+    projectId: isEntityId(projectId) ? projectId : null,
     notes: normalizeNotes(notes),
     createdAt: now,
     updatedAt: now,
     completedAt: null,
   };
-};
-
-const toTimestamp = (value: unknown, fallback: number) => {
-  const timestamp = typeof value === "string" ? Date.parse(value) : value;
-  return typeof timestamp === "number" && Number.isFinite(timestamp) && timestamp > 0 ? timestamp : fallback;
 };
 
 const readList = (input: unknown): unknown[] | null => {
@@ -98,12 +97,17 @@ export const parseTodos = (input: unknown, now: number = Date.now()): Todo[] | n
     if (!title) return [];
 
     const rawId = typeof entry.id === "number" ? String(entry.id) : typeof entry.id === "string" ? entry.id.trim() : "";
-    const id = ID_PATTERN.test(rawId) && !seen.has(rawId) ? rawId : nanoid();
+    const id = isEntityId(rawId) && !seen.has(rawId) ? rawId : nanoid();
     seen.add(id);
 
     const completed = entry.completed === true || entry.isCompleted === true;
-    const createdAt = toTimestamp(entry.createdAt, now);
-    const updatedAt = Math.max(toTimestamp(entry.updatedAt, createdAt), createdAt);
+    const createdAt = readTimestamp(entry.createdAt, now);
+    const updatedAt = Math.max(readTimestamp(entry.updatedAt, createdAt), createdAt);
+
+    const dueDate = isDateKey(entry.dueDate) ? entry.dueDate : null;
+    const repeat = dueDate !== null && isRepeat(entry.repeat) ? entry.repeat : null;
+    const anchor =
+      isDateKey(entry.repeatAnchor) && dueDate !== null && entry.repeatAnchor <= dueDate ? entry.repeatAnchor : dueDate;
 
     return [
       {
@@ -111,12 +115,14 @@ export const parseTodos = (input: unknown, now: number = Date.now()): Todo[] | n
         title,
         completed,
         important: entry.important === true,
-        dueDate: isDateKey(entry.dueDate) ? entry.dueDate : null,
-        repeat: isDateKey(entry.dueDate) && isRepeat(entry.repeat) ? entry.repeat : null,
+        dueDate,
+        repeat,
+        repeatAnchor: repeat ? anchor : null,
+        projectId: isEntityId(entry.projectId) ? entry.projectId : null,
         notes: typeof entry.notes === "string" ? normalizeNotes(entry.notes) : "",
         createdAt,
         updatedAt,
-        completedAt: completed ? toTimestamp(entry.completedAt, updatedAt) : null,
+        completedAt: completed ? readTimestamp(entry.completedAt, updatedAt) : null,
       },
     ];
   });

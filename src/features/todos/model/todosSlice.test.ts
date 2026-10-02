@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { dataImported, dataReplaced } from "@/features/data/model/actions";
+import { projectRemoved } from "@/features/projects/model/projectsSlice";
 import { makeTodo } from "@/test/factories";
 
 import {
@@ -8,14 +10,13 @@ import {
   todoDuplicated,
   todoMoved,
   todoNoted,
+  todoProjectChanged,
   todoRepeatChanged,
   todoImportanceToggled,
   todoRenamed,
   todoScheduled,
   todosAdapter,
-  todosImported,
   todosRemoved,
-  todosReplaced,
   todosRestored,
   todosScheduled,
   todosSlice,
@@ -111,7 +112,10 @@ describe("todosSlice", () => {
   it("imports only unknown todos and appends them", () => {
     const state = reducer(
       stateOf("a"),
-      todosImported([makeTodo({ id: "a", title: "Duplicate" }), makeTodo({ id: "z", title: "Imported" })]),
+      dataImported({
+        todos: [makeTodo({ id: "a", title: "Duplicate" }), makeTodo({ id: "z", title: "Imported" })],
+        projects: [],
+      }),
     );
 
     expect(state.ids).toEqual(["a", "z"]);
@@ -119,8 +123,27 @@ describe("todosSlice", () => {
   });
 
   it("replaces the whole collection", () => {
-    const state = reducer(stateOf("a", "b"), todosReplaced([makeTodo({ id: "x", title: "Only" })]));
+    const state = reducer(
+      stateOf("a", "b"),
+      dataReplaced({ todos: [makeTodo({ id: "x", title: "Only" })], projects: [] }),
+    );
     expect(state.ids).toEqual(["x"]);
+  });
+
+  it("moves tasks between projects", () => {
+    const state = reducer(stateOf("a"), todoProjectChanged("a", "work"));
+    expect(state.entities.a?.projectId).toBe("work");
+    expect(reducer(state, todoProjectChanged("a", "work"))).toBe(state);
+    expect(reducer(state, todoProjectChanged("a", null)).entities.a?.projectId).toBeNull();
+  });
+
+  it("deletes the tasks of a deleted project", () => {
+    const state = todosAdapter.setAll(todosAdapter.getInitialState(), [
+      makeTodo({ id: "a", title: "A", projectId: "work" }),
+      makeTodo({ id: "b", title: "B" }),
+      makeTodo({ id: "c", title: "C", projectId: "work", completed: true }),
+    ]);
+    expect(reducer(state, projectRemoved("work")).ids).toEqual(["b"]);
   });
 
   it("updates notes only when they change", () => {
@@ -166,14 +189,38 @@ describe("todosSlice", () => {
     expect(reopened.ids).toHaveLength(3);
   });
 
+  it("keeps monthly repeats on the day the series started", () => {
+    const at = new Date(2026, 1, 28, 12).getTime();
+    const rent = todosAdapter.setAll(todosAdapter.getInitialState(), [
+      makeTodo({ id: "a", title: "Rent", dueDate: "2026-02-28", repeat: "monthly", repeatAnchor: "2026-01-31" }),
+    ]);
+
+    const state = reducer(rent, { type: todoToggled.type, payload: { id: "a", at, nextId: "next" } });
+
+    expect(state.entities.next).toMatchObject({ dueDate: "2026-03-31", repeatAnchor: "2026-01-31" });
+    expect(state.entities.a).toMatchObject({ repeat: null, repeatAnchor: null });
+  });
+
+  it("moves the anchor when a repeating task is rescheduled by hand", () => {
+    const state = reducer(
+      todosAdapter.setAll(todosAdapter.getInitialState(), [
+        makeTodo({ id: "a", title: "Gym", dueDate: "2026-10-01", repeat: "weekly", repeatAnchor: "2026-10-01" }),
+      ]),
+      todoScheduled("a", "2026-10-03"),
+    );
+    expect(state.entities.a).toMatchObject({ dueDate: "2026-10-03", repeatAnchor: "2026-10-03" });
+  });
+
   it("changes repeats and gives undated tasks a start date", () => {
     const state = reducer(stateOf("a"), todoRepeatChanged("a", "weekly"));
     expect(state.entities.a?.repeat).toBe("weekly");
     expect(state.entities.a?.dueDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(reducer(state, todoRepeatChanged("a", "weekly"))).toBe(state);
 
+    expect(state.entities.a?.repeatAnchor).toBe(state.entities.a?.dueDate);
+
     const undated = reducer(state, todoScheduled("a", null));
-    expect(undated.entities.a).toMatchObject({ dueDate: null, repeat: null });
+    expect(undated.entities.a).toMatchObject({ dueDate: null, repeat: null, repeatAnchor: null });
   });
 
   it("reschedules several tasks at once", () => {

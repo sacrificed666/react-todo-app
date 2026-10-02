@@ -1,5 +1,7 @@
 import { createEntityAdapter, createSlice, nanoid, type PayloadAction } from "@reduxjs/toolkit";
 
+import { dataImported, dataReplaced } from "@/features/data/model/actions";
+import { projectRemoved } from "@/features/projects/model/projectsSlice";
 import { isDateKey, toDateKey } from "@/shared/lib/date";
 
 import { nextOccurrence } from "./repeat";
@@ -40,11 +42,12 @@ export const todosSlice = createSlice({
           id: nextId,
           completed: false,
           completedAt: null,
-          dueDate: nextOccurrence(todo.dueDate, todo.repeat, toDateKey(new Date(at))),
+          dueDate: nextOccurrence(todo.dueDate, todo.repeat, toDateKey(new Date(at)), todo.repeatAnchor ?? undefined),
           createdAt: at,
         };
         state.ids.splice(state.ids.indexOf(id) + 1, 0, nextId);
         todo.repeat = null;
+        todo.repeatAnchor = null;
       },
       prepare: (id: string) => ({ payload: { id, at: Date.now(), nextId: nanoid() } }),
     },
@@ -74,6 +77,7 @@ export const todosSlice = createSlice({
         if (!todo || todo.dueDate === dueDate) return;
         todo.dueDate = dueDate;
         if (dueDate === null) todo.repeat = null;
+        todo.repeatAnchor = todo.repeat ? dueDate : null;
         todo.updatedAt = action.payload.at;
       },
       prepare: (id: string, dueDate: string | null) => ({ payload: { id, dueDate, at: Date.now() } }),
@@ -98,9 +102,20 @@ export const todosSlice = createSlice({
         if (!todo || todo.repeat === repeat) return;
         todo.repeat = repeat;
         if (repeat && !todo.dueDate) todo.dueDate = toDateKey(new Date(at));
+        todo.repeatAnchor = repeat ? todo.dueDate : null;
         todo.updatedAt = at;
       },
       prepare: (id: string, repeat: Repeat | null) => ({ payload: { id, repeat, at: Date.now() } }),
+    },
+    todoProjectChanged: {
+      reducer(state, action: PayloadAction<{ id: string; projectId: string | null; at: number }>) {
+        const { id, projectId, at } = action.payload;
+        const todo = state.entities[id];
+        if (!todo || todo.projectId === projectId) return;
+        todo.projectId = projectId;
+        todo.updatedAt = at;
+      },
+      prepare: (id: string, projectId: string | null) => ({ payload: { id, projectId, at: Date.now() } }),
     },
     todoNoted: {
       reducer(state, action: PayloadAction<{ id: string; notes: string; at: number }>) {
@@ -158,16 +173,24 @@ export const todosSlice = createSlice({
         state.entities[todo.id] = todo;
       }
     },
-    todosImported(state, action: PayloadAction<readonly Todo[]>) {
-      for (const todo of action.payload) {
-        if (todo.id in state.entities) continue;
-        state.ids.push(todo.id);
-        state.entities[todo.id] = todo;
-      }
-    },
-    todosReplaced(state, action: PayloadAction<readonly Todo[]>) {
-      todosAdapter.setAll(state, action.payload);
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(projectRemoved, (state, action) => {
+        todosAdapter.removeMany(
+          state,
+          state.ids.filter((id) => state.entities[id]?.projectId === action.payload),
+        );
+      })
+      .addCase(dataReplaced, (state, action) => {
+        todosAdapter.setAll(state, action.payload.todos);
+      })
+      .addCase(dataImported, (state, action) => {
+        todosAdapter.addMany(
+          state,
+          action.payload.todos.filter((todo) => !(todo.id in state.entities)),
+        );
+      });
   },
 });
 
@@ -179,12 +202,11 @@ export const {
   todoScheduled,
   todosScheduled,
   todoRepeatChanged,
+  todoProjectChanged,
   todoNoted,
   todoDuplicated,
   todoMoved,
   allTodosMarked,
   todosRemoved,
   todosRestored,
-  todosImported,
-  todosReplaced,
 } = todosSlice.actions;

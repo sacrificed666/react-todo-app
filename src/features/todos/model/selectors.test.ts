@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import { setupStore } from "@/app/store";
+import { selectCurrentProject, selectList } from "@/features/lists/model/selectors";
 import { sortChanged } from "@/features/lists/model/viewSlice";
-import { makeState, makeTodo, sampleTodos } from "@/test/factories";
+import { makeProject, makeState, makeTodo, sampleTodos } from "@/test/factories";
 
 import {
   selectCompletedIds,
   selectListCounts,
   selectListProgress,
+  selectProjectCounts,
   selectTagCounts,
   selectVisibleTodos,
 } from "./selectors";
@@ -106,5 +108,37 @@ describe("selectTagCounts", () => {
       { tag: "#q4", count: 2 },
       { tag: "#Work", count: 2 },
     ]);
+  });
+});
+
+describe("projects and search", () => {
+  const work = makeProject({ id: "work", name: "Work" });
+  const todos = [
+    makeTodo({ id: "a", title: "Slides", projectId: "work" }),
+    makeTodo({ id: "b", title: "Report", projectId: "work", completed: true, completedAt: 1 }),
+    makeTodo({ id: "c", title: "Slides for home", dueDate: today }),
+  ];
+
+  it("shows the tasks of the open project", () => {
+    const visible = selectVisibleTodos(stateWith(todos, "project:work", "", [work]), today);
+    expect(visible.active.map((todo) => todo.id)).toEqual(["a"]);
+    expect(visible.completed.map((todo) => todo.id)).toEqual(["b"]);
+    expect(selectListProgress(stateWith(todos, "project:work", "", [work]), today)).toEqual({ done: 1, total: 2 });
+  });
+
+  it("searches every list while a query is typed", () => {
+    const visible = selectVisibleTodos(stateWith(todos, "today", "slides", [work]), today);
+    expect(visible.active.map((todo) => todo.id)).toEqual(["a", "c"]);
+  });
+
+  it("counts active tasks per project", () => {
+    expect([...selectProjectCounts(stateWith(todos, "all", "", [work]))]).toEqual([["work", 1]]);
+  });
+
+  it("falls back to all tasks when the open project is gone", () => {
+    const state = stateWith(todos, "project:gone", "", [work]);
+    expect(selectList(state)).toBe("all");
+    expect(selectCurrentProject(state)).toBeUndefined();
+    expect(selectCurrentProject(stateWith(todos, "project:work", "", [work]))).toEqual(work);
   });
 });

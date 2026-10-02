@@ -46,6 +46,35 @@ describe("repeats", () => {
     });
   });
 
+  it("anchors a new series to its first date", () => {
+    expect(createTodo({ title: "Rent", repeat: "monthly", dueDate: "2026-01-31" }, 1)).toMatchObject({
+      dueDate: "2026-01-31",
+      repeatAnchor: "2026-01-31",
+    });
+  });
+
+  it("repairs missing or impossible anchors when parsing", () => {
+    const [missing, future, plain] =
+      parseTodos([
+        { id: "a", title: "A", dueDate: "2026-10-01", repeat: "monthly" },
+        { id: "b", title: "B", dueDate: "2026-10-01", repeat: "monthly", repeatAnchor: "2026-12-01" },
+        { id: "c", title: "C", dueDate: "2026-10-01", repeatAnchor: "2026-09-01" },
+      ]) ?? [];
+    expect(missing?.repeatAnchor).toBe("2026-10-01");
+    expect(future?.repeatAnchor).toBe("2026-10-01");
+    expect(plain?.repeatAnchor).toBeNull();
+  });
+
+  it("keeps valid project links and drops malformed ones", () => {
+    const [linked, broken] =
+      parseTodos([
+        { id: "a", title: "A", projectId: "work" },
+        { id: "b", title: "B", projectId: "not valid!" },
+      ]) ?? [];
+    expect(linked?.projectId).toBe("work");
+    expect(broken?.projectId).toBeNull();
+  });
+
   it("drops unknown repeats and repeats without a date when parsing", () => {
     const [unknown, undated] =
       parseTodos([
@@ -98,6 +127,8 @@ describe("createTodo", () => {
       important: false,
       dueDate: null,
       repeat: null,
+      repeatAnchor: null,
+      projectId: null,
       notes: "",
       createdAt: 42,
       updatedAt: 42,
@@ -136,6 +167,8 @@ describe("parseTodos", () => {
       important: true,
       dueDate: "2026-10-01",
       repeat: "weekly",
+      repeatAnchor: "2026-09-17",
+      projectId: "books",
       notes: "Chapter 3",
       createdAt: 1,
       updatedAt: 2,
@@ -154,6 +187,8 @@ describe("parseTodos", () => {
         important: false,
         dueDate: null,
         repeat: null,
+        repeatAnchor: null,
+        projectId: null,
         notes: "",
         createdAt: 500,
         updatedAt: 500,

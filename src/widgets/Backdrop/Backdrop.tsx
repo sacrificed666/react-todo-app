@@ -9,6 +9,7 @@ const Backdrop = () => (
         <span key={orb} className={styles.orb} data-orb={orb} />
       ))}
     </div>
+    <div className={styles.stars} />
     <div className={styles.waves} />
     <div className={styles.grain} />
   </div>

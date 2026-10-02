@@ -1,7 +1,7 @@
 import { createSlice, nanoid, type PayloadAction } from "@reduxjs/toolkit";
 
 import type { MessageKey } from "@/features/i18n/model/translate";
-import type { ListId } from "@/features/lists/model/lists";
+import type { ViewId } from "@/features/lists/model/lists";
 import type { RemovedTodo } from "@/features/todos/model/todosSlice";
 
 export interface ToastMessage {
@@ -15,7 +15,7 @@ export type ToastAction =
   | { type: "restore"; todos: RemovedTodo[] }
   | { type: "reload" }
   | { type: "undo" }
-  | { type: "show"; list: ListId; todoId: string };
+  | { type: "show"; list: ViewId; todoId: string };
 
 export interface Toast {
   id: string;

@@ -1,7 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import type { RootState } from "@/app/store";
-import { isOverdue, matchesList, type ListId } from "@/features/lists/model/lists";
+import { isOverdue, matchesList, matchesView, type ListId } from "@/features/lists/model/lists";
 import { selectList, selectQuery, selectSort } from "@/features/lists/model/selectors";
 import { sortTodos } from "@/features/lists/model/sort";
 
@@ -36,17 +36,38 @@ export const selectCompletedIds = createSelector([selectTodos], (todos) =>
   todos.filter((todo) => todo.completed).map((todo) => todo.id),
 );
 
+export const selectProjectCounts = createSelector([selectTodos], (todos): ReadonlyMap<string, number> => {
+  const counts = new Map<string, number>();
+  for (const todo of todos) {
+    if (todo.completed || todo.projectId === null) continue;
+    counts.set(todo.projectId, (counts.get(todo.projectId) ?? 0) + 1);
+  }
+  return counts;
+});
+
+export const selectDueDateCounts = createSelector([selectTodos], (todos): ReadonlyMap<string, number> => {
+  const counts = new Map<string, number>();
+  for (const todo of todos) {
+    if (todo.completed || todo.dueDate === null) continue;
+    counts.set(todo.dueDate, (counts.get(todo.dueDate) ?? 0) + 1);
+  }
+  return counts;
+});
+
 export const selectListProgress = createSelector([selectTodos, selectList, selectToday], (todos, list, today) => {
-  const inList = todos.filter((todo) => matchesList(todo, list, today));
+  const inList = todos.filter((todo) => matchesView(todo, list, today));
   return { done: inList.filter((todo) => todo.completed).length, total: inList.length };
 });
 
+const selectQueryArgument = (state: RootState, _today: string, query?: string) => query ?? selectQuery(state);
+
 export const selectVisibleTodos = createSelector(
-  [selectTodos, selectList, selectQuery, selectSort, selectToday],
+  [selectTodos, selectList, selectQueryArgument, selectSort, selectToday],
   (todos, list, query, sort, today) => {
+    const searching = query.trim() !== "";
     const matches = createMatcher(query);
-    const visible = todos.filter(
-      (todo) => matchesList(todo, list, today) && (matches(todo.title) || matches(todo.notes)),
+    const visible = todos.filter((todo) =>
+      searching ? matches(todo.title) || matches(todo.notes) : matchesView(todo, list, today),
     );
     return {
       active: sortTodos(
@@ -60,8 +81,6 @@ export const selectVisibleTodos = createSelector(
     };
   },
 );
-
-export const selectHistory = (state: RootState) => state.history;
 
 export interface TagCount {
   tag: string;

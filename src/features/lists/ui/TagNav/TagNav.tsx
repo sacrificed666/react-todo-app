@@ -10,7 +10,11 @@ import { queryChanged } from "../../model/viewSlice";
 
 import styles from "./TagNav.module.scss";
 
-const TagNav = () => {
+interface TagNavProps {
+  onNavigate?: () => void;
+}
+
+const TagNav = ({ onNavigate }: TagNavProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
   const headingId = useId();
@@ -34,7 +38,10 @@ const TagNav = () => {
                 className={styles.tag}
                 aria-pressed={active}
                 aria-label={t("todo.tag", { tag })}
-                onClick={() => dispatch(queryChanged(active ? "" : tag))}
+                onClick={() => {
+                  dispatch(queryChanged(active ? "" : tag));
+                  onNavigate?.();
+                }}
               >
                 <Icon name="hash" className={styles.icon} />
                 <span className={styles.name}>{tag.slice(1)}</span>

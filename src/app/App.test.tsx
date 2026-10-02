@@ -4,10 +4,15 @@ import { describe, expect, it, vi } from "vitest";
 import { TOAST_DURATION } from "@/features/notifications/ui/Toaster/Toaster";
 import { selectTodos } from "@/features/todos/model/selectors";
 import { parseTodos } from "@/features/todos/model/todo";
-import { dayFromToday, makeTodo, todayKey } from "@/test/factories";
+import { dayFromToday, makeProject, makeTodo, todayKey } from "@/test/factories";
 import { itemTitles, mockMediaQueries, openPopover, renderApp, section, type User } from "@/test/render";
 
 const notification = () => screen.getByRole("status", { name: "Notification" });
+
+const openSettings = async (user: User) => {
+  await user.click(screen.getByRole("button", { name: "Settings" }));
+  return within(screen.getByRole("dialog", { name: "Settings" }));
+};
 
 const chooseMenuItem = async (user: User, name: string) => {
   const menu = await openPopover(user, screen.getByRole("button", { name: "More actions" }));
@@ -23,10 +28,12 @@ const plannedTodos = [
 ];
 
 describe("App shell", () => {
-  it("renders the header, lists and credits", () => {
+  it("renders the sidebar, lists and credits without a header bar", () => {
     renderApp(plannedTodos);
 
-    expect(screen.getByRole("banner")).toHaveTextContent("ToDo");
+    expect(screen.queryByRole("banner")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "ToDo home" })).toHaveTextContent("ToDo");
+    expect(screen.getByRole("searchbox", { name: "Search tasks" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "All tasks" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Lists" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Today (2)" })).toBeInTheDocument();
@@ -65,21 +72,38 @@ describe("App shell", () => {
     expect(screen.queryByRole("textbox", { name: "New task" })).not.toBeInTheDocument();
   });
 
-  it("changes the appearance and accent", async () => {
+  it("changes the appearance, accent, background and glass", async () => {
     const { user, store } = renderApp();
 
-    const panel = await openPopover(user, screen.getByRole("button", { name: "Settings" }));
+    const panel = await openSettings(user);
     await user.click(panel.getByRole("radio", { name: "Light" }));
     await user.click(panel.getByRole("radio", { name: "Forest" }));
+    await user.click(panel.getByRole("radio", { name: "Nebula" }));
+    await user.click(panel.getByRole("radio", { name: "Tinted" }));
 
-    expect(store.getState().settings).toEqual({ appearance: "light", accent: "forest", locale: "en", effects: "auto" });
-    expect(document.documentElement.dataset).toMatchObject({ appearance: "light", accent: "forest" });
+    expect(store.getState().settings).toEqual({
+      appearance: "light",
+      accent: "forest",
+      backdrop: "nebula",
+      glass: "tinted",
+      locale: "en",
+      effects: "auto",
+    });
+    expect(document.documentElement.dataset).toMatchObject({
+      appearance: "light",
+      accent: "forest",
+      backdrop: "nebula",
+      glass: "tinted",
+    });
+
+    await user.click(panel.getByRole("button", { name: "Done" }));
+    expect(screen.queryByRole("dialog", { name: "Settings" })).not.toBeInTheDocument();
   });
 
   it("switches the interface language", async () => {
     const { user, store } = renderApp(plannedTodos);
 
-    const panel = await openPopover(user, screen.getByRole("button", { name: "Settings" }));
+    const panel = await openSettings(user);
     await user.click(panel.getByRole("radio", { name: "Українська" }));
 
     expect(store.getState().settings.locale).toBe("uk");
@@ -157,7 +181,7 @@ describe("Layout", () => {
   it("switches to any of the eight languages", async () => {
     const { user, store } = renderApp(plannedTodos);
 
-    const panel = await openPopover(user, screen.getByRole("button", { name: "Settings" }));
+    const panel = await openSettings(user);
     expect(
       panel.getAllByRole("radio", { name: /English|Українська|Deutsch|Español|Français|Italiano|Nederlands|Polski/ }),
     ).toHaveLength(8);
@@ -172,7 +196,7 @@ describe("Layout", () => {
   it("switches the effects level", async () => {
     const { user, store } = renderApp();
 
-    const panel = await openPopover(user, screen.getByRole("button", { name: "Settings" }));
+    const panel = await openSettings(user);
     expect(panel.getByText("On this device: Reduced")).toBeInTheDocument();
 
     await user.click(panel.getByRole("radio", { name: "Full" }));
@@ -464,7 +488,44 @@ describe("Sorting and search", () => {
     expect(search).toHaveValue("");
 
     await user.keyboard("{Escape}");
+    expect(search).not.toHaveFocus();
+  });
+
+  it("searches every list, not only the open one", async () => {
+    const { user } = renderApp(plannedTodos, "today");
+
+    await user.type(screen.getByRole("searchbox", { name: "Search tasks" }), "dentist");
+
+    expect(screen.getByRole("heading", { level: 1, name: "Search" })).toBeInTheDocument();
+    expect(screen.getByText("1 result for “dentist”")).toBeInTheDocument();
+    expect(itemTitles(screen.getByRole("main"))).toEqual(["Dentist appointment"]);
+    expect(screen.queryByRole("textbox", { name: "New task" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /^Upcoming/ }));
+    expect(screen.getByRole("searchbox", { name: "Search tasks" })).toHaveValue("");
+    expect(screen.getByRole("heading", { level: 1, name: "Upcoming" })).toBeInTheDocument();
+  });
+
+  it("opens search from the toolbar on phones", async () => {
+    mockMediaQueries(["(max-width: 899px)"]);
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "Show search" }));
+    const search = screen.getByRole("searchbox", { name: "Search tasks" });
+    expect(search).toHaveFocus();
+
+    await user.type(search, "milk");
+    expect(itemTitles(screen.getByRole("main"))).toEqual(["Buy milk"]);
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.queryByRole("searchbox", { name: "Search tasks" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Show search" })).toHaveFocus();
+
+    await user.click(screen.getByRole("button", { name: "Show search" }));
+    await user.type(screen.getByRole("searchbox", { name: "Search tasks" }), "call");
+    await user.click(within(screen.getByRole("navigation", { name: "Lists" })).getByRole("button", { name: /^Today/ }));
+    expect(screen.queryByRole("searchbox", { name: "Search tasks" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
   });
 });
 
@@ -511,5 +572,136 @@ describe("More actions menu", () => {
 
     expect(await screen.findByRole("checkbox", { name: "Legacy import" })).toBeInTheDocument();
     expect(notification()).toHaveTextContent("Imported 1 task");
+  });
+});
+
+describe("Projects", () => {
+  const work = makeProject({ id: "work", name: "Work", color: "violet" });
+
+  it("creates a project from the sidebar and adds tasks to it", async () => {
+    const { user, store } = renderApp([]);
+
+    await user.click(screen.getByRole("button", { name: "New project" }));
+    const dialog = within(screen.getByRole("dialog", { name: "New project" }));
+    expect(dialog.getByRole("textbox", { name: "Name" })).toHaveFocus();
+    await user.type(dialog.getByRole("textbox", { name: "Name" }), "💡 Ideas");
+    await user.click(dialog.getByRole("radio", { name: "Teal" }));
+    await user.click(dialog.getByRole("button", { name: "Create" }));
+
+    expect(screen.getByRole("heading", { level: 1, name: "Ideas" })).toBeInTheDocument();
+    expect(screen.getByText("Nothing in Ideas yet")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Project: Ideas" })).toBeInTheDocument();
+
+    await user.type(screen.getByRole("textbox", { name: "New task" }), "Write a blog post{Enter}");
+    expect(itemTitles(screen.getByRole("main"))).toEqual(["Write a blog post"]);
+
+    const [project] = store.getState().projects.ids;
+    expect(store.getState().projects.entities[project ?? ""]).toMatchObject({ name: "💡 Ideas", color: "teal" });
+    expect(selectTodos(store.getState())[0]?.projectId).toBe(project);
+    expect(
+      within(screen.getByRole("navigation", { name: "Projects" })).getByRole("button", { name: "Ideas (1)" }),
+    ).toHaveAttribute("aria-current", "page");
+  });
+
+  it("assigns projects with @ in quick add and opens them from a task", async () => {
+    const { user, store } = renderApp([], "all", [work]);
+
+    await user.type(screen.getByRole("textbox", { name: "New task" }), "Prepare slides @work");
+    expect(screen.getByRole("button", { name: "Project: Work" })).toHaveAttribute("title", "Recognised from the title");
+    await user.keyboard("{Enter}");
+
+    expect(selectTodos(store.getState())[0]).toMatchObject({ title: "Prepare slides", projectId: "work" });
+    await user.click(screen.getByRole("button", { name: "Open Work" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Work" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Open Work" })).not.toBeInTheDocument();
+  });
+
+  it("moves a task to another project from its details", async () => {
+    const { user, store } = renderApp([makeTodo({ id: "deck", title: "Slides" })], "all", [work]);
+
+    await user.click(screen.getByRole("button", { name: "Details for “Slides”" }));
+    const details = within(screen.getByRole("dialog", { name: "Task details" }));
+    const picker = await openPopover(user, details.getByRole("button", { name: "Project" }));
+    await user.click(picker.getByRole("button", { name: "Work" }));
+
+    expect(selectTodos(store.getState())[0]?.projectId).toBe("work");
+    expect(details.getByRole("button", { name: "Project: Work" })).toBeInTheDocument();
+  });
+
+  it("edits and deletes a project with undo", async () => {
+    const { user, store } = renderApp([makeTodo({ id: "deck", title: "Slides", projectId: "work" })], "project:work", [
+      work,
+    ]);
+
+    await user.click(screen.getByRole("button", { name: "Edit project" }));
+    let dialog = within(screen.getByRole("dialog", { name: "Edit project" }));
+    await user.clear(dialog.getByRole("textbox", { name: "Name" }));
+    await user.type(dialog.getByRole("textbox", { name: "Name" }), "Job");
+    await user.click(dialog.getByRole("button", { name: "Save" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Job" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Edit project" }));
+    dialog = within(screen.getByRole("dialog", { name: "Edit project" }));
+    await user.click(dialog.getByRole("button", { name: "Delete project" }));
+    expect(dialog.getByRole("alert")).toHaveTextContent("“Job” and its 1 task will be deleted.");
+    await user.click(dialog.getByRole("button", { name: "Delete" }));
+
+    expect(screen.getByRole("heading", { level: 1, name: "All tasks" })).toBeInTheDocument();
+    expect(selectTodos(store.getState())).toEqual([]);
+    expect(notification()).toHaveTextContent("Deleted “Job” and 1 task");
+
+    await user.click(screen.getByRole("button", { name: "Undo" }));
+    expect(store.getState().projects.entities.work?.name).toBe("Job");
+    expect(selectTodos(store.getState())[0]?.title).toBe("Slides");
+  });
+
+  it("browses lists and projects from a sheet on phones", async () => {
+    mockMediaQueries(["(max-width: 899px)"]);
+    const { user } = renderApp([makeTodo({ id: "deck", title: "Slides", projectId: "work" })], "all", [work]);
+
+    await user.click(screen.getByRole("button", { name: "Lists" }));
+    const sheet = within(screen.getByRole("dialog", { name: "Lists" }));
+    expect(sheet.getByRole("button", { name: "Completed (0)" })).toBeInTheDocument();
+    await user.click(sheet.getByRole("button", { name: "Work (1)" }));
+
+    expect(screen.queryByRole("dialog", { name: "Lists" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Work" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Lists" })).toHaveAttribute("aria-current", "page");
+  });
+});
+
+const historyMarker = (): unknown => {
+  const state: unknown = window.history.state;
+  return typeof state === "object" && state !== null && "todoOverlay" in state ? state.todoOverlay : undefined;
+};
+
+describe("Back button", () => {
+  it("closes an open sheet instead of leaving the app", async () => {
+    window.history.replaceState(null, "");
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "Settings" }));
+    expect(historyMarker()).toEqual(expect.any(String));
+
+    await act(async () => {
+      window.history.back();
+      await new Promise((resolve) => setTimeout(resolve, 30));
+    });
+    expect(screen.queryByRole("dialog", { name: "Settings" })).not.toBeInTheDocument();
+  });
+
+  it("removes its history entry when a sheet is closed with a button", async () => {
+    window.history.replaceState(null, "");
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "Settings" }));
+    const opened = historyMarker();
+    expect(opened).toEqual(expect.any(String));
+
+    await user.click(screen.getByRole("button", { name: "Done" }));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 30));
+    });
+    expect(historyMarker()).not.toBe(opened);
   });
 });

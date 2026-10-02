@@ -1,3 +1,7 @@
+@use "sass:list";
+@use "sass:map";
+@use "palettes" as *;
+
 @property --glass-refraction {
   syntax: "*";
   inherits: false;
@@ -73,6 +77,7 @@
   --waves-filter: invert(1);
   --waves-opacity: 0.45;
   --grain-opacity: 0.18;
+  --star-color: rgb(40 48 96 / 45%);
 }
 
 :root {
@@ -86,8 +91,8 @@
   --layout-width: 76rem;
   --sidebar-width: 16.75rem;
   --inspector-width: 20rem;
-  --header-height: 64px;
   --tabbar-offset: 0px;
+  --titlebar-height: 0px;
 
   --color-backdrop: #070a14;
   --color-surface: #161b2c;
@@ -120,6 +125,17 @@
   --tone-important: #ffb020;
   --tone-completed: #32d583;
 
+  --project-blue: #3d8bff;
+  --project-indigo: #6366f1;
+  --project-violet: #9b6cff;
+  --project-pink: #f25ca2;
+  --project-red: #ef4444;
+  --project-orange: #f97316;
+  --project-yellow: #e5a50a;
+  --project-green: #22c55e;
+  --project-teal: #14b8a6;
+  --project-gray: #8b95a7;
+
   --glass-tint: rgb(255 255 255 / 6%);
   --glass-tint-hover: rgb(255 255 255 / 10%);
   --glass-tint-pressed: rgb(255 255 255 / 15%);
@@ -147,11 +163,17 @@
   --bar-shadow: 0 1px 0 rgb(255 255 255 / 6%), 0 12px 32px -20px rgb(0 0 0 / 70%);
 
   --backdrop-base: linear-gradient(165deg, #0b1122 0%, #060910 55%, #090c19 100%);
-  --orb-1: #2f6bff;
-  --orb-2: #1fb5e6;
-  --orb-3: #6a5cff;
-  --orb-4: #19c3b3;
-  --orb-5: #3a8dff;
+  --accent-orb-1: #2f6bff;
+  --accent-orb-2: #1fb5e6;
+  --accent-orb-3: #6a5cff;
+  --accent-orb-4: #19c3b3;
+  --accent-orb-5: #3a8dff;
+  --orb-1: var(--accent-orb-1);
+  --orb-2: var(--accent-orb-2);
+  --orb-3: var(--accent-orb-3);
+  --orb-4: var(--accent-orb-4);
+  --orb-5: var(--accent-orb-5);
+  --star-color: rgb(255 255 255 / 85%);
   --orb-opacity: 0.56;
   --orb-opacity-rich: 0.46;
   --orb-blend: screen;
@@ -235,69 +257,78 @@
   --duration-slow: 520ms;
 }
 
-:root[data-accent="violet"] {
-  --color-accent: #8b6cff;
-  --orb-1: #7a5cff;
-  --orb-2: #ff4f93;
-  --orb-3: #ff9f45;
-  --orb-4: #1fd1c2;
-  --orb-5: #3f6bff;
+@each $name, $accent in $accents {
+  :root[data-accent="#{$name}"] {
+    --color-accent: #{map.get($accent, dark)};
+
+    @if map.has-key($accent, on-dark) {
+      --color-on-accent: #{map.get($accent, on-dark)};
+    }
+
+    @for $index from 1 through 5 {
+      --accent-orb-#{$index}: #{list.nth(map.get($accent, orbs), $index)};
+    }
+  }
 }
 
-:root[data-accent="sunset"] {
-  --color-accent: #ff6b3d;
-  --orb-1: #ff6a3d;
-  --orb-2: #ff4f7b;
-  --orb-3: #ffb347;
-  --orb-4: #d9467c;
-  --orb-5: #ff8a5c;
+@each $name, $orbs in $backdrops {
+  :root[data-backdrop="#{$name}"] {
+    @for $index from 1 through 5 {
+      --orb-#{$index}: #{list.nth($orbs, $index)};
+    }
+  }
 }
 
-:root[data-accent="forest"] {
-  --color-accent: #22b35e;
-  --orb-1: #22c55e;
-  --orb-2: #14b8a6;
-  --orb-3: #84cc16;
-  --orb-4: #0ea5e9;
-  --orb-5: #16a34a;
+@mixin light-accents {
+  @each $name, $accent in $accents {
+    &[data-accent="#{$name}"] {
+      --color-accent: #{map.get($accent, light)};
+      --color-on-accent: #ffffff;
+    }
+  }
 }
 
-:root[data-accent="graphite"] {
-  --color-accent: #8a93a6;
-  --orb-1: #64748b;
-  --orb-2: #94a3b8;
-  --orb-3: #475569;
-  --orb-4: #cbd5e1;
-  --orb-5: #334155;
+@mixin tinted-dark {
+  --glass-tint: rgb(24 28 46 / 52%);
+  --glass-tint-hover: rgb(32 36 58 / 58%);
+  --glass-tint-pressed: rgb(40 44 68 / 64%);
+  --glass-tint-strong: rgb(16 20 36 / 82%);
+  --glass-tint-content: rgb(20 24 42 / 78%);
+  --glass-tint-bar: rgb(12 16 30 / 72%);
+}
+
+@mixin tinted-light {
+  --glass-tint: rgb(255 255 255 / 66%);
+  --glass-tint-hover: rgb(255 255 255 / 76%);
+  --glass-tint-pressed: rgb(255 255 255 / 86%);
+  --glass-tint-strong: rgb(250 251 255 / 90%);
+  --glass-tint-content: rgb(252 253 255 / 86%);
+  --glass-tint-bar: rgb(248 250 255 / 82%);
 }
 
 :root[data-appearance="light"] {
   @include light-tokens;
+  @include light-accents;
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-appearance="dark"]) {
     @include light-tokens;
+    @include light-accents;
   }
 }
 
-:root[data-appearance="light"][data-accent="blue"],
-:root[data-appearance="light"]:not([data-accent]) {
-  --color-accent: #007aff;
+:root[data-glass="tinted"] {
+  @include tinted-dark;
 }
 
-:root[data-appearance="light"][data-accent="graphite"] {
-  --color-accent: #4b5566;
+:root[data-glass="tinted"][data-appearance="light"] {
+  @include tinted-light;
 }
 
 @media (prefers-color-scheme: light) {
-  :root:not([data-appearance="dark"])[data-accent="blue"],
-  :root:not([data-appearance="dark"]):not([data-accent]) {
-    --color-accent: #007aff;
-  }
-
-  :root:not([data-appearance="dark"])[data-accent="graphite"] {
-    --color-accent: #4b5566;
+  :root[data-glass="tinted"]:not([data-appearance="dark"]) {
+    @include tinted-light;
   }
 }
 
@@ -310,6 +341,12 @@
 @media (max-width: 899px) {
   :root {
     --tabbar-offset: 76px;
+  }
+}
+
+@media (display-mode: window-controls-overlay) {
+  :root {
+    --titlebar-height: env(titlebar-area-height, 32px);
   }
 }
 
@@ -328,7 +365,9 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  :root {
+  :root,
+  :root[data-glass][data-appearance],
+  :root[data-glass]:not([data-appearance="dark"]) {
     --glass-tint: color-mix(in srgb, var(--color-backdrop) 92%, var(--color-text));
     --glass-tint-hover: color-mix(in srgb, var(--color-backdrop) 86%, var(--color-text));
     --glass-tint-pressed: color-mix(in srgb, var(--color-backdrop) 80%, var(--color-text));
@@ -344,7 +383,9 @@
 }
 
 @media (prefers-contrast: more) {
-  :root {
+  :root,
+  :root[data-glass][data-appearance],
+  :root[data-glass]:not([data-appearance="dark"]) {
     --color-text-secondary: color-mix(in srgb, var(--color-text) 88%, transparent);
     --color-text-tertiary: color-mix(in srgb, var(--color-text) 76%, transparent);
     --color-separator: color-mix(in srgb, var(--color-text) 40%, transparent);

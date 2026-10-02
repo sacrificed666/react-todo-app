@@ -5,26 +5,30 @@ import type { Repeat } from "./todo";
 const WEEKEND = new Set([0, 6]);
 const MAX_STEPS = 5000;
 
-const advance = (key: string, repeat: Repeat) => {
-  switch (repeat) {
-    case "daily":
-      return addDays(key, 1);
-    case "weekdays": {
-      let next = addDays(key, 1);
-      while (WEEKEND.has(fromDateKey(next).getDay())) next = addDays(next, 1);
-      return next;
-    }
-    case "weekly":
-      return addDays(key, 7);
-    case "monthly":
-      return addMonths(key, 1);
-    case "yearly":
-      return addMonths(key, 12);
-  }
+const monthIndex = (key: string) => Number(key.slice(0, 4)) * 12 + Number(key.slice(5, 7)) - 1;
+
+const advanceDays = (key: string, repeat: Repeat) => {
+  if (repeat === "weekly") return addDays(key, 7);
+  let next = addDays(key, 1);
+  if (repeat !== "weekdays") return next;
+  while (WEEKEND.has(fromDateKey(next).getDay())) next = addDays(next, 1);
+  return next;
 };
 
-export const nextOccurrence = (dueDate: string, repeat: Repeat, today: string) => {
-  let next = advance(dueDate, repeat);
-  for (let step = 0; next <= today && step < MAX_STEPS; step += 1) next = advance(next, repeat);
+export const nextOccurrence = (dueDate: string, repeat: Repeat, today: string, anchor: string = dueDate) => {
+  const months = repeat === "monthly" ? 1 : repeat === "yearly" ? 12 : 0;
+
+  if (months === 0) {
+    let next = advanceDays(dueDate, repeat);
+    for (let step = 0; next <= today && step < MAX_STEPS; step += 1) next = advanceDays(next, repeat);
+    return next;
+  }
+
+  let count = Math.max(Math.floor((monthIndex(dueDate) - monthIndex(anchor)) / months), 0) + 1;
+  let next = addMonths(anchor, count * months);
+  for (let step = 0; (next <= dueDate || next <= today) && step < MAX_STEPS; step += 1) {
+    count += 1;
+    next = addMonths(anchor, count * months);
+  }
   return next;
 };

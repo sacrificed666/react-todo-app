@@ -1,13 +1,19 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import CommandPalette from "@/features/commands/ui/CommandPalette/CommandPalette";
+import { redo, undo } from "@/features/data/model/thunks";
 import { useI18n } from "@/features/i18n/model/useI18n";
+import { selectDetailsId, selectOverlay } from "@/features/lists/model/selectors";
 import { useListShortcuts } from "@/features/lists/model/useListShortcuts";
+import { detailsClosed, overlayClosed } from "@/features/lists/model/viewSlice";
+import ListsSheet from "@/features/lists/ui/ListsSheet/ListsSheet";
 import TabBar from "@/features/lists/ui/TabBar/TabBar";
 import Toaster from "@/features/notifications/ui/Toaster/Toaster";
+import ProjectDialog from "@/features/projects/ui/ProjectDialog/ProjectDialog";
 import { useDocumentSync } from "@/features/settings/model/useDocumentSync";
+import SettingsDialog from "@/features/settings/ui/SettingsDialog/SettingsDialog";
 import { selectListCounts } from "@/features/todos/model/selectors";
-import { redo, undo } from "@/features/todos/model/thunks";
 import TaskDetailsDialog from "@/features/todos/ui/TaskDetailsDialog/TaskDetailsDialog";
+import TaskDnd from "@/features/todos/ui/TaskDnd/TaskDnd";
 import { useAppBadge } from "@/shared/hooks/useAppBadge";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { usePointerLight } from "@/shared/hooks/usePointerLight";
@@ -16,10 +22,12 @@ import { useToday } from "@/shared/hooks/useToday";
 import { isRedoKey, isUndoKey } from "@/shared/lib/keyboard";
 import { COMPACT_LAYOUT, WIDE_LAYOUT } from "@/shared/lib/media";
 import Backdrop from "@/widgets/Backdrop/Backdrop";
-import Header from "@/widgets/Header/Header";
 import Inspector from "@/widgets/Inspector/Inspector";
 import Sidebar from "@/widgets/Sidebar/Sidebar";
+import Toolbar from "@/widgets/Toolbar/Toolbar";
 import Workspace, { WORKSPACE_ID } from "@/widgets/Workspace/Workspace";
+
+import { useBackToClose } from "./useBackToClose";
 
 import styles from "./App.module.scss";
 
@@ -30,11 +38,18 @@ const App = () => {
   const compact = useMediaQuery(COMPACT_LAYOUT);
   const wide = useMediaQuery(WIDE_LAYOUT);
   const counts = useAppSelector((state) => selectListCounts(state, today));
+  const overlay = useAppSelector(selectOverlay);
+  const detailsOpen = useAppSelector((state) => selectDetailsId(state) !== null) && !wide;
 
   usePointerLight();
   useDocumentSync();
   useListShortcuts();
   useAppBadge(counts.today);
+
+  useBackToClose(overlay !== null || detailsOpen, () => {
+    if (overlay) dispatch(overlayClosed(overlay.kind));
+    else dispatch(detailsClosed());
+  });
 
   useShortcut(isUndoKey, (event) => {
     event.preventDefault();
@@ -52,15 +67,21 @@ const App = () => {
         {t("app.skip")}
       </a>
       <Backdrop />
-      <Header />
-      <div className={styles.body}>
-        <Sidebar />
-        <Workspace />
-        {wide ? <Inspector /> : null}
-      </div>
+      <div className={styles.titlebar} aria-hidden="true" />
+      <TaskDnd>
+        <div className={styles.body}>
+          {compact ? <Toolbar /> : null}
+          <Sidebar />
+          <Workspace />
+          {wide ? <Inspector /> : null}
+        </div>
+        {compact ? <ListsSheet /> : null}
+      </TaskDnd>
       {compact ? <TabBar /> : null}
       {wide ? null : <TaskDetailsDialog />}
       <CommandPalette />
+      <SettingsDialog />
+      <ProjectDialog />
       <Toaster />
     </div>
   );

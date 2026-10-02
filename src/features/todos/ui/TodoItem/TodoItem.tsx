@@ -1,6 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
+  memo,
   useEffect,
   useEffectEvent,
   useRef,
@@ -12,11 +13,14 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector, useAppStore } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
-import { matchesList } from "@/features/lists/model/lists";
-import { selectDetailsId, selectList } from "@/features/lists/model/selectors";
-import { detailsOpened, queryChanged } from "@/features/lists/model/viewSlice";
+import { matchesView, projectView } from "@/features/lists/model/lists";
+import { selectDetailsId, selectList, selectSearching } from "@/features/lists/model/selectors";
+import { detailsOpened, listChanged, queryChanged } from "@/features/lists/model/viewSlice";
+import { splitProjectName } from "@/features/projects/model/project";
+import { selectProjectById } from "@/features/projects/model/selectors";
+import ProjectIcon from "@/features/projects/ui/ProjectIcon/ProjectIcon";
 import { useToday } from "@/shared/hooks/useToday";
 import { celebrate } from "@/shared/lib/celebrate";
 import { cx } from "@/shared/lib/cx";
@@ -25,21 +29,31 @@ import { tap } from "@/shared/lib/haptics";
 import { isEditableTarget } from "@/shared/lib/keyboard";
 import { prefersReducedMotion, waitForTransitions } from "@/shared/lib/motion";
 import Checkbox from "@/shared/ui/Checkbox/Checkbox";
+import type { MenuPoint } from "@/shared/ui/ContextMenu/ContextMenu";
 import Icon from "@/shared/ui/Icon/Icon";
 import IconButton from "@/shared/ui/IconButton/IconButton";
 
 import { checklistProgress } from "../../model/checklist";
-import { removeTodos, toggleTodo } from "../../model/thunks";
+import { duplicateTodo, removeTodos, toggleTodo } from "../../model/thunks";
 import { extractTags, MAX_TITLE_LENGTH, stripTags, type Todo } from "../../model/todo";
-import { todoImportanceToggled, todoMoved, todoRenamed, todoScheduled } from "../../model/todosSlice";
+import {
+  todoImportanceToggled,
+  todoMoved,
+  todoProjectChanged,
+  todoRenamed,
+  todoScheduled,
+} from "../../model/todosSlice";
 import DuePicker from "../DuePicker/DuePicker";
 import { COMPOSER_INPUT_ID, TOGGLE_SELECTOR, toggleId } from "../ids";
+import TaskMenu, { type TaskMenuActions } from "../TaskMenu/TaskMenu";
 
 import styles from "./TodoItem.module.scss";
 
 const TOGGLE_DELAY = 420;
 const SWIPE_THRESHOLD = 88;
 const SWIPE_LIMIT = 132;
+const LONG_PRESS = 480;
+const PRESS_TOLERANCE = 8;
 
 interface Swipe {
   pointerId: number;
@@ -74,30 +88,51 @@ const centerOf = (element: Element | null) => {
   return { x: left + width / 2, y: top + height / 2 };
 };
 
+const anchorOf = (element: Element | null): MenuPoint => {
+  if (!element) return { x: 0, y: 0 };
+  const { left, bottom } = element.getBoundingClientRect();
+  return { x: left, y: bottom + 6 };
+};
+
 interface TodoItemProps {
   todo: Todo;
   previousId: string | null;
   nextId: string | null;
   sortable: boolean;
+  coarse: boolean;
+  viewProjectId: string | null;
   hideDueDate?: boolean;
 }
 
-const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: TodoItemProps) => {
+const TodoItem = ({
+  todo,
+  previousId,
+  nextId,
+  sortable,
+  coarse,
+  viewProjectId,
+  hideDueDate = false,
+}: TodoItemProps) => {
   const dispatch = useAppDispatch();
   const today = useToday();
   const { t, locale } = useI18n();
-  const list = useAppSelector(selectList);
+  const store = useAppStore();
   const selected = useAppSelector((state) => selectDetailsId(state) === todo.id);
+  const project = useAppSelector((state) =>
+    todo.projectId === null ? undefined : selectProjectById(state, todo.projectId),
+  );
   const itemRef = useRef<HTMLLIElement>(null);
   const editorRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLButtonElement>(null);
   const toggleTimer = useRef(0);
+  const pressTimer = useRef(0);
   const swipeRef = useRef<Swipe | null>(null);
   const suppressClick = useRef(false);
   const [pendingToggle, setPendingToggle] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(todo.title);
+  const [menu, setMenu] = useState<{ point: MenuPoint; touch: boolean } | null>(null);
 
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({
     id: todo.id,
@@ -111,8 +146,15 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
   const title = stripTags(todo.title) || todo.title;
   const checklist = checklistProgress(todo.notes);
   const neighborId = nextId ?? previousId;
+  const showProject = project !== undefined && project.id !== viewProjectId;
 
-  useEffect(() => () => clearTimeout(toggleTimer.current), []);
+  useEffect(
+    () => () => {
+      clearTimeout(toggleTimer.current);
+      clearTimeout(pressTimer.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!editing) return;
@@ -136,7 +178,8 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
   };
 
   const update = (next: Todo, commit: () => void) => {
-    if (matchesList(next, list, today)) commit();
+    const state = store.getState();
+    if (selectSearching(state) || matchesView(next, selectList(state), today)) commit();
     else void leave(commit);
   };
 
@@ -194,6 +237,29 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
 
   const openDetails = () => dispatch(detailsOpened(todo.id));
 
+  const openMenu = (point: MenuPoint, touch = false) => {
+    if (editing || leaving) return;
+    setMenu({ point, touch });
+  };
+
+  const moveToProject = (projectId: string | null) =>
+    update({ ...todo, projectId }, () => dispatch(todoProjectChanged(todo.id, projectId)));
+
+  const menuActions: TaskMenuActions = {
+    toggle: () => {
+      clearTimeout(toggleTimer.current);
+      setPendingToggle(false);
+      void commitToggle();
+    },
+    toggleImportant,
+    schedule,
+    moveToProject,
+    rename: startEditing,
+    openDetails,
+    duplicate: () => dispatch(duplicateTodo(todo.id)),
+    remove: handleDelete,
+  };
+
   const openDuePicker = () => itemRef.current?.querySelector<HTMLButtonElement>("[data-due-trigger]")?.click();
 
   const focusSibling = (direction: 1 | -1) => {
@@ -225,6 +291,12 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
     const { target } = event;
     if (editing || leaving || isDragging || event.defaultPrevented || event.metaKey || event.ctrlKey) return;
     if (!(target instanceof Element) || isEditableTarget(target) || target.closest("[popover]")) return;
+
+    if (event.key === "ContextMenu" || (event.shiftKey && event.key === "F10")) {
+      event.preventDefault();
+      openMenu(anchorOf(titleRef.current ?? itemRef.current));
+      return;
+    }
 
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
@@ -265,9 +337,21 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
     item.style.removeProperty("--swipe");
   };
 
+  const cancelPress = () => clearTimeout(pressTimer.current);
+
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    suppressClick.current = false;
     if (event.pointerType !== "touch" || !event.isPrimary || editing || leaving) return;
     if (event.target instanceof Element && event.target.closest("[data-swipe-ignore], [popover]")) return;
+    const point = { x: event.clientX, y: event.clientY };
+    clearTimeout(pressTimer.current);
+    pressTimer.current = window.setTimeout(() => {
+      if (swipeRef.current?.engaged) return;
+      swipeRef.current = null;
+      suppressClick.current = true;
+      tap(12);
+      openMenu(point, true);
+    }, LONG_PRESS);
     swipeRef.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -285,6 +369,7 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
 
     const dx = event.clientX - swipe.startX;
     const dy = event.clientY - swipe.startY;
+    if (Math.hypot(dx, dy) > PRESS_TOLERANCE) cancelPress();
 
     if (!swipe.engaged) {
       if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
@@ -310,6 +395,7 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
   };
 
   const handlePointerUp = () => {
+    cancelPress();
     const swipe = swipeRef.current;
     swipeRef.current = null;
     if (!swipe?.engaged) return;
@@ -325,8 +411,19 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
   };
 
   const handlePointerCancel = () => {
+    cancelPress();
     swipeRef.current = null;
     resetSwipe();
+  };
+
+  const handleContextMenu = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.target instanceof Element && event.target.closest("input, textarea, [popover]")) return;
+    event.preventDefault();
+    if (menu) return;
+    cancelPress();
+    swipeRef.current = null;
+    const fromKeyboard = event.clientX === 0 && event.clientY === 0;
+    openMenu(fromKeyboard ? anchorOf(titleRef.current) : { x: event.clientX, y: event.clientY });
   };
 
   const handleClickCapture = (event: MouseEvent<HTMLDivElement>) => {
@@ -356,6 +453,7 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerCancel}
           onClickCapture={handleClickCapture}
+          onContextMenu={handleContextMenu}
         >
           <Checkbox
             id={toggleId(todo.id)}
@@ -383,14 +481,14 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
               ref={titleRef}
               type="button"
               className={styles.title}
-              aria-label={t("todo.edit", { title: todo.title })}
-              onClick={startEditing}
+              aria-label={coarse ? t("todo.details", { title: todo.title }) : t("todo.edit", { title: todo.title })}
+              onClick={coarse ? openDetails : startEditing}
             >
               {title}
             </button>
           )}
 
-          {!editing && (due || todo.repeat || tags.length > 0 || todo.notes) ? (
+          {!editing && (due || todo.repeat || tags.length > 0 || todo.notes || showProject) ? (
             <div className={styles.meta}>
               {due ? (
                 <span className={styles.chip} data-tone={todo.completed ? undefined : due.tone}>
@@ -422,6 +520,18 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
                   <Icon name="notes" className={styles.chipIcon} />
                   <span className="visually-hidden">{t("todo.notes")}</span>
                 </span>
+              ) : null}
+              {showProject ? (
+                <button
+                  type="button"
+                  className={cx(styles.chip, styles.project)}
+                  data-project-color={project.color}
+                  aria-label={t("project.show", { name: splitProjectName(project.name).label })}
+                  onClick={() => dispatch(listChanged(projectView(project.id)))}
+                >
+                  <ProjectIcon name={project.name} color={project.color} size="small" className={styles.projectIcon} />
+                  {splitProjectName(project.name).label}
+                </button>
               ) : null}
               {tags.map((tag) => (
                 <button
@@ -481,7 +591,7 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
                   label={t("todo.details", { title: todo.title })}
                   variant="ghost"
                   size="small"
-                  className={styles.action}
+                  className={cx(styles.action, styles.info)}
                   onClick={openDetails}
                 />
                 <IconButton
@@ -510,8 +620,17 @@ const TodoItem = ({ todo, previousId, nextId, sortable, hideDueDate = false }: T
           </div>
         </div>
       </div>
+      {menu ? (
+        <TaskMenu
+          todo={todo}
+          point={menu.point}
+          touch={menu.touch}
+          actions={menuActions}
+          onClose={() => setMenu(null)}
+        />
+      ) : null}
     </li>
   );
 };
 
-export default TodoItem;
+export default memo(TodoItem);

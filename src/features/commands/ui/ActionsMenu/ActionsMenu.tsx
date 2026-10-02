@@ -1,14 +1,14 @@
 import { useRef, type ChangeEvent, type ReactNode } from "react";
 
 import { useAppDispatch } from "@/app/hooks";
+import { importData } from "@/features/data/model/thunks";
+import { MAX_IMPORT_BYTES } from "@/features/data/model/transfer";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { toastShown } from "@/features/notifications/model/toastSlice";
-import { importTodos } from "@/features/todos/model/thunks";
-import { MAX_IMPORT_BYTES } from "@/features/todos/model/transfer";
 import { isApplePlatform } from "@/shared/lib/keyboard";
 import Icon from "@/shared/ui/Icon/Icon";
 import type { IconName } from "@/shared/ui/Icon/icons";
-import IconButton from "@/shared/ui/IconButton/IconButton";
+import IconButton, { type IconButtonVariant } from "@/shared/ui/IconButton/IconButton";
 import Popover from "@/shared/ui/Popover/Popover";
 import { usePopover } from "@/shared/ui/Popover/usePopover";
 
@@ -34,7 +34,11 @@ const MenuItem = ({ icon, disabled = false, hint, onSelect, children }: MenuItem
   </button>
 );
 
-const ActionsMenu = () => {
+interface ActionsMenuProps {
+  variant?: IconButtonVariant;
+}
+
+const ActionsMenu = ({ variant = "glass" }: ActionsMenuProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
   const commands = useTaskCommands();
@@ -50,6 +54,7 @@ const ActionsMenu = () => {
     { keys: ["↑", "↓"], label: t("shortcuts.navigate") },
     { keys: [apple ? "⌥" : "Alt", "↑", "↓"], label: t("shortcuts.reorder") },
     { keys: ["S", "D", "E", "I"], label: t("shortcuts.taskActions") },
+    { keys: ["⇧", "F10"], label: t("shortcuts.menu") },
   ];
 
   const select = (run: () => void) => {
@@ -66,12 +71,12 @@ const ActionsMenu = () => {
       dispatch(toastShown({ message: { key: "toast.importTooLarge" }, tone: "error" }));
       return;
     }
-    dispatch(importTodos(await file.text()));
+    dispatch(importData(await file.text()));
   };
 
   return (
     <>
-      <IconButton icon="ellipsis" label={t("actions.open")} {...popover.triggerProps} />
+      <IconButton icon="ellipsis" label={t("actions.open")} variant={variant} {...popover.triggerProps} />
       <Popover
         id={popover.id}
         popoverRef={popover.ref}

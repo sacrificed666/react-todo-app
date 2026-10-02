@@ -1,17 +1,88 @@
-import { useState, type KeyboardEvent } from "react";
+import { useState } from "react";
 import { flushSync } from "react-dom";
 
+import { useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
+import { useWeekStart } from "@/features/i18n/model/useWeekStart";
 import { useToday } from "@/shared/hooks/useToday";
 import { cx } from "@/shared/lib/cx";
-import { addDays, describeDueDate, formatWeekdayShort } from "@/shared/lib/date";
+import { addDays, describeDueDate, formatWeekdayShort, fromDateKey, nextWeekday } from "@/shared/lib/date";
+import Calendar from "@/shared/ui/Calendar/Calendar";
 import Icon from "@/shared/ui/Icon/Icon";
 import type { IconName } from "@/shared/ui/Icon/icons";
 import IconButton from "@/shared/ui/IconButton/IconButton";
 import Popover from "@/shared/ui/Popover/Popover";
 import { usePopover } from "@/shared/ui/Popover/usePopover";
 
+import { selectDueDateCounts } from "../../model/selectors";
+
 import styles from "./DuePicker.module.scss";
+
+export const QUICK_DATES = [
+  { key: "due.today", icon: "sun", resolve: (today: string) => today },
+  { key: "due.tomorrow", icon: "sunrise", resolve: (today: string) => addDays(today, 1) },
+  {
+    key: "due.weekend",
+    icon: "weekend",
+    resolve: (today: string) => ([0, 6].includes(fromDateKey(today).getDay()) ? today : nextWeekday(today, 6)),
+  },
+  { key: "due.nextWeek", icon: "nextWeek", resolve: (today: string) => addDays(today, 7) },
+] as const satisfies readonly { key: string; icon: IconName; resolve: (today: string) => string }[];
+
+interface DueOptionsProps {
+  value: string | null;
+  onChoose: (value: string | null) => void;
+}
+
+export const DueOptions = ({ value, onChoose }: DueOptionsProps) => {
+  const today = useToday();
+  const { t, locale } = useI18n();
+  const weekStart = useWeekStart();
+  const marks = useAppSelector(selectDueDateCounts);
+
+  return (
+    <>
+      <fieldset className={styles.quick}>
+        <legend className="visually-hidden">{t("due.heading")}</legend>
+        {QUICK_DATES.map((option) => {
+          const date = option.resolve(today);
+          return (
+            <button
+              key={option.key}
+              type="button"
+              className={styles.quickOption}
+              aria-pressed={value === date}
+              aria-label={`${t(option.key)}, ${formatWeekdayShort(date, locale)}`}
+              onClick={() => onChoose(date)}
+            >
+              <Icon name={option.icon} className={styles.quickIcon} />
+              <span className={styles.quickLabel}>{t(option.key)}</span>
+            </button>
+          );
+        })}
+      </fieldset>
+      <Calendar
+        value={value}
+        today={today}
+        locale={locale}
+        weekStart={weekStart}
+        marks={marks}
+        labels={{
+          previous: t("calendar.previous"),
+          next: t("calendar.next"),
+          describe: (count) => t("calendar.tasks", { count }),
+        }}
+        onSelect={onChoose}
+      />
+      {value ? (
+        <button type="button" className={styles.remove} onClick={() => onChoose(null)}>
+          <Icon name="xmark" className={styles.removeIcon} />
+          {t("due.remove")}
+        </button>
+      ) : null}
+    </>
+  );
+};
 
 interface DuePickerProps {
   value: string | null;
@@ -21,12 +92,6 @@ interface DuePickerProps {
   detected?: boolean;
   className?: string;
 }
-
-const QUICK_DATES = [
-  { key: "due.today", offset: 0, icon: "sun" },
-  { key: "due.tomorrow", offset: 1, icon: "calendar" },
-  { key: "due.nextWeek", offset: 7, icon: "calendarDays" },
-] as const satisfies readonly { key: string; offset: number; icon: IconName }[];
 
 const DuePicker = ({ value, onChange, variant, label, detected = false, className }: DuePickerProps) => {
   const today = useToday();
@@ -45,12 +110,6 @@ const DuePicker = ({ value, onChange, variant, label, detected = false, classNam
     onChange(next);
   };
 
-  const handleDateKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
-    popover.close();
-  };
-
   return (
     <>
       {variant === "chip" ? (
@@ -66,7 +125,7 @@ const DuePicker = ({ value, onChange, variant, label, detected = false, classNam
           {...popover.triggerProps}
         >
           <Icon name={detected ? "sparkles" : "calendar"} className={styles.chipIcon} />
-          {due ? <span className={styles.chipLabel}>{due.label}</span> : null}
+          {due ? <span>{due.label}</span> : null}
         </button>
       ) : (
         <IconButton
@@ -90,38 +149,7 @@ const DuePicker = ({ value, onChange, variant, label, detected = false, classNam
         {open ? (
           <>
             <p className={styles.heading}>{t("due.heading")}</p>
-            {QUICK_DATES.map((option) => {
-              const date = addDays(today, option.offset);
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  className={styles.option}
-                  aria-pressed={value === date}
-                  onClick={() => choose(date)}
-                >
-                  <Icon name={option.icon} className={styles.optionIcon} />
-                  <span className={styles.optionLabel}>{t(option.key)}</span>
-                  <span className={styles.hint}>{formatWeekdayShort(date, locale)}</span>
-                </button>
-              );
-            })}
-            <label className={styles.custom}>
-              <span>{t("due.pick")}</span>
-              <input
-                type="date"
-                className={styles.date}
-                value={value ?? ""}
-                onChange={(event) => onChange(event.target.value || null)}
-                onKeyDown={handleDateKeyDown}
-              />
-            </label>
-            {value ? (
-              <button type="button" className={cx(styles.option, styles.remove)} onClick={() => choose(null)}>
-                <Icon name="xmark" className={styles.optionIcon} />
-                <span className={styles.optionLabel}>{t("due.remove")}</span>
-              </button>
-            ) : null}
+            <DueOptions value={value} onChoose={choose} />
           </>
         ) : null}
       </Popover>

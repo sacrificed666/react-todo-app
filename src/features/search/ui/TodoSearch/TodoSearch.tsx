@@ -3,7 +3,7 @@ import type { KeyboardEvent, RefObject } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { selectQuery } from "@/features/lists/model/selectors";
-import { paletteToggled, queryChanged } from "@/features/lists/model/viewSlice";
+import { overlayOpened, queryChanged } from "@/features/lists/model/viewSlice";
 import { isApplePlatform } from "@/shared/lib/keyboard";
 import Icon from "@/shared/ui/Icon/Icon";
 import IconButton from "@/shared/ui/IconButton/IconButton";
@@ -12,7 +12,7 @@ import styles from "./TodoSearch.module.scss";
 
 interface TodoSearchProps {
   inputRef: RefObject<HTMLInputElement | null>;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 const TodoSearch = ({ inputRef, onClose }: TodoSearchProps) => {
@@ -28,7 +28,7 @@ const TodoSearch = ({ inputRef, onClose }: TodoSearchProps) => {
       return;
     }
     inputRef.current?.blur();
-    onClose();
+    onClose?.();
   };
 
   const clear = () => {
@@ -59,7 +59,7 @@ const TodoSearch = ({ inputRef, onClose }: TodoSearchProps) => {
           className={styles.hint}
           aria-label={t("header.palette")}
           aria-keyshortcuts="Meta+K Control+K"
-          onClick={() => dispatch(paletteToggled(true))}
+          onClick={() => dispatch(overlayOpened({ kind: "palette" }))}
         >
           {isApplePlatform() ? "⌘K" : "Ctrl K"}
         </button>

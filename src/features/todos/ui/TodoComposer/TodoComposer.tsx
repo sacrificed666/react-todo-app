@@ -1,8 +1,11 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
-import { useAppDispatch } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
-import type { ListId } from "@/features/lists/model/lists";
+import { projectIdOf, type ViewId } from "@/features/lists/model/lists";
+import { splitProjectName } from "@/features/projects/model/project";
+import { selectProjects } from "@/features/projects/model/selectors";
+import ProjectPicker from "@/features/projects/ui/ProjectPicker/ProjectPicker";
 import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
 import { useShortcut } from "@/shared/hooks/useShortcut";
 import { useToday } from "@/shared/hooks/useToday";
@@ -20,35 +23,65 @@ import { COMPOSER_INPUT_ID } from "../ids";
 import styles from "./TodoComposer.module.scss";
 
 interface TodoComposerProps {
-  list: ListId;
+  view: ViewId;
 }
 
-const defaultDueDate = (list: ListId, today: string) => {
-  if (list === "today") return today;
-  if (list === "upcoming") return addDays(today, 1);
+const defaultDueDate = (view: ViewId, today: string) => {
+  if (view === "today") return today;
+  if (view === "upcoming") return addDays(today, 1);
   return null;
 };
 
-const TodoComposer = ({ list }: TodoComposerProps) => {
+const TodoComposer = ({ view }: TodoComposerProps) => {
   const dispatch = useAppDispatch();
   const today = useToday();
   const { t } = useI18n();
+  const projects = useAppSelector(selectProjects);
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
-  const [dueDate, setDueDate] = useState(() => defaultDueDate(list, today));
-  const [important, setImportant] = useState(list === "important");
+  const [dueDate, setDueDate] = useState(() => defaultDueDate(view, today));
+  const [important, setImportant] = useState(view === "important");
+  const [project, setProject] = useState(() => projectIdOf(view));
+  const [engaged, setEngaged] = useState(false);
+  const expanded = engaged || title !== "";
 
   useLiquidGlass(formRef, { bezel: 20, scale: 44 });
+
+  useEffect(() => {
+    if (!engaged) return;
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && formRef.current?.contains(event.target)) return;
+      setEngaged(false);
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [engaged]);
+
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const handleFocusOut = (event: FocusEvent) => {
+      const next = event.relatedTarget;
+      if (next instanceof Node && !form.contains(next)) setEngaged(false);
+    };
+    form.addEventListener("focusout", handleFocusOut);
+    return () => form.removeEventListener("focusout", handleFocusOut);
+  }, []);
 
   useShortcut(isPlainKey("n"), (event) => {
     event.preventDefault();
     inputRef.current?.focus();
   });
 
-  const parsed = parseQuickAdd(title, today);
+  const parsed = parseQuickAdd(
+    title,
+    today,
+    projects.map(({ id, name }) => ({ id, name, label: splitProjectName(name).label })),
+  );
   const effectiveDueDate = parsed.dueDate ?? dueDate;
   const effectiveImportant = important || parsed.important;
+  const effectiveProject = parsed.projectId ?? project;
   const canSubmit = normalizeTitle(parsed.title) !== "";
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -58,6 +91,7 @@ const TodoComposer = ({ list }: TodoComposerProps) => {
       dueDate: effectiveDueDate,
       important: effectiveImportant,
       repeat: parsed.repeat,
+      projectId: effectiveProject,
     };
     if (dispatch(addTodo(draft))) {
       setTitle("");
@@ -65,7 +99,13 @@ const TodoComposer = ({ list }: TodoComposerProps) => {
   };
 
   return (
-    <form ref={formRef} className={styles.composer} onSubmit={handleSubmit} data-glass-light="">
+    <form
+      ref={formRef}
+      className={styles.composer}
+      data-engaged={expanded || undefined}
+      data-glass-light=""
+      onSubmit={handleSubmit}
+    >
       <Icon name="plus" className={styles.leading} />
       <input
         ref={inputRef}
@@ -77,6 +117,7 @@ const TodoComposer = ({ list }: TodoComposerProps) => {
         maxLength={MAX_TITLE_LENGTH + 40}
         autoComplete="off"
         enterKeyHint="done"
+        onFocus={() => setEngaged(true)}
         onChange={(event) => setTitle(event.target.value)}
       />
       <div className={styles.options}>
@@ -87,6 +128,14 @@ const TodoComposer = ({ list }: TodoComposerProps) => {
           label={t("composer.dueDate")}
           detected={parsed.dueDate !== null}
         />
+        {projects.length > 0 ? (
+          <ProjectPicker
+            value={effectiveProject}
+            onChange={setProject}
+            detected={parsed.projectId !== null}
+            hideEmptyLabel
+          />
+        ) : null}
         {parsed.repeat ? (
           <span className={styles.repeat} title={t("composer.detected")}>
             <Icon name="repeat" className={styles.repeatIcon} />
@@ -103,8 +152,15 @@ const TodoComposer = ({ list }: TodoComposerProps) => {
           aria-pressed={effectiveImportant}
           onClick={() => setImportant(!important)}
         />
-        <IconButton type="submit" icon="arrowUp" label={t("composer.submit")} variant="accent" disabled={!canSubmit} />
       </div>
+      <IconButton
+        type="submit"
+        icon="arrowUp"
+        label={t("composer.submit")}
+        variant="accent"
+        className={styles.submit}
+        disabled={!canSubmit}
+      />
     </form>
   );
 };

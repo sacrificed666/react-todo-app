@@ -1,5 +1,5 @@
+import { exportFileName } from "@/features/data/model/transfer";
 import { createTranslator, detectLocale, isLocale } from "@/features/i18n/model/translate";
-import { exportFileName } from "@/features/todos/model/transfer";
 import { downloadJson } from "@/shared/lib/download";
 import { getStorage, readJson, removeKey } from "@/shared/lib/storage";
 import Icon from "@/shared/ui/Icon/Icon";
@@ -23,7 +23,7 @@ const ErrorScreen = ({ error }: ErrorScreenProps) => {
 
   const downloadBackup = () => {
     if (!storage) return;
-    downloadJson(exportFileName(new Date()), readJson(storage, STORAGE_KEYS.todos) ?? null);
+    downloadJson(exportFileName(new Date()), readJson(storage, STORAGE_KEYS.data) ?? null);
   };
 
   const resetView = () => {

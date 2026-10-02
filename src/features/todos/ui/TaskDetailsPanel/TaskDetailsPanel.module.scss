@@ -2,7 +2,7 @@
 
 .panel {
   @include glass(var(--radius-xl), var(--glass-tint-strong), var(--glass-blur-thick));
-  max-block-size: calc(100dvh - var(--header-height) - 48px);
+  max-block-size: calc(100dvh - 32px);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;

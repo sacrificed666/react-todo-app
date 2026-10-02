@@ -225,3 +225,80 @@
     white-space: nowrap;
   }
 }
+
+.projectsTitle {
+  @extend .subtitle;
+  margin-block-start: 8px;
+}
+
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-inline: -6px;
+}
+
+.project {
+  display: grid;
+  grid-template-areas:
+    "icon name count"
+    "icon bar bar";
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 5px;
+  inline-size: 100%;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  text-align: start;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background-color: var(--color-fill);
+  }
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+
+  > :first-child {
+    grid-area: icon;
+  }
+}
+
+.projectName {
+  grid-area: name;
+  overflow: hidden;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projectCount {
+  grid-area: count;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-tertiary);
+}
+
+.projectBar {
+  grid-area: bar;
+  position: relative;
+  block-size: 4px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background-color: var(--color-fill-strong);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--project-color);
+    transform: scaleX(var(--value, 0));
+    transform-origin: left;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+}

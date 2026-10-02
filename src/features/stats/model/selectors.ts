@@ -1,6 +1,8 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import type { RootState } from "@/app/store";
+import type { Project } from "@/features/projects/model/project";
+import { selectProjects } from "@/features/projects/model/selectors";
 import { selectTodos } from "@/features/todos/model/selectors";
 import { addDays, toDateKey } from "@/shared/lib/date";
 
@@ -27,4 +29,25 @@ export const selectActivity = createSelector([selectTodos, selectToday], (todos,
   }
 
   return { days, streak };
+});
+
+export interface ProjectProgress {
+  project: Project;
+  done: number;
+  total: number;
+}
+
+export const selectProjectProgress = createSelector([selectTodos, selectProjects], (todos, projects) => {
+  const totals = new Map<string, { done: number; total: number }>();
+  for (const todo of todos) {
+    if (todo.projectId === null) continue;
+    const entry = totals.get(todo.projectId) ?? { done: 0, total: 0 };
+    entry.total += 1;
+    if (todo.completed) entry.done += 1;
+    totals.set(todo.projectId, entry);
+  }
+  return projects.flatMap((project): ProjectProgress[] => {
+    const entry = totals.get(project.id);
+    return entry ? [{ project, ...entry }] : [];
+  });
 });

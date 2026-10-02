@@ -1,29 +1,26 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { setupStore } from "@/app/store";
+import { undo } from "@/features/data/model/thunks";
 import { createTranslator } from "@/features/i18n/model/translate";
 import { queryChanged } from "@/features/lists/model/viewSlice";
 import { formatMessage } from "@/features/notifications/model/format";
 import { selectToast } from "@/features/notifications/model/selectors";
-import * as download from "@/shared/lib/download";
-import { dayFromToday, makeState, makeTodo, sampleTodos, todayKey } from "@/test/factories";
+import { dayFromToday, makeProject, makeState, makeTodo, sampleTodos, todayKey } from "@/test/factories";
 
 import { selectTodos } from "./selectors";
 import {
   addTodo,
   clearCompleted,
+  dropTodo,
   duplicateTodo,
-  exportTodos,
   homeListOf,
-  importTodos,
-  redo,
+  homeViewOf,
   rescheduleOverdue,
   removeTodos,
   toggleTodo,
-  undo,
   undoRemoval,
 } from "./thunks";
-import { todoRenamed } from "./todosSlice";
 
 type Store = ReturnType<typeof setupStore>;
 
@@ -66,6 +63,25 @@ describe("addTodo", () => {
     expect(homeListOf(makeTodo({ id: "c", title: "c", dueDate: dayFromToday(2) }), today)).toBe("upcoming");
     expect(homeListOf(makeTodo({ id: "d", title: "d", important: true }), today)).toBe("important");
     expect(homeListOf(makeTodo({ id: "e", title: "e" }), today)).toBe("all");
+  });
+
+  it("names the project a task was added to", () => {
+    const store = setupStore(makeState([], "today", "", [makeProject({ id: "work", name: "💼 Work" })]));
+    store.dispatch(addTodo({ title: "Slides", projectId: "work" }));
+
+    expect(selectToast(store.getState())).toMatchObject({
+      message: { params: { list: "💼 Work" } },
+      action: { type: "show", list: "project:work" },
+    });
+    expect(toastText(store)).toBe("Added “Slides” to 💼 Work");
+  });
+
+  it("prefers the project over a smart list as the home of a task", () => {
+    const today = todayKey();
+    expect(homeViewOf(makeTodo({ id: "a", title: "a", dueDate: today, projectId: "work" }), today)).toBe(
+      "project:work",
+    );
+    expect(homeViewOf(makeTodo({ id: "b", title: "b", important: true }), today)).toBe("important");
   });
 
   it("stays in the current list when the new todo belongs there", () => {
@@ -115,34 +131,6 @@ describe("removal and undo", () => {
     store.dispatch(clearCompleted());
     expect(titles(store)).toEqual(["Buy milk", "Call grandma"]);
     expect(toastText(store)).toBe("Cleared 1 completed task");
-  });
-});
-
-describe("importTodos", () => {
-  it("imports new todos from an export file", () => {
-    const store = setupStore(makeState(sampleTodos));
-    const file = JSON.stringify({
-      todos: [makeTodo({ id: "milk", title: "Buy milk" }), makeTodo({ id: "new", title: "Imported", important: true })],
-    });
-
-    store.dispatch(importTodos(file));
-
-    expect(titles(store)).toEqual(["Buy milk", "Write the quarterly report", "Call grandma", "Imported"]);
-    expect(selectTodos(store.getState()).at(-1)?.important).toBe(true);
-    expect(toastText(store)).toBe("Imported 1 task");
-  });
-
-  it("reports when nothing new was found", () => {
-    const store = setupStore(makeState(sampleTodos));
-    store.dispatch(importTodos(JSON.stringify(sampleTodos)));
-    expect(toastText(store)).toBe("Nothing new to import");
-  });
-
-  it("rejects invalid files", () => {
-    const store = setupStore();
-    store.dispatch(importTodos("{not json"));
-    expect(selectToast(store.getState())?.tone).toBe("error");
-    expect(toastText(store)).toBe("This file is not a valid ToDo export");
   });
 });
 
@@ -201,48 +189,6 @@ describe("duplicateTodo", () => {
   });
 });
 
-describe("undo and redo", () => {
-  it("steps through the history and describes each step", () => {
-    const store = setupStore(makeState(sampleTodos));
-    store.dispatch(todoRenamed("milk", "Buy oat milk"));
-    store.dispatch(removeTodos(["call"]));
-
-    store.dispatch(undo());
-    expect(titles(store)).toEqual(["Buy oat milk", "Write the quarterly report", "Call grandma"]);
-    expect(toastText(store)).toBe("Undone: delete 1 task");
-
-    store.dispatch(undo());
-    expect(titles(store)).toEqual(["Buy milk", "Write the quarterly report", "Call grandma"]);
-    expect(toastText(store, "uk")).toBe("Скасовано: перейменування «Buy milk»");
-
-    store.dispatch(redo());
-    expect(titles(store)).toEqual(["Buy oat milk", "Write the quarterly report", "Call grandma"]);
-    expect(toastText(store)).toBe("Redone: rename “Buy milk”");
-  });
-
-  it("does nothing without history", () => {
-    const store = setupStore(makeState(sampleTodos));
-    store.dispatch(undo());
-    store.dispatch(redo());
-    expect(titles(store)).toHaveLength(3);
-    expect(selectToast(store.getState())).toBeNull();
-  });
-});
-
-describe("exportTodos", () => {
-  it("downloads every todo with metadata", () => {
-    const downloadJson = vi.spyOn(download, "downloadJson").mockImplementation(() => {});
-    const store = setupStore(makeState(sampleTodos));
-
-    store.dispatch(exportTodos());
-
-    expect(downloadJson).toHaveBeenCalledWith(
-      expect.stringMatching(/^todos-\d{4}-\d{2}-\d{2}\.json$/),
-      expect.objectContaining({ app: "react-todo-app", todos: sampleTodos }),
-    );
-  });
-});
-
 describe("rescheduleOverdue", () => {
   it("moves every overdue task to today in one undoable step", () => {
     const today = todayKey();
@@ -268,5 +214,41 @@ describe("rescheduleOverdue", () => {
     store.dispatch(undo());
     expect(selectTodos(store.getState())[0]?.dueDate).toBe(dayFromToday(-3));
     expect(store.dispatch(rescheduleOverdue(dayFromToday(-10)))).toBe(0);
+  });
+});
+
+describe("dropTodo", () => {
+  it("applies the meaning of the list a task was dropped on", () => {
+    const today = todayKey();
+    const store = setupStore(
+      makeState(
+        [makeTodo({ id: "a", title: "Slides" }), makeTodo({ id: "b", title: "Later", dueDate: dayFromToday(5) })],
+        "all",
+        "",
+        [makeProject({ id: "work", name: "Work" })],
+      ),
+    );
+    const todo = (id: string) => selectTodos(store.getState()).find((entry) => entry.id === id);
+
+    expect(store.dispatch(dropTodo("a", "today", today))).toBe(true);
+    expect(todo("a")?.dueDate).toBe(today);
+    expect(toastText(store)).toBe("Moved “Slides” to Today");
+
+    store.dispatch(dropTodo("a", "upcoming", today));
+    expect(todo("a")?.dueDate).toBe(dayFromToday(1));
+    expect(store.dispatch(dropTodo("b", "upcoming", today))).toBe(false);
+
+    store.dispatch(dropTodo("a", "important", today));
+    expect(todo("a")?.important).toBe(true);
+    expect(store.dispatch(dropTodo("a", "important", today))).toBe(false);
+
+    store.dispatch(dropTodo("a", "project:work", today));
+    expect(todo("a")?.projectId).toBe("work");
+    expect(toastText(store)).toBe("Moved “Slides” to Work");
+
+    store.dispatch(dropTodo("a", "completed", today));
+    expect(todo("a")?.completed).toBe(true);
+    expect(selectToast(store.getState())?.action).toEqual({ type: "undo" });
+    expect(store.dispatch(dropTodo("missing", "today", today))).toBe(false);
   });
 });

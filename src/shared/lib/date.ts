@@ -92,3 +92,36 @@ export const describeDueDate = (dueDate: string, today: string, locale = "en"): 
     : { month: "short", day: "numeric", year: "numeric" };
   return { label: capitalize(dateFormatter(locale, options).format(date), locale), tone };
 };
+
+export const formatMonthYear = (key: string, locale = "en") =>
+  capitalize(dateFormatter(locale, { month: "long", year: "numeric" }).format(fromDateKey(key)), locale);
+
+export const formatLongDate = (key: string, locale = "en") =>
+  dateFormatter(locale, { weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(fromDateKey(key));
+
+export const formatWeekday = (key: string, locale = "en", width: "narrow" | "short" | "long" = "long") =>
+  capitalize(dateFormatter(locale, { weekday: width }).format(fromDateKey(key)), locale);
+
+export const startOfMonth = (key: string) => `${key.slice(0, 7)}-01`;
+
+export const startOfWeek = (key: string, weekStart: number) =>
+  addDays(key, -((fromDateKey(key).getDay() - weekStart + 7) % 7));
+
+export const nextWeekday = (key: string, weekday: number) =>
+  addDays(key, (weekday - fromDateKey(key).getDay() + 7) % 7);
+
+interface WeekInfoLocale {
+  getWeekInfo?: () => { firstDay: number };
+  weekInfo?: { firstDay: number };
+}
+
+export const firstDayOfWeek = (locale: string) => {
+  try {
+    const info = new Intl.Locale(locale) as Intl.Locale & WeekInfoLocale;
+    const firstDay = info.getWeekInfo?.().firstDay ?? info.weekInfo?.firstDay;
+    if (firstDay !== undefined) return firstDay % 7;
+  } catch {
+    return 1;
+  }
+  return locale === "en" || locale.startsWith("en-US") ? 0 : 1;
+};

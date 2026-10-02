@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { setupStore } from "@/app/store";
-import { makeState, makeTodo } from "@/test/factories";
+import { makeProject, makeState, makeTodo } from "@/test/factories";
 
-import { selectActivity } from "./selectors";
+import { selectActivity, selectProjectProgress } from "./selectors";
 
 const today = "2026-10-01";
 const stateWith = (...args: Parameters<typeof makeState>) => setupStore(makeState(...args)).getState();
@@ -40,5 +40,32 @@ describe("selectActivity", () => {
     expect(selectActivity(stateWith([doneOn("a", "2026-09-30"), doneOn("b", "2026-09-29")]), today).streak).toBe(2);
     expect(selectActivity(stateWith([doneOn("a", "2026-09-29")]), today).streak).toBe(0);
     expect(selectActivity(stateWith([]), today).streak).toBe(0);
+  });
+});
+
+describe("selectProjectProgress", () => {
+  it("counts done and total tasks per project in sidebar order", () => {
+    const state = setupStore(
+      makeState(
+        [
+          makeTodo({ id: "a", title: "A", projectId: "home" }),
+          makeTodo({ id: "b", title: "B", projectId: "home", completed: true, completedAt: 1 }),
+          makeTodo({ id: "c", title: "C", projectId: "work" }),
+          makeTodo({ id: "d", title: "D" }),
+        ],
+        "all",
+        "",
+        [
+          makeProject({ id: "work", name: "Work" }),
+          makeProject({ id: "empty", name: "Empty" }),
+          makeProject({ id: "home", name: "Home" }),
+        ],
+      ),
+    ).getState();
+
+    expect(selectProjectProgress(state).map(({ project, done, total }) => [project.id, done, total])).toEqual([
+      ["work", 0, 1],
+      ["home", 1, 2],
+    ]);
   });
 });

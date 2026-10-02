@@ -48,3 +48,33 @@ describe("TodoComposer quick add", () => {
     expect(screen.getByRole("button", { name: "Due date: Today" })).toBeInTheDocument();
   });
 });
+
+const composer = () => screen.getByRole("textbox", { name: "New task" }).closest("form");
+
+describe("TodoComposer options row", () => {
+  it("opens while the field is in use and closes when the user leaves it", async () => {
+    const { user } = renderApp([]);
+    expect(composer()).not.toHaveAttribute("data-engaged");
+
+    await user.click(screen.getByRole("textbox", { name: "New task" }));
+    expect(composer()).toHaveAttribute("data-engaged");
+
+    await user.click(screen.getByRole("button", { name: "Important" }));
+    expect(composer()).toHaveAttribute("data-engaged");
+
+    await user.click(screen.getByRole("heading", { level: 1 }));
+    expect(composer()).not.toHaveAttribute("data-engaged");
+  });
+
+  it("stays open while there is text and after focus moves elsewhere with the keyboard", async () => {
+    const { user } = renderApp([]);
+
+    await user.type(screen.getByRole("textbox", { name: "New task" }), "Draft");
+    await user.click(screen.getByRole("heading", { level: 1 }));
+    expect(composer()).toHaveAttribute("data-engaged");
+
+    await user.clear(screen.getByRole("textbox", { name: "New task" }));
+    await user.tab({ shift: true });
+    expect(composer()).not.toHaveAttribute("data-engaged");
+  });
+});

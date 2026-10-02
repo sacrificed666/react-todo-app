@@ -1,26 +1,33 @@
-import type { AppThunk } from "@/app/store";
-import { isOverdue, matchesList, type ListId } from "@/features/lists/model/lists";
-import { selectDetailsId, selectList, selectQuery } from "@/features/lists/model/selectors";
+import type { AppThunk, RootState } from "@/app/store";
+import {
+  isOverdue,
+  isProjectView,
+  matchesView,
+  projectIdOf,
+  projectView,
+  type ListId,
+  type ViewId,
+} from "@/features/lists/model/lists";
+import { selectDetailsId, selectList, selectQuery, selectSearching } from "@/features/lists/model/selectors";
 import { detailsClosed, queryChanged } from "@/features/lists/model/viewSlice";
 import { selectToast } from "@/features/notifications/model/selectors";
 import { toastDismissed, toastShown, type ToastMessage } from "@/features/notifications/model/toastSlice";
-import { toDateKey } from "@/shared/lib/date";
-import { downloadJson } from "@/shared/lib/download";
+import { addDays, toDateKey } from "@/shared/lib/date";
 
-import { redone, undone } from "./history";
 import { selectCompletedIds, selectTodoById, selectTodos } from "./selectors";
 import { createMatcher, normalizeTitle, type Todo, type TodoDraft } from "./todo";
 import {
   todoAdded,
   todoDuplicated,
-  todosImported,
+  todoImportanceToggled,
+  todoProjectChanged,
+  todoScheduled,
   todosRemoved,
   todosRestored,
   todosScheduled,
   todoToggled,
   type RemovedTodo,
 } from "./todosSlice";
-import { createExport, exportFileName, readImport } from "./transfer";
 
 export const addTodo =
   (draft: TodoDraft): AppThunk<boolean> =>
@@ -29,27 +36,33 @@ export const addTodo =
     if (!title) return false;
 
     const { payload: todo } = dispatch(todoAdded({ ...draft, title }));
+    if (!createMatcher(selectQuery(getState()))(title)) dispatch(queryChanged(""));
 
     const state = getState();
     const today = toDateKey(new Date());
-    if (!createMatcher(selectQuery(state))(title)) dispatch(queryChanged(""));
-    if (!matchesList(todo, selectList(state), today)) {
-      const list = homeListOf(todo, today);
-      dispatch(
-        toastShown({
-          message: { key: "toast.addedTo", params: { title: todo.title, list: { key: `lists.${list}` } } },
-          tone: "success",
-          action: { type: "show", list, todoId: todo.id },
-        }),
-      );
-    }
+    if (selectSearching(state) || matchesView(todo, selectList(state), today)) return true;
+
+    const view = homeViewOf(todo, today);
+    dispatch(
+      toastShown({
+        message: { key: "toast.addedTo", params: { title: todo.title, list: viewName(state, view) } },
+        tone: "success",
+        action: { type: "show", list: view, todoId: todo.id },
+      }),
+    );
     return true;
   };
+
+export const viewName = (state: RootState, view: ViewId): ToastMessage | string =>
+  isProjectView(view) ? (state.projects.entities[projectIdOf(view) ?? ""]?.name ?? "") : { key: `lists.${view}` };
 
 export const homeListOf = (todo: Todo, today: string): ListId => {
   if (todo.dueDate !== null) return todo.dueDate <= today ? "today" : "upcoming";
   return todo.important ? "important" : "all";
 };
+
+export const homeViewOf = (todo: Todo, today: string): ViewId =>
+  todo.projectId === null ? homeListOf(todo, today) : projectView(todo.projectId);
 
 export const rescheduleOverdue =
   (today: string): AppThunk<number> =>
@@ -76,11 +89,11 @@ export const toggleTodo =
 
     const state = getState();
     const list = selectList(state);
-    if (list === "completed" || !selectTodoById(state, id)?.completed) return false;
-    if (selectTodos(state).some((todo) => !todo.completed && matchesList(todo, list, today))) return false;
+    if (list === "completed" || selectSearching(state) || !selectTodoById(state, id)?.completed) return false;
+    if (selectTodos(state).some((todo) => !todo.completed && matchesView(todo, list, today))) return false;
 
     dispatch(
-      toastShown({ message: { key: "toast.allDone", params: { list: { key: `lists.${list}` } } }, tone: "success" }),
+      toastShown({ message: { key: "toast.allDone", params: { list: viewName(state, list) } }, tone: "success" }),
     );
     return true;
   };
@@ -135,43 +148,26 @@ export const undoRemoval = (): AppThunk => (dispatch, getState) => {
   dispatch(toastDismissed(toast.id));
 };
 
-export const importTodos =
-  (text: string): AppThunk =>
+export const dropTodo =
+  (id: string, target: ViewId, today: string): AppThunk<boolean> =>
   (dispatch, getState) => {
-    const todos = readImport(text);
-    if (!todos) {
-      dispatch(toastShown({ message: { key: "toast.invalidImport" }, tone: "error" }));
-      return;
-    }
+    const todo = selectTodoById(getState(), id);
+    if (!todo) return false;
+    const before = getState().todos;
 
-    const { entities } = getState().todos;
-    const fresh = todos.filter((todo) => !(todo.id in entities));
-    dispatch(todosImported(fresh));
+    if (isProjectView(target)) dispatch(todoProjectChanged(id, projectIdOf(target)));
+    else if (target === "today") dispatch(todoScheduled(id, today));
+    else if (target === "upcoming" && (todo.dueDate === null || todo.dueDate <= today))
+      dispatch(todoScheduled(id, addDays(today, 1)));
+    else if (target === "important" && !todo.important) dispatch(todoImportanceToggled(id));
+    else if (target === "completed" && !todo.completed) dispatch(todoToggled(id));
+
+    if (getState().todos === before) return false;
     dispatch(
       toastShown({
-        message:
-          fresh.length > 0
-            ? { key: "toast.imported", params: { count: fresh.length } }
-            : { key: "toast.nothingImported" },
+        message: { key: "toast.dropped", params: { title: todo.title, target: viewName(getState(), target) } },
+        action: { type: "undo" },
       }),
     );
+    return true;
   };
-
-export const exportTodos = (): AppThunk => (_dispatch, getState) => {
-  const now = new Date();
-  downloadJson(exportFileName(now), createExport(selectTodos(getState()), now));
-};
-
-export const undo = (): AppThunk => (dispatch, getState) => {
-  const entry = getState().history.past.at(-1);
-  if (!entry) return;
-  dispatch(undone());
-  dispatch(toastShown({ message: { key: "toast.undone", params: { action: entry.description } } }));
-};
-
-export const redo = (): AppThunk => (dispatch, getState) => {
-  const entry = getState().history.future.at(-1);
-  if (!entry) return;
-  dispatch(redone());
-  dispatch(toastShown({ message: { key: "toast.redone", params: { action: entry.description } } }));
-};

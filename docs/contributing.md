@@ -78,19 +78,30 @@ const Panel = () => {
 
 ### ⌘ Adding a command to the palette
 
-Commands are plain objects built in `CommandPalette.tsx`:
+Commands are plain objects. Commands that also belong in the **⋯** menu — undo, redo, bulk actions, export — are defined once in `features/commands/model/useTaskCommands.ts` with a `disabled` state; navigation, project and appearance commands are built in `CommandPalette.tsx`:
 
 ```ts
 {
-  id: "clear",
-  group: "actions",
-  label: t("actions.clearCompleted"),
-  icon: "eraser",
-  run: () => dispatch(clearCompleted()),
+  id: "settings",
+  group: "appearance",
+  label: t("palette.openSettings"),
+  keywords: "preferences options",
+  icon: "sliders",
+  run: () => dispatch(overlayOpened({ kind: "settings" })),
 }
 ```
 
 Give it a translated `label`, optional `keywords` for fuzzy matching and a `hint` for its keyboard shortcut. `rankCommands()` takes care of filtering, ordering and grouping.
+
+### 🪟 Adding a dialog or sheet
+
+Modal surfaces are described by `view.overlay`, so only one is open at a time and the **Back** button can close it:
+
+1. Add a kind to the `Overlay` union in `features/lists/model/viewSlice.ts`.
+2. Render a `Dialog` whose `open` is `selectOverlayKind(state) === "your-kind"` and whose `onClose` dispatches `overlayClosed("your-kind")`.
+3. Open it with `overlayOpened({ kind: "your-kind" })` from a button or a palette command.
+
+On phones `Dialog` turns into a bottom sheet automatically.
 
 ## 📝 Commit messages
 
@@ -115,5 +126,3 @@ chore(deps): update vite to 8.4
 | 📝 `docs`     | Documentation                      |
 | 👷 `ci`       | Pipeline and automation            |
 | 🔧 `chore`    | Dependencies and maintenance       |
-
-Notable changes are listed in [CHANGELOG.md](../CHANGELOG.md).

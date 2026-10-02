@@ -1,38 +1,73 @@
 import { describe, expect, it } from "vitest";
 
+import { serializeData } from "@/features/data/model/document";
 import { listChanged, sortChanged } from "@/features/lists/model/viewSlice";
-import { accentChanged, appearanceChanged, localeChanged } from "@/features/settings/model/settingsSlice";
+import { projectAdded } from "@/features/projects/model/projectsSlice";
+import { selectProjects } from "@/features/projects/model/selectors";
+import {
+  accentChanged,
+  appearanceChanged,
+  backdropChanged,
+  glassChanged,
+  localeChanged,
+} from "@/features/settings/model/settingsSlice";
 import { selectTodos } from "@/features/todos/model/selectors";
 import { parseTodos } from "@/features/todos/model/todo";
 import { todoAdded } from "@/features/todos/model/todosSlice";
 import { readJson } from "@/shared/lib/storage";
-import { makeTodo, sampleTodos } from "@/test/factories";
+import { makeProject, makeTodo, sampleTodos } from "@/test/factories";
 
-import { loadPersistedState, serializeTodos, startPersistence, STORAGE_KEYS } from "./persistence";
+import { loadPersistedState, startPersistence, STORAGE_KEYS } from "./persistence";
 import { setupStore } from "./store";
 
-const storedTitles = () => (parseTodos(readJson(localStorage, STORAGE_KEYS.todos)) ?? []).map((todo) => todo.title);
+const storedTitles = () => (parseTodos(readJson(localStorage, STORAGE_KEYS.data)) ?? []).map((todo) => todo.title);
+
+const work = makeProject({ id: "work", name: "Work" });
+
+const serializeTodos = (todos: Parameters<typeof serializeData>[0]["todos"]) => serializeData({ todos, projects: [] });
 
 describe("loadPersistedState", () => {
-  it("reads saved todos and preferences", () => {
-    localStorage.setItem(STORAGE_KEYS.todos, serializeTodos(sampleTodos));
+  it("reads saved todos, projects and preferences", () => {
+    localStorage.setItem(STORAGE_KEYS.data, serializeData({ todos: sampleTodos, projects: [work] }));
     localStorage.setItem(
       STORAGE_KEYS.preferences,
-      JSON.stringify({ list: "today", sort: "dueDate", showCompleted: false, appearance: "light", accent: "forest" }),
+      JSON.stringify({
+        list: "project:work",
+        sort: "dueDate",
+        showCompleted: false,
+        appearance: "light",
+        accent: "forest",
+        backdrop: "ocean",
+        glass: "tinted",
+      }),
     );
 
     const store = setupStore(loadPersistedState());
 
     expect(selectTodos(store.getState())).toEqual(sampleTodos);
+    expect(selectProjects(store.getState())).toEqual([work]);
     expect(store.getState().view).toEqual({
-      list: "today",
+      list: "project:work",
       query: "",
       sort: "dueDate",
       showCompleted: false,
       detailsId: null,
-      paletteOpen: false,
+      overlay: null,
     });
-    expect(store.getState().settings).toEqual({ appearance: "light", accent: "forest", locale: "en", effects: "auto" });
+    expect(store.getState().settings).toEqual({
+      appearance: "light",
+      accent: "forest",
+      backdrop: "ocean",
+      glass: "tinted",
+      locale: "en",
+      effects: "auto",
+    });
+  });
+
+  it("opens all tasks when the saved project no longer exists", () => {
+    localStorage.setItem(STORAGE_KEYS.data, serializeTodos(sampleTodos));
+    localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ list: "project:gone" }));
+    expect(setupStore(loadPersistedState()).getState().view.list).toBe("all");
   });
 
   it("detects the language on the first launch and keeps the saved one afterwards", () => {
@@ -61,14 +96,21 @@ describe("loadPersistedState", () => {
   });
 
   it("falls back to defaults for corrupted data", () => {
-    localStorage.setItem(STORAGE_KEYS.todos, "{broken");
-    localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ list: "everything", sort: 1, accent: "pink" }));
+    localStorage.setItem(STORAGE_KEYS.data, "{broken");
+    localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ list: "everything", sort: 1, accent: "magenta" }));
 
     const state = setupStore(loadPersistedState()).getState();
 
     expect(selectTodos(state)).toEqual([]);
     expect(state.view).toMatchObject({ list: "all", sort: "manual", showCompleted: true });
-    expect(state.settings).toEqual({ appearance: "system", accent: "blue", locale: "en", effects: "auto" });
+    expect(state.settings).toEqual({
+      appearance: "system",
+      accent: "blue",
+      backdrop: "aurora",
+      glass: "clear",
+      locale: "en",
+      effects: "auto",
+    });
   });
 
   it("skips persistence when storage is unavailable", () => {
@@ -87,15 +129,21 @@ describe("startPersistence", () => {
     store.dispatch(sortChanged("newest"));
     store.dispatch(appearanceChanged("dark"));
     store.dispatch(accentChanged("violet"));
+    store.dispatch(backdropChanged("nebula"));
+    store.dispatch(glassChanged("tinted"));
     store.dispatch(localeChanged("uk"));
+    store.dispatch(projectAdded({ name: "Work" }));
 
     expect(storedTitles()).toEqual(["Persist me"]);
+    expect(readJson(localStorage, STORAGE_KEYS.data)).toMatchObject({ version: 6, projects: [{ name: "Work" }] });
     expect(readJson(localStorage, STORAGE_KEYS.preferences)).toEqual({
       list: "important",
       sort: "newest",
       showCompleted: true,
       appearance: "dark",
       accent: "violet",
+      backdrop: "nebula",
+      glass: "tinted",
       locale: "uk",
       effects: "auto",
     });
@@ -111,7 +159,7 @@ describe("startPersistence", () => {
     const external = serializeTodos([makeTodo({ id: "remote", title: "From another tab" })]);
 
     window.dispatchEvent(
-      new StorageEvent("storage", { key: STORAGE_KEYS.todos, newValue: external, storageArea: localStorage }),
+      new StorageEvent("storage", { key: STORAGE_KEYS.data, newValue: external, storageArea: localStorage }),
     );
     expect(selectTodos(store.getState()).map((todo) => todo.id)).toEqual(["remote"]);
 

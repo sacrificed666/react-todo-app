@@ -2,9 +2,10 @@ import { useEffect, useRef, useState, type FocusEvent } from "react";
 import { flushSync } from "react-dom";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { undo } from "@/features/data/model/thunks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { listChanged } from "@/features/lists/model/viewSlice";
-import { undo, undoRemoval } from "@/features/todos/model/thunks";
+import { undoRemoval } from "@/features/todos/model/thunks";
 import { toggleId } from "@/features/todos/ui/ids";
 import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
 import { applyUpdate } from "@/shared/lib/serviceWorker";

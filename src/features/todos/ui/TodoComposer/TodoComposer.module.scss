@@ -79,7 +79,25 @@
   font-size: 1.0625rem;
 }
 
-@container composer (max-width: 420px) {
+.submit {
+  flex: none;
+}
+
+@container composer (max-width: 480px) {
+  .options {
+    display: none;
+    order: 1;
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    margin-inline-start: 0;
+    padding-inline-start: 32px;
+
+    .composer[data-engaged] & {
+      display: flex;
+      animation: reveal var(--duration-base) var(--ease-out);
+    }
+  }
+
   .repeat {
     inline-size: 34px;
     padding: 0;
@@ -88,5 +106,12 @@
     span {
       display: none;
     }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 -6px;
   }
 }

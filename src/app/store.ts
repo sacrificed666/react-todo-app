@@ -1,12 +1,15 @@
 import { combineSlices, configureStore, type ThunkAction, type UnknownAction } from "@reduxjs/toolkit";
 
+import { historySlice, withHistory } from "@/features/data/model/history";
 import { viewSlice } from "@/features/lists/model/viewSlice";
 import { toastSlice } from "@/features/notifications/model/toastSlice";
+import { projectsSlice } from "@/features/projects/model/projectsSlice";
 import { settingsSlice } from "@/features/settings/model/settingsSlice";
-import { historySlice, withHistory } from "@/features/todos/model/history";
 import { todosSlice } from "@/features/todos/model/todosSlice";
 
-export const rootReducer = withHistory(combineSlices(todosSlice, viewSlice, settingsSlice, toastSlice, historySlice));
+export const rootReducer = withHistory(
+  combineSlices(todosSlice, projectsSlice, viewSlice, settingsSlice, toastSlice, historySlice),
+);
 
 export type RootState = ReturnType<typeof rootReducer>;
 

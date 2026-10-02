@@ -16,8 +16,8 @@
   grid-template-areas: "sidebar main";
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   align-items: start;
-  gap: 24px;
-  padding-block: 24px 48px;
+  gap: 24px 28px;
+  padding-block: calc(var(--titlebar-height) + 16px) 48px;
 
   @media (min-width: 1240px) {
     grid-template-areas: "sidebar main inspector";
@@ -26,11 +26,12 @@
 
   @media (max-width: 899px) {
     grid-template-areas:
+      "toolbar"
       "main"
       "sidebar";
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
-    padding-block: 12px calc(24px + var(--tabbar-offset) + env(safe-area-inset-bottom));
+    padding-block: 0 calc(24px + var(--tabbar-offset) + env(safe-area-inset-bottom));
   }
 }
 
@@ -50,5 +51,21 @@
 
   &:focus-visible {
     translate: 0;
+  }
+}
+
+.titlebar {
+  display: none;
+
+  @media (display-mode: window-controls-overlay) and (min-width: 900px) {
+    display: block;
+    position: fixed;
+    inset-block-start: env(titlebar-area-y, 0);
+    inset-inline-start: env(titlebar-area-x, 0);
+    z-index: 90;
+    inline-size: env(titlebar-area-width, 100%);
+    block-size: var(--titlebar-height);
+    -webkit-app-region: drag;
+    app-region: drag;
   }
 }

@@ -32,11 +32,22 @@ describe("effects", () => {
 
 describe("readSettings", () => {
   it("validates every stored value", () => {
-    expect(readSettings({ appearance: "dark", accent: "sunset", locale: "it", effects: "full" }, [])).toEqual({
+    expect(
+      readSettings(
+        { appearance: "dark", accent: "sunset", backdrop: "plain", glass: "tinted", locale: "it", effects: "full" },
+        [],
+      ),
+    ).toEqual({
       appearance: "dark",
       accent: "sunset",
+      backdrop: "plain",
+      glass: "tinted",
       locale: "it",
       effects: "full",
+    });
+    expect(readSettings({ backdrop: "photo", glass: "frosted" }, [])).toMatchObject({
+      backdrop: "aurora",
+      glass: "clear",
     });
     expect(readSettings({ effects: "turbo", locale: "xx" }, ["nl-BE"])).toMatchObject({
       effects: "auto",

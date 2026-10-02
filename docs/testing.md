@@ -24,9 +24,9 @@ The HTML coverage report is written to `coverage/index.html`.
 
 ```mermaid
 flowchart TB
-  UI["🖥️ UI flows · ~60 tests<br/>App, layouts, planning, palette, details, rows, composer, error screen"]
-  Model["🧠 Model · ~150 tests<br/>slices, history, repeats, groups, selectors, thunks, quick add in 8 languages, translations"]
-  Lib["🧰 Shared helpers · ~30 tests<br/>dates, keyboard, fuzzy search, refraction, Trusted Types"]
+  UI["🖥️ UI flows · ~80 tests<br/>App, layouts, projects, planning, palette, context menu, calendar, details, rows, composer, back button"]
+  Model["🧠 Model · ~200 tests<br/>slices, history, projects, data document, repeats, groups, selectors, thunks, drag and drop, quick add in 8 languages"]
+  Lib["🧰 Shared helpers · ~30 tests<br/>dates and calendars, keyboard, fuzzy search, refraction, Trusted Types"]
   UI --> Model --> Lib
 ```
 
@@ -36,15 +36,17 @@ Most behaviour is pinned down by fast unit tests of pure functions and reducers;
 
 Tests sit next to the code they cover as `*.test.ts(x)`:
 
-| Area                                     | Files                                                                                                 | Covers                                                                                                                                               |
-| ---------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🚀 App                                   | `app/App.test.tsx`                                                                                    | Shell, smart lists, tab bar on phones, language switch, skip link, composer, editing, undo, sorting, search, menu, import and export                 |
-|                                          | `app/persistence.test.ts`, `app/launch.test.ts`, `app/ErrorBoundary.test.tsx`                         | Loading, migrations, language detection, cross-tab sync, URL shortcuts, share target, recovery screen                                                |
-| ✅ Todos model                           | `todo`, `todosSlice`, `history`, `repeat`, `selectors`, `thunks`, `quickAdd`, `checklist`, `transfer` | Parsing and validation, every reducer, undo and redo, next occurrences, counters and tags, quick add grammar with repeats, checklists, import limits |
-| ✅ Todos UI                              | `TodoItem`, `TaskDetailsDialog`, `TodoComposer`                                                       | Keyboard commands, swipes, tags and chips, the details dialog, quick add recognition                                                                 |
-| ⌘ Commands                               | `rank.test.ts`, `CommandPalette.test.tsx`                                                             | Ranking and grouping, shortcut, arrow keys, running commands, finding tasks                                                                          |
-| 📚 Lists, 📊 stats, 🎨 settings, 🌍 i18n | `lists`, `groups`, `sort`, `stats/selectors`, `theme`, `settings`, `thunks`, `translate`              | Smart list rules, date groups, sort orders, activity and streaks, effects, language switching, plurals                                               |
-| 🧰 Shared                                | `date`, `keyboard`, `motion`, `refraction`, `text`, `trustedTypes`                                    | Date keys and labels, shortcut matchers, transitions, displacement maths, fuzzy search, the URL policy                                               |
+| Area                                     | Files                                                                                    | Covers                                                                                                                                                           |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🚀 App                                   | `app/App.test.tsx`                                                                       | Shell without a header, smart lists, projects, the phone toolbar, tab bar and Lists sheet, settings, global search, back button, planning, menus, import, export |
+|                                          | `app/persistence.test.ts`, `app/launch.test.ts`, `app/ErrorBoundary.test.tsx`            | Loading, migrations, missing projects, language detection, cross-tab sync, URL shortcuts, share target, recovery screen                                          |
+| ✅ Todos model                           | `todo`, `todosSlice`, `repeat`, `selectors`, `thunks`, `quickAdd`, `checklist`           | Parsing and validation, every reducer, anchored repeats, counters and tags, drops on the sidebar, quick add grammar with repeats and `@project` mentions         |
+| ✅ Todos UI                              | `TodoItem`, `TaskDetailsDialog`, `TodoComposer`, `TaskDnd/dnd`                           | Keyboard commands, the context menu with long press, swipes, chips, the details dialog, quick add recognition, collisions, drop rules and announcements          |
+| 📁 Projects                              | `project.test.ts`, `projects/thunks.test.ts`                                             | Names and emoji icons, colours, parsing, creating and deleting with undo                                                                                         |
+| 💾 Data                                  | `document`, `history`, `transfer`, `data/thunks`                                         | The stored document and its links, undo and redo of tasks and projects, import limits, export, merging imports                                                   |
+| ⌘ Commands                               | `rank.test.ts`, `CommandPalette.test.tsx`                                                | Ranking and grouping, shortcut, arrow keys, running commands, projects, finding tasks                                                                            |
+| 📚 Lists, 📊 stats, 🎨 settings, 🌍 i18n | `lists`, `groups`, `sort`, `stats/selectors`, `theme`, `settings`, `thunks`, `translate` | Smart lists and project views, date groups, sort orders, activity, streaks and project progress, backgrounds and glass, language switching, plurals              |
+| 🧰 Shared                                | `date`, `keyboard`, `motion`, `refraction`, `text`, `trustedTypes`, `Calendar`           | Date keys, labels and week starts, shortcut matchers, transitions, displacement maths, fuzzy search, the URL policy, calendar keyboard navigation                |
 
 ## 🌐 Test environment
 
@@ -59,14 +61,14 @@ Tests sit next to the code they cover as `*.test.ts(x)`:
 
 ## 🛠️ Helpers
 
-| Helper                                     | File                    | Purpose                                                              |
-| ------------------------------------------ | ----------------------- | -------------------------------------------------------------------- |
-| `renderWithStore(ui, { preloadedState })`  | `src/test/render.tsx`   | Renders with a fresh store and returns `{ store, user, ...queries }` |
-| `renderApp(todos, list)`                   | `src/test/render.tsx`   | Renders the whole app with the given todos and selected list         |
-| `openPopover(user, trigger)`               | `src/test/render.tsx`   | Clicks a popover trigger and returns queries scoped to the panel     |
-| `section(name)`, `itemTitles(region)`      | `src/test/render.tsx`   | Finds a task section and lists the titles in it                      |
-| `makeTodo()`, `makeState()`, `sampleTodos` | `src/test/factories.ts` | Consistent fixtures                                                  |
-| `todayKey()`, `dayFromToday(offset)`       | `src/test/factories.ts` | Due dates relative to the current day                                |
+| Helper                                                      | File                    | Purpose                                                              |
+| ----------------------------------------------------------- | ----------------------- | -------------------------------------------------------------------- |
+| `renderWithStore(ui, { preloadedState })`                   | `src/test/render.tsx`   | Renders with a fresh store and returns `{ store, user, ...queries }` |
+| `renderApp(todos, list, projects)`                          | `src/test/render.tsx`   | Renders the whole app with the given todos, view and projects        |
+| `openPopover(user, trigger)`                                | `src/test/render.tsx`   | Clicks a popover trigger and returns queries scoped to the panel     |
+| `section(name)`, `itemTitles(region)`                       | `src/test/render.tsx`   | Finds a task section and lists the titles in it                      |
+| `makeTodo()`, `makeProject()`, `makeState()`, `sampleTodos` | `src/test/factories.ts` | Consistent fixtures                                                  |
+| `todayKey()`, `dayFromToday(offset)`                        | `src/test/factories.ts` | Due dates relative to the current day                                |
 
 ## 📐 Conventions
 
@@ -75,7 +77,9 @@ Tests sit next to the code they cover as `*.test.ts(x)`:
 - 👀 Test behaviour, not implementation: assert on what the user sees or on the store, never on component state.
 - 🌍 Assert translated text through `formatMessage(createTranslator(locale), message)` in model tests, so both languages are checked without rendering.
 - 🫥 Popover content is in the DOM even while closed; scope queries with `openPopover()` or ignore it with `{ ignore: "[popover] *" }`.
-- 🌐 Browser-only effects (refraction, pointer light, the aurora, real CSP enforcement) are verified in Chrome; their pure logic is unit tested.
+- ⏱️ Long presses and other timers use `vi.useFakeTimers()` with `act()`, and real timers are restored at the end of the test.
+- 🔢 Pure logic that a component needs, such as drop rules or collision detection, lives in a plain module next to it (`TaskDnd/dnd.ts`) so it can be tested without a browser.
+- 🌐 Browser-only behaviour — refraction, pointer light, the backgrounds, dragging onto the sidebar, real CSP enforcement and rendering speed — is verified in Chrome; its pure logic is unit tested.
 
 ## 📊 Coverage thresholds
 

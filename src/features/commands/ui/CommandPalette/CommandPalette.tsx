@@ -7,20 +7,30 @@ import { LOCALES, type Locale } from "@/features/i18n/model/translate";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import LocaleFlag from "@/features/i18n/ui/LocaleFlag/LocaleFlag";
 import { LIST_ICONS } from "@/features/lists/model/listIcons";
-import { LISTS } from "@/features/lists/model/lists";
+import { LISTS, projectView } from "@/features/lists/model/lists";
 import { selectList, selectPaletteOpen, selectSort } from "@/features/lists/model/selectors";
 import { SORT_MODES } from "@/features/lists/model/sort";
 import {
   detailsOpened,
   listChanged,
-  paletteToggled,
+  overlayClosed,
+  overlayOpened,
   queryChanged,
   sortChanged,
 } from "@/features/lists/model/viewSlice";
+import { splitProjectName, type Project } from "@/features/projects/model/project";
+import { selectProjects } from "@/features/projects/model/selectors";
+import ProjectIcon from "@/features/projects/ui/ProjectIcon/ProjectIcon";
 import { selectSettings } from "@/features/settings/model/selectors";
 import { EFFECTS, resolveEffects } from "@/features/settings/model/settings";
-import { accentChanged, appearanceChanged, effectsChanged } from "@/features/settings/model/settingsSlice";
-import { ACCENTS, APPEARANCES } from "@/features/settings/model/theme";
+import {
+  accentChanged,
+  appearanceChanged,
+  backdropChanged,
+  effectsChanged,
+  glassChanged,
+} from "@/features/settings/model/settingsSlice";
+import { ACCENTS, APPEARANCES, BACKDROPS, GLASS_STYLES } from "@/features/settings/model/theme";
 import { changeLocale } from "@/features/settings/model/thunks";
 import { selectTodos } from "@/features/todos/model/selectors";
 import { COMPOSER_INPUT_ID } from "@/features/todos/ui/ids";
@@ -38,9 +48,17 @@ import { useTaskCommands } from "../../model/useTaskCommands";
 
 import styles from "./CommandPalette.module.scss";
 
-type CommandGroup = "actions" | "lists" | "tasks" | "sort" | "appearance" | "language";
+type CommandGroup = "actions" | "lists" | "projects" | "tasks" | "sort" | "appearance" | "language";
 
-const GROUP_ORDER: readonly CommandGroup[] = ["actions", "lists", "tasks", "sort", "appearance", "language"];
+const GROUP_ORDER: readonly CommandGroup[] = [
+  "actions",
+  "lists",
+  "projects",
+  "tasks",
+  "sort",
+  "appearance",
+  "language",
+];
 const TASK_LIMIT = 8;
 const APPEARANCE_ICONS = { system: "monitor", light: "sun", dark: "moon" } as const satisfies Record<string, IconName>;
 
@@ -51,6 +69,7 @@ interface Command {
   keywords?: string;
   icon: IconName;
   flag?: Locale;
+  project?: Project;
   hint?: string;
   current?: boolean;
   run: () => void;
@@ -67,6 +86,7 @@ const PaletteContent = () => {
   const sort = useAppSelector(selectSort);
   const settings = useAppSelector(selectSettings);
   const todos = useAppSelector(selectTodos);
+  const projects = useAppSelector(selectProjects);
   const taskCommands = useTaskCommands();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -79,6 +99,14 @@ const PaletteContent = () => {
 
   const actionCommands: Command[] = [
     { id: "new-task", group: "actions", label: t("palette.newTask"), icon: "plus", hint: "N", run: focusComposer },
+    {
+      id: "new-project",
+      group: "actions",
+      label: t("palette.newProject"),
+      keywords: "list folder",
+      icon: "folder",
+      run: () => dispatch(overlayOpened({ kind: "project", projectId: null })),
+    },
     ...taskCommands
       .filter((command) => !command.disabled)
       .map(({ id, label, icon, hint, keywords, run }): Command => ({
@@ -123,6 +151,16 @@ const PaletteContent = () => {
       current: id === list,
       run: () => dispatch(listChanged(id)),
     })),
+    ...projects.map((project): Command => ({
+      id: `project-${project.id}`,
+      group: "projects",
+      label: t("palette.goToProject", { name: splitProjectName(project.name).label }),
+      keywords: project.name,
+      icon: "folder",
+      project,
+      current: projectView(project.id) === list,
+      run: () => dispatch(listChanged(projectView(project.id))),
+    })),
     ...foundTasks,
     ...SORT_MODES.map((mode): Command => ({
       id: `sort-${mode}`,
@@ -150,6 +188,32 @@ const PaletteContent = () => {
       current: accent === settings.accent,
       run: () => dispatch(accentChanged(accent)),
     })),
+    ...BACKDROPS.map((backdrop): Command => ({
+      id: `backdrop-${backdrop}`,
+      group: "appearance",
+      label: t("palette.background", { name: t(`background.${backdrop}`) }),
+      keywords: "wallpaper theme",
+      icon: "image",
+      current: backdrop === settings.backdrop,
+      run: () => dispatch(backdropChanged(backdrop)),
+    })),
+    ...GLASS_STYLES.map((glass): Command => ({
+      id: `glass-${glass}`,
+      group: "appearance",
+      label: t("palette.glass", { mode: t(`glass.${glass}`) }),
+      keywords: "transparency contrast",
+      icon: "sparkles",
+      current: glass === settings.glass,
+      run: () => dispatch(glassChanged(glass)),
+    })),
+    {
+      id: "settings",
+      group: "appearance",
+      label: t("palette.openSettings"),
+      keywords: "preferences options",
+      icon: "sliders",
+      run: () => dispatch(overlayOpened({ kind: "settings" })),
+    },
     ...EFFECTS.map((effects): Command => ({
       id: `effects-${effects}`,
       group: "appearance",
@@ -193,7 +257,7 @@ const PaletteContent = () => {
   }, [activeId]);
 
   const run = (command: Command) => {
-    flushSync(() => dispatch(paletteToggled(false)));
+    flushSync(() => dispatch(overlayClosed("palette")));
     command.run();
   };
 
@@ -231,6 +295,8 @@ const PaletteContent = () => {
     >
       {command.flag ? (
         <LocaleFlag locale={command.flag} className={styles.optionFlag} />
+      ) : command.project ? (
+        <ProjectIcon name={command.project.name} color={command.project.color} size="small" />
       ) : (
         <Icon name={command.icon} filled={command.icon === "star"} className={styles.optionIcon} />
       )}
@@ -317,7 +383,7 @@ const CommandPalette = () => {
     isModKey("k"),
     (event) => {
       event.preventDefault();
-      dispatch(paletteToggled(!open));
+      dispatch(open ? overlayClosed("palette") : overlayOpened({ kind: "palette" }));
     },
     { allowInEditable: true },
   );
@@ -327,7 +393,7 @@ const CommandPalette = () => {
       open={open}
       label={t("palette.label")}
       placement="top"
-      onClose={() => dispatch(paletteToggled(false))}
+      onClose={() => dispatch(overlayClosed("palette"))}
       className={styles.dialog}
     >
       <PaletteContent />

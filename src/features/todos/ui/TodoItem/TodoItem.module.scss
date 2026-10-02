@@ -3,7 +3,13 @@
 .item {
   display: grid;
   grid-template-rows: 1fr;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 64px;
   transition: grid-template-rows var(--duration-base) var(--ease-in-out);
+
+  :root[data-dragging] & {
+    content-visibility: visible;
+  }
 
   &[data-leaving] {
     grid-template-rows: 0fr;
@@ -73,10 +79,8 @@
 
   &[data-dragging] {
     z-index: 2;
-    background-color: var(--color-surface);
-    box-shadow:
-      var(--glass-shadow-lifted),
-      inset 0 0 0 1px var(--color-separator);
+    opacity: 0.4;
+    background-color: var(--color-fill);
   }
 
   &[data-editing] {
@@ -226,6 +230,22 @@
   }
 }
 
+.project {
+  gap: 4px;
+  padding-inline: 4px 9px;
+  color: var(--color-text-secondary);
+  @include pressable(0.94);
+
+  @include hover {
+    background-color: color-mix(in srgb, var(--project-color) 18%, transparent);
+    color: var(--color-text);
+  }
+}
+
+.projectIcon {
+  margin-inline-end: -1px;
+}
+
 .actions {
   grid-area: actions;
   display: flex;
@@ -299,6 +319,17 @@
 @container todo-list (max-width: 560px) {
   .schedule,
   .delete {
+    display: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .row {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  .info {
     display: none;
   }
 }

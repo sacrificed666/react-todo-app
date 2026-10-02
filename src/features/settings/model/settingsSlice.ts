@@ -3,7 +3,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Locale } from "@/features/i18n/model/translate";
 
 import { DEFAULT_SETTINGS, type Effects } from "./settings";
-import type { Accent, Appearance } from "./theme";
+import type { Accent, Appearance, Backdrop, GlassStyle } from "./theme";
 
 export const settingsSlice = createSlice({
   name: "settings",
@@ -15,6 +15,12 @@ export const settingsSlice = createSlice({
     accentChanged(state, action: PayloadAction<Accent>) {
       state.accent = action.payload;
     },
+    backdropChanged(state, action: PayloadAction<Backdrop>) {
+      state.backdrop = action.payload;
+    },
+    glassChanged(state, action: PayloadAction<GlassStyle>) {
+      state.glass = action.payload;
+    },
     localeChanged(state, action: PayloadAction<Locale>) {
       state.locale = action.payload;
     },
@@ -24,4 +30,5 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const { appearanceChanged, accentChanged, localeChanged, effectsChanged } = settingsSlice.actions;
+export const { appearanceChanged, accentChanged, backdropChanged, glassChanged, localeChanged, effectsChanged } =
+  settingsSlice.actions;

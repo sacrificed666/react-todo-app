@@ -1,0 +1,44 @@
+import type { AppThunk } from "@/app/store";
+import { projectView } from "@/features/lists/model/lists";
+import { detailsClosed, listChanged } from "@/features/lists/model/viewSlice";
+import { toastShown } from "@/features/notifications/model/toastSlice";
+import { selectTodos } from "@/features/todos/model/selectors";
+
+import { normalizeProjectName, type ProjectDraft } from "./project";
+import { projectAdded, projectRemoved } from "./projectsSlice";
+
+export const createProject =
+  (draft: ProjectDraft, open = true): AppThunk<string | null> =>
+  (dispatch) => {
+    const name = normalizeProjectName(draft.name);
+    if (!name) return null;
+    const { payload } = dispatch(projectAdded({ ...draft, name }));
+    if (open) dispatch(listChanged(projectView(payload.id)));
+    return payload.id;
+  };
+
+export const deleteProject =
+  (id: string): AppThunk =>
+  (dispatch, getState) => {
+    const state = getState();
+    const project = state.projects.entities[id];
+    if (!project) return;
+
+    const taskIds = selectTodos(state)
+      .filter((todo) => todo.projectId === id)
+      .map((todo) => todo.id);
+    const { detailsId } = state.view;
+
+    dispatch(projectRemoved(id));
+    if (detailsId !== null && taskIds.includes(detailsId)) dispatch(detailsClosed());
+
+    dispatch(
+      toastShown({
+        message:
+          taskIds.length > 0
+            ? { key: "toast.projectDeleted", params: { name: project.name, count: taskIds.length } }
+            : { key: "toast.projectDeletedEmpty", params: { name: project.name } },
+        action: { type: "undo" },
+      }),
+    );
+  };

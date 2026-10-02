@@ -54,33 +54,34 @@ react-todo-app/
 ├── public/                          Favicons and PWA icons copied as-is
 ├── scripts/                         Coverage summary and build report for the pipeline
 ├── src/
-│   ├── app/                         Entry point, App shell, store, persistence, launch intents, PWA, error screen
-│   ├── widgets/                     Header, Sidebar, Workspace, Inspector, Backdrop
+│   ├── app/                         Entry point, App shell, store, persistence, launch intents, PWA, back button, error screen
+│   ├── widgets/                     Sidebar, Toolbar (phones), Workspace, Inspector, Backdrop
 │   ├── features/
-│   │   ├── todos/                   Task model, history, repeats, quick add, checklists, transfer; composer, list, rows, details
-│   │   ├── lists/                   Smart lists, date groups, sorting, view state; navigation, tags, tab bar, list header
-│   │   ├── stats/                   Activity and streak; the overview card
+│   │   ├── todos/                   Task model, repeats, quick add, checklists; composer, list, rows, context menu, drag and drop, details
+│   │   ├── projects/                Project model, colours and emoji icons; sidebar list, picker, dialog
+│   │   ├── lists/                   Smart lists and project views, date groups, sorting, view state; navigation, tags, tab bar, Lists sheet, list header
+│   │   ├── data/                    The stored document, import and export, undo history
+│   │   ├── stats/                   Activity, streak and project progress; the overview card
 │   │   ├── commands/                Shared task commands; the ⋯ menu and the ⌘K palette
 │   │   ├── search/                  Search field
-│   │   ├── settings/                Appearance, accent, language and effects
-│   │   ├── i18n/                    Messages in eight languages, the lazy catalog, names, flags and the translator
-│   │   └── notifications/           Toast state and the Toaster
+│   │   ├── settings/                Appearance, accent, background, glass, language and effects; the settings dialog
+│   │   ├── i18n/                    Messages in eight languages, the lazy catalog, names, flags, week starts and the translator
+│   │   └── notifications/           Toast state, the Toaster and the offline badge
 │   ├── shared/
-│   │   ├── ui/                      Icon, IconButton, Checkbox, Popover, Dialog, SegmentedControl, ProgressBar, EmptyState
-│   │   ├── hooks/                   Liquid glass, effects level, shortcuts, media queries, online status, app badge, today, pointer light
-│   │   ├── lib/                     Dates, keyboard, fuzzy search, storage, motion, refraction, effects, haptics, confetti, Trusted Types
-│   │   ├── styles/                  Design tokens, glass mixins and global styles
+│   │   ├── ui/                      Icon, IconButton, Checkbox, Popover, Dialog, ContextMenu, Calendar, SwatchPicker, SegmentedControl, ProgressBar, EmptyState, Brand
+│   │   ├── hooks/                   Liquid glass, effects level, shortcuts, media queries, scroll position, online status, app badge, today, pointer light
+│   │   ├── lib/                     Dates and calendars, keyboard, fuzzy search, storage, motion, refraction, effects, haptics, confetti, Trusted Types
+│   │   ├── styles/                  Design tokens, accent and background palettes, glass and menu mixins, global styles
 │   │   └── assets/                  Flow-lines artwork used by the backdrop
 │   ├── test/                        Test setup, polyfills, factories and render helpers
 │   └── types/                       Global type declarations
-├── CHANGELOG.md
 ├── index.html
 ├── vite.config.ts                   Vite, React Compiler, PWA, CSP and Vitest configuration
 ├── .oxlintrc.json                   Lint rules and layer boundaries
 └── .oxfmtrc.json                    Formatting rules
 ```
 
-Every feature has a `model/` folder for state and logic and a `ui/` folder with one folder per component, for example `features/todos/ui/TodoItem/TodoItem.tsx` and `TodoItem.module.scss`. Tests sit next to the code they cover as `*.test.ts(x)`. The layers and their rules are explained in [Architecture](./architecture.md#-layers).
+Every feature has a `model/` folder for state and logic and, when it renders something, a `ui/` folder with one folder per component, for example `features/todos/ui/TodoItem/TodoItem.tsx` and `TodoItem.module.scss`. Tests sit next to the code they cover as `*.test.ts(x)`. The layers and their rules are explained in [Architecture](./architecture.md#-layers).
 
 ## 💻 Editor setup
 

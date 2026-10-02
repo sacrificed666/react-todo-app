@@ -1,7 +1,7 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { makeTodo } from "@/test/factories";
+import { makeProject, makeTodo } from "@/test/factories";
 import { renderApp } from "@/test/render";
 
 const palette = () => screen.getByRole("dialog", { name: "Command palette" });
@@ -48,7 +48,22 @@ describe("CommandPalette", () => {
     expect(palette()).toBeInTheDocument();
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog", { name: "Command palette" })).not.toBeInTheDocument();
-    expect(store.getState().view.paletteOpen).toBe(false);
+    expect(store.getState().view.overlay).toBeNull();
+  });
+
+  it("opens projects and creates new ones", async () => {
+    const { user, store } = renderApp([], "all", [makeProject({ id: "home", name: "🏠 Home", color: "orange" })]);
+
+    await user.keyboard("{Control>}k{/Control}");
+    await user.type(combobox(), "home");
+    await user.keyboard("{Enter}");
+    expect(store.getState().view.list).toBe("project:home");
+    expect(screen.getByRole("heading", { level: 1, name: "Home" })).toBeInTheDocument();
+
+    await user.keyboard("{Control>}k{/Control}");
+    await user.type(combobox(), "new project");
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("dialog", { name: "New project" })).toBeInTheDocument();
   });
 
   it("finds tasks and opens their details", async () => {

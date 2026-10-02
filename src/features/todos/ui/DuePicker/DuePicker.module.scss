@@ -56,7 +56,10 @@
 }
 
 .panel {
-  inline-size: min(16rem, calc(100vw - 24px));
+  inline-size: min(19rem, calc(100vw - 24px));
+  max-block-size: calc(100dvh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .heading {
@@ -68,24 +71,40 @@
   color: var(--color-text-tertiary);
 }
 
-.option {
+.quick {
+  min-inline-size: 0;
+  margin: 0;
+  border: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  padding: 0 2px 6px;
+  border-block-end: 1px solid var(--color-separator);
+  margin-block-end: 4px;
+}
+
+.quickOption {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  inline-size: 100%;
-  block-size: 42px;
-  padding-inline: 12px;
-  border-radius: calc(var(--radius-xl) - 6px);
-  font-size: 0.9375rem;
-  text-align: start;
-  transition: background-color var(--duration-fast) var(--ease-out);
+  gap: 4px;
+  min-inline-size: 0;
+  padding: 8px 2px 6px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+  @include pressable(0.94);
 
   @include hover {
     background-color: var(--color-fill);
+    color: var(--color-text);
   }
 
   &[aria-pressed="true"] {
     background-color: var(--color-accent-soft);
+    color: var(--color-accent-bright);
   }
 
   &:focus-visible {
@@ -93,57 +112,44 @@
   }
 }
 
-.optionIcon {
-  font-size: 1.125rem;
-  color: var(--color-text-secondary);
+.quickIcon {
+  font-size: 1.25rem;
 }
 
-.optionLabel {
-  flex: 1;
-}
-
-.hint {
-  font-size: 0.8125rem;
-  color: var(--color-text-tertiary);
+.quickLabel {
+  max-inline-size: 100%;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 
 .remove {
-  margin-block-start: 4px;
-  color: var(--color-danger);
-
-  .optionIcon {
-    color: inherit;
-  }
-}
-
-.custom {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
-  margin-block-start: 6px;
-  padding: 10px 12px 6px;
-  border-block-start: 1px solid var(--color-separator);
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-}
+  inline-size: 100%;
+  block-size: 40px;
+  margin-block-start: 2px;
+  padding-inline: 12px;
+  border-radius: calc(var(--radius-xl) - 6px);
+  color: var(--color-danger);
+  font-size: 0.9375rem;
+  transition: background-color var(--duration-fast) var(--ease-out);
 
-.date {
-  flex: 1;
-  min-inline-size: 0;
-  block-size: 34px;
-  padding-inline: 10px;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background-color: var(--color-fill);
-  font-size: 0.875rem;
-  color: var(--color-text);
+  @include hover {
+    background-color: var(--color-danger-soft);
+  }
 
   &:focus-visible {
-    outline: 2px solid var(--color-focus);
-    outline-offset: 1px;
+    outline-offset: -2px;
   }
+}
+
+.removeIcon {
+  font-size: 1.125rem;
 }
 
 .chip[data-detected] {
@@ -164,17 +170,5 @@
 @media (prefers-reduced-motion: reduce) {
   .chip[data-detected] .chipIcon {
     animation: none;
-  }
-}
-
-@container composer (max-width: 420px) {
-  .chip:not([data-empty]) {
-    inline-size: 34px;
-    padding: 0;
-    justify-content: center;
-  }
-
-  .chipLabel {
-    display: none;
   }
 }

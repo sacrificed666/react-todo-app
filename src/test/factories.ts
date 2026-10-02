@@ -1,6 +1,8 @@
 import type { RootState } from "@/app/store";
-import type { ListId } from "@/features/lists/model/lists";
+import type { ViewId } from "@/features/lists/model/lists";
 import { initialViewState } from "@/features/lists/model/viewSlice";
+import type { Project } from "@/features/projects/model/project";
+import { projectsAdapter } from "@/features/projects/model/projectsSlice";
 import type { Todo } from "@/features/todos/model/todo";
 import { todosAdapter } from "@/features/todos/model/todosSlice";
 import { addDays, toDateKey } from "@/shared/lib/date";
@@ -14,6 +16,8 @@ export const makeTodo = (overrides: Partial<Todo> & Pick<Todo, "id" | "title">):
   important: false,
   dueDate: null,
   repeat: null,
+  repeatAnchor: null,
+  projectId: null,
   notes: "",
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_000_000,
@@ -21,8 +25,21 @@ export const makeTodo = (overrides: Partial<Todo> & Pick<Todo, "id" | "title">):
   ...overrides,
 });
 
-export const makeState = (todos: readonly Todo[], list: ListId = "all", query = ""): Partial<RootState> => ({
+export const makeProject = (overrides: Partial<Project> & Pick<Project, "id" | "name">): Project => ({
+  color: "blue",
+  createdAt: 1_700_000_000_000,
+  updatedAt: 1_700_000_000_000,
+  ...overrides,
+});
+
+export const makeState = (
+  todos: readonly Todo[],
+  list: ViewId = "all",
+  query = "",
+  projects: readonly Project[] = [],
+): Partial<RootState> => ({
   todos: todosAdapter.setAll(todosAdapter.getInitialState(), todos),
+  projects: projectsAdapter.setAll(projectsAdapter.getInitialState(), projects),
   view: { ...initialViewState, list, query },
 });
 

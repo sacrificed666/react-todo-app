@@ -50,7 +50,7 @@ describe("ErrorBoundary", () => {
 
   it("downloads a backup of the stored tasks", async () => {
     const downloadJson = vi.spyOn(download, "downloadJson").mockImplementation(() => {});
-    localStorage.setItem(STORAGE_KEYS.todos, JSON.stringify({ version: 4, todos: [] }));
+    localStorage.setItem(STORAGE_KEYS.data, JSON.stringify({ version: 4, todos: [] }));
     const user = renderBroken();
 
     await user.click(screen.getByRole("button", { name: "Download a backup" }));

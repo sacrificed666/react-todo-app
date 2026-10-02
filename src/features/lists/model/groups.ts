@@ -1,7 +1,7 @@
 import type { Todo } from "@/features/todos/model/todo";
 import { daysBetween } from "@/shared/lib/date";
 
-import type { ListId } from "./lists";
+import type { ViewId } from "./lists";
 
 export type TodoGroupKind = "overdue" | "day" | "month" | "all";
 
@@ -37,7 +37,7 @@ const groupUpcoming = (todos: readonly Todo[], today: string): TodoGroup[] => {
   return [...groups.values()].toSorted((a, b) => a.sortKey.localeCompare(b.sortKey)).map(({ group }) => group);
 };
 
-export const groupActiveTodos = (todos: readonly Todo[], list: ListId, today: string): TodoGroup[] => {
+export const groupActiveTodos = (todos: readonly Todo[], list: ViewId, today: string): TodoGroup[] => {
   if (todos.length === 0) return [];
 
   if (list === "today") {

@@ -1,52 +1,86 @@
 import { useRef } from "react";
 
-import { useAppSelector } from "@/app/hooks";
+import ActionsMenu from "@/features/commands/ui/ActionsMenu/ActionsMenu";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import ListNav from "@/features/lists/ui/ListNav/ListNav";
 import TagNav from "@/features/lists/ui/TagNav/TagNav";
+import OfflineBadge from "@/features/notifications/ui/OfflineBadge/OfflineBadge";
+import ProjectNav from "@/features/projects/ui/ProjectNav/ProjectNav";
+import TodoSearch from "@/features/search/ui/TodoSearch/TodoSearch";
+import SettingsButton from "@/features/settings/ui/SettingsButton/SettingsButton";
 import Overview from "@/features/stats/ui/Overview/Overview";
-import { selectTagCounts } from "@/features/todos/model/selectors";
 import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { useShortcut } from "@/shared/hooks/useShortcut";
 import { useToday } from "@/shared/hooks/useToday";
+import { isPlainKey } from "@/shared/lib/keyboard";
 import { COMPACT_LAYOUT, WIDE_LAYOUT } from "@/shared/lib/media";
+import Brand from "@/shared/ui/Brand/Brand";
 
 import styles from "./Sidebar.module.scss";
 
-const Sidebar = () => {
+const Credits = () => {
   const { t } = useI18n();
   const today = useToday();
-  const compact = useMediaQuery(COMPACT_LAYOUT);
-  const wide = useMediaQuery(WIDE_LAYOUT);
-  const hasTags = useAppSelector((state) => selectTagCounts(state).length > 0);
+
+  return (
+    <p className={styles.credits}>
+      © {today.slice(0, 4)}{" "}
+      <a className={styles.link} href="https://github.com/sacrificed666" target="_blank" rel="noreferrer">
+        Illia Movchko
+      </a>
+      <span aria-hidden="true"> · </span>
+      <a
+        className={styles.link}
+        href="https://github.com/sacrificed666/react-todo-app"
+        target="_blank"
+        rel="noreferrer"
+      >
+        {t("credits.source")}
+      </a>
+    </p>
+  );
+};
+
+const Navigator = () => {
+  const { t } = useI18n();
   const panelRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useLiquidGlass(panelRef, { bezel: 18, scale: 36 });
 
+  useShortcut(isPlainKey("/"), (event) => {
+    event.preventDefault();
+    searchRef.current?.focus();
+  });
+
+  return (
+    <div ref={panelRef} className={styles.panel} data-glass-light="">
+      <div className={styles.top}>
+        <Brand label={t("header.home")} />
+        <div className={styles.tools}>
+          <OfflineBadge />
+          <SettingsButton variant="ghost" />
+          <ActionsMenu variant="ghost" />
+        </div>
+      </div>
+      <TodoSearch inputRef={searchRef} />
+      <ListNav />
+      <ProjectNav />
+      <TagNav />
+    </div>
+  );
+};
+
+const Sidebar = () => {
+  const compact = useMediaQuery(COMPACT_LAYOUT);
+  const wide = useMediaQuery(WIDE_LAYOUT);
+
   return (
     <aside className={styles.sidebar}>
-      {compact && !hasTags ? null : (
-        <div ref={panelRef} className={styles.panel} data-glass-light="">
-          {compact ? null : <ListNav />}
-          <TagNav />
-        </div>
-      )}
+      {compact ? null : <Navigator />}
       {wide ? null : <Overview />}
-      <p className={styles.credits}>
-        © {today.slice(0, 4)}{" "}
-        <a className={styles.link} href="https://github.com/sacrificed666" target="_blank" rel="noreferrer">
-          Illia Movchko
-        </a>
-        <span aria-hidden="true"> · </span>
-        <a
-          className={styles.link}
-          href="https://github.com/sacrificed666/react-todo-app"
-          target="_blank"
-          rel="noreferrer"
-        >
-          {t("credits.source")}
-        </a>
-      </p>
+      <Credits />
     </aside>
   );
 };

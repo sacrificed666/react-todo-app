@@ -4,6 +4,11 @@
   flex-direction: column;
   gap: 16px;
   min-inline-size: 0;
+  padding-block-start: 10px;
+
+  @media (max-width: 899px) {
+    padding-block-start: 0;
+  }
 }
 
 .main:focus {

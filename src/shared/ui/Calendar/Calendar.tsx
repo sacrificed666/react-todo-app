@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 
 import {
   addDays,
@@ -37,6 +37,7 @@ const KEY_STEPS: Readonly<Record<string, number>> = { ArrowLeft: -1, ArrowRight:
 
 const Calendar = ({ value, today, locale, weekStart, labels, marks, onSelect }: CalendarProps) => {
   const gridRef = useRef<HTMLTableElement>(null);
+  const monthId = useId();
   const moved = useRef(false);
   const [focused, setFocused] = useState(value ?? today);
   const month = startOfMonth(focused);
@@ -80,7 +81,7 @@ const Calendar = ({ value, today, locale, weekStart, labels, marks, onSelect }: 
   return (
     <div className={styles.calendar}>
       <div className={styles.header}>
-        <p className={styles.month} aria-live="polite">
+        <p id={monthId} className={styles.month} aria-live="polite">
           {formatMonthYear(month, locale)}
         </p>
         <IconButton
@@ -98,7 +99,7 @@ const Calendar = ({ value, today, locale, weekStart, labels, marks, onSelect }: 
           onClick={() => shiftMonth(1)}
         />
       </div>
-      <table ref={gridRef} className={styles.grid}>
+      <table ref={gridRef} className={styles.grid} aria-labelledby={monthId}>
         <thead>
           <tr>
             {weeks[0]?.map((date) => (

@@ -51,7 +51,7 @@ react-todo-app/
 │   └── SECURITY.md                  How to report vulnerabilities
 ├── docs/                            This documentation and its screenshots
 ├── lint/no-comments.js              Custom Oxlint rule that forbids comments
-├── public/                          Favicons and PWA icons copied as-is
+├── public/                          Favicons, PWA icons, the social preview and the install screenshots, copied as-is
 ├── scripts/                         Coverage summary and build report for the pipeline
 ├── src/
 │   ├── app/                         Entry point, App shell, store, persistence, launch intents, PWA, back button, error screen

@@ -49,11 +49,11 @@ const ListHeader = () => {
           </h1>
           <p className={styles.subtitle}>
             {view.kind === "search" ? (
-              t("search.results", { count: results, query: view.query })
+              <span aria-hidden="true">{t("search.results", { count: results, query: view.query })}</span>
             ) : (
               <time dateTime={today}>{formatHeadline(today, locale)}</time>
             )}
-            {showProgress ? <span>{t("listHeader.progress", { done, total })}</span> : null}
+            {showProgress ? <span className={styles.progress}>{t("listHeader.progress", { done, total })}</span> : null}
           </p>
         </div>
         <div className={styles.tools}>
@@ -71,6 +71,9 @@ const ListHeader = () => {
           )}
         </div>
       </div>
+      <output className="visually-hidden" aria-live="polite">
+        {view.kind === "search" ? t("search.results", { count: results, query: view.query }) : ""}
+      </output>
       {showProgress ? (
         <ProgressBar value={done} max={total} label={t("listHeader.progressLabel", { list: view.title })} />
       ) : null}

@@ -14,16 +14,22 @@ export const useBackToClose = (open: boolean, onBack: () => void) => {
   const handleBack = useEffectEvent(onBack);
 
   useEffect(() => {
-    if (open && marker.current === null) {
+    if (open) {
+      if (marker.current !== null) return;
       const id = crypto.randomUUID();
       const state: unknown = globalThis.history.state;
       globalThis.history.pushState({ ...(isRecord(state) ? state : {}), [MARKER]: id }, "");
       marker.current = id;
-    } else if (!open && marker.current !== null) {
+      return;
+    }
+
+    if (marker.current === null) return;
+    const timer = window.setTimeout(() => {
       const id = marker.current;
       marker.current = null;
-      if (currentMarker() === id) globalThis.history.back();
-    }
+      if (id !== null && currentMarker() === id) globalThis.history.back();
+    });
+    return () => clearTimeout(timer);
   }, [open]);
 
   useEffect(() => {

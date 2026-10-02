@@ -80,12 +80,12 @@ describe("loadPersistedState", () => {
     expect(loadPersistedState(localStorage, ["uk-UA"])?.settings?.locale).toBe("en");
   });
 
-  it("maps the filter saved by version 2", () => {
+  it("maps the old filter preference to a list", () => {
     localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ filter: "completed" }));
     expect(setupStore(loadPersistedState()).getState().view.list).toBe("completed");
   });
 
-  it("migrates todos saved by the previous version", () => {
+  it("migrates todos saved in the legacy format", () => {
     localStorage.setItem(STORAGE_KEYS.legacyTodos, JSON.stringify([{ id: "1", text: "Old task", isCompleted: false }]));
 
     const store = setupStore(loadPersistedState());
@@ -135,7 +135,7 @@ describe("startPersistence", () => {
     store.dispatch(projectAdded({ name: "Work" }));
 
     expect(storedTitles()).toEqual(["Persist me"]);
-    expect(readJson(localStorage, STORAGE_KEYS.data)).toMatchObject({ version: 6, projects: [{ name: "Work" }] });
+    expect(readJson(localStorage, STORAGE_KEYS.data)).toMatchObject({ projects: [{ name: "Work" }] });
     expect(readJson(localStorage, STORAGE_KEYS.preferences)).toEqual({
       list: "important",
       sort: "newest",

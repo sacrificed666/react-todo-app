@@ -17,8 +17,6 @@ const catalog = new Map<Locale, Messages>([["en", en]]);
 
 export const getMessages = (locale: Locale): Messages => catalog.get(locale) ?? en;
 
-export const hasMessages = (locale: Locale) => catalog.has(locale);
-
 export const loadMessages = async (locale: Locale) => {
   if (locale === "en" || catalog.has(locale)) return;
   catalog.set(locale, await loaders[locale]());

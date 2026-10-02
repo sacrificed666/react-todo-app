@@ -81,6 +81,7 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
 
   return (
     <div className={styles.form}>
+      <h2 className="visually-hidden">{t("details.title")}</h2>
       <div className={styles.head}>
         <Checkbox
           className={styles.toggle}

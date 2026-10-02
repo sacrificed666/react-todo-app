@@ -1,14 +1,13 @@
 import { toDateKey } from "@/shared/lib/date";
 
 import type { DataSnapshot } from "./actions";
-import { DATA_VERSION, parseData } from "./document";
+import { parseData } from "./document";
 
 export const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
 export const MAX_IMPORT_TODOS = 5000;
 
 export const createExport = ({ todos, projects }: DataSnapshot, exportedAt: Date) => ({
   app: "react-todo-app",
-  version: DATA_VERSION,
   exportedAt: exportedAt.toISOString(),
   todos,
   projects,

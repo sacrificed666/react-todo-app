@@ -28,12 +28,14 @@ const plannedTodos = [
 ];
 
 describe("App shell", () => {
-  it("renders the sidebar, lists and credits without a header bar", () => {
+  it("keeps the header, search and lists in the sidebar and the credits in a footer", () => {
     renderApp(plannedTodos);
 
-    expect(screen.queryByRole("banner")).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "ToDo home" })).toHaveTextContent("ToDo");
-    expect(screen.getByRole("searchbox", { name: "Search tasks" })).toBeInTheDocument();
+    const banner = screen.getByRole("banner");
+    expect(within(banner).getByRole("link", { name: "ToDo home" })).toHaveTextContent("ToDo");
+    expect(within(banner).getByRole("searchbox", { name: "Search tasks" })).toHaveAttribute("aria-keyshortcuts", "/");
+    expect(within(banner).getByRole("navigation", { name: "Projects" })).toBeInTheDocument();
+    expect(within(screen.getByRole("contentinfo")).getByRole("link", { name: "Source code" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "All tasks" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Lists" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Today (2)" })).toBeInTheDocument();
@@ -112,6 +114,17 @@ describe("App shell", () => {
     expect(screen.getByRole("button", { name: "Сьогодні (2)" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Вихідний код" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Нове завдання" })).toBeInTheDocument();
+  });
+
+  it("names the browser tab after the open list", async () => {
+    const { user } = renderApp(plannedTodos);
+    expect(document.title).toBe("ToDo — Liquid Glass to-do list and task manager");
+
+    await user.click(screen.getByRole("button", { name: /^Today/ }));
+    expect(document.title).toBe("Today · ToDo");
+
+    await user.type(screen.getByRole("searchbox", { name: "Search tasks" }), "dentist");
+    expect(document.title).toBe("Search · ToDo");
   });
 
   it("offers a skip link to the task list", () => {
@@ -497,7 +510,7 @@ describe("Sorting and search", () => {
     await user.type(screen.getByRole("searchbox", { name: "Search tasks" }), "dentist");
 
     expect(screen.getByRole("heading", { level: 1, name: "Search" })).toBeInTheDocument();
-    expect(screen.getByText("1 result for “dentist”")).toBeInTheDocument();
+    expect(screen.getByText("1 result for “dentist”", { selector: "output" })).toBeInTheDocument();
     expect(itemTitles(screen.getByRole("main"))).toEqual(["Dentist appointment"]);
     expect(screen.queryByRole("textbox", { name: "New task" })).not.toBeInTheDocument();
 
@@ -516,6 +529,7 @@ describe("Sorting and search", () => {
 
     await user.type(search, "milk");
     expect(itemTitles(screen.getByRole("main"))).toEqual(["Buy milk"]);
+    expect(screen.getByRole("navigation", { name: "Lists" })).toHaveAttribute("data-idle");
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
     expect(screen.queryByRole("searchbox", { name: "Search tasks" })).not.toBeInTheDocument();
@@ -688,6 +702,21 @@ describe("Back button", () => {
       await new Promise((resolve) => setTimeout(resolve, 30));
     });
     expect(screen.queryByRole("dialog", { name: "Settings" })).not.toBeInTheDocument();
+  });
+
+  it("keeps a sheet opened from the palette", async () => {
+    window.history.replaceState(null, "");
+    const { user } = renderApp();
+
+    await user.keyboard("{Control>}k{/Control}");
+    await user.type(screen.getByRole("combobox", { name: "Command palette" }), "open settings");
+    await user.keyboard("{Enter}");
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 60));
+    });
+
+    expect(screen.getByRole("dialog", { name: "Settings" })).toBeInTheDocument();
+    expect(historyMarker()).toEqual(expect.any(String));
   });
 
   it("removes its history entry when a sheet is closed with a button", async () => {

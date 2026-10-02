@@ -107,7 +107,8 @@ const SettingsContent = ({ onClose }: { onClose: () => void }) => {
                 onChange={() => dispatch(backdropChanged(option))}
               />
               <span className={styles.preview} data-preview={option} aria-hidden="true">
-                <span className={styles.previewGlass} />
+                <span className={styles.previewSidebar} />
+                <span className={styles.previewCard} />
               </span>
               <span className={styles.backdropName}>{t(`background.${option}`)}</span>
             </label>

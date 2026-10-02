@@ -10,7 +10,9 @@ const Inspector = () => {
   const id = useAppSelector(selectDetailsId);
   const todo = useAppSelector((state) => (id === null ? undefined : selectTodoById(state, id)));
 
-  return <div className={styles.inspector}>{todo ? <TaskDetailsPanel key={todo.id} todo={todo} /> : <Overview />}</div>;
+  return (
+    <aside className={styles.inspector}>{todo ? <TaskDetailsPanel key={todo.id} todo={todo} /> : <Overview />}</aside>
+  );
 };
 
 export default Inspector;

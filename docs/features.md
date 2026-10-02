@@ -265,7 +265,6 @@ Exported files look like this:
 ```json
 {
   "app": "react-todo-app",
-  "version": 6,
   "exportedAt": "2026-10-02T10:00:00.000Z",
   "todos": [
     {
@@ -300,14 +299,14 @@ Importing never deletes anything:
 - 🔁 tasks and projects whose `id` already exists are skipped, new ones are appended;
 - 🔗 links to projects that are missing from the file are dropped, so a task never points to nothing;
 - 📄 a plain array of tasks is accepted as well as the full export;
-- 🕰️ files from earlier versions — without projects, repeats, notes, importance or dates, or in the first `{ "id", "text", "isCompleted" }` format — are converted automatically;
+- 🕰️ older files — without projects, repeats, notes, importance or dates, or in the first `{ "id", "text", "isCompleted" }` format — are converted automatically;
 - 🚫 invalid entries, dates, colours and ids are ignored or replaced, and broken or oversized files are reported in a notification.
 
 ## 💾 Persistence and sync
 
 - 💾 Tasks, projects, the selected list, sort order, the completed section state, appearance, language and effects are saved to `localStorage` after every change.
 - 🔄 Changes made in another tab of the same browser appear immediately.
-- 🕰️ Data saved by earlier versions of the app is migrated to the new format on first launch.
+- 🕰️ Data saved in an older format is migrated to the current one on first launch.
 - 🔒 Your tasks never leave your device: there is no account, no server and no analytics. The only outside request is for the language flags, made when you open the language list.
 
 ## 📱 Install, offline and app integration
@@ -317,7 +316,7 @@ ToDo App is a Progressive Web App:
 - 📲 **Install** it from the browser menu; it then opens in its own window. On desktop Chromium the window controls float over the app and the top edge of the window stays draggable (Window Controls Overlay).
 - ⬅️ **Back button** — on phones and in the installed app, **Back** closes an open sheet, dialog or the palette instead of leaving the app.
 - ✈️ **Offline** — after the first visit everything works without a network connection. An **Offline** badge appears next to the settings while you are disconnected, and a notification confirms when the app is ready to work offline.
-- 🔄 **Updates** — when a new version is downloaded, a notification offers **Reload**. Nothing changes under your feet while you work.
+- 🔄 **Updates** — when an update is downloaded, a notification offers **Reload**. Nothing changes under your feet while you work.
 - 🚀 **Shortcuts** — the installed app's icon menu offers **New task**, **Today** and **Important**.
 - 📤 **Share target** — share a page or text from another app to ToDo (where supported) and it becomes a task with the link in its notes.
 - 🔴 **Badge** — the number of tasks due today appears on the app icon.
@@ -369,6 +368,10 @@ Swipes and the long press confirm themselves with a short vibration; releasing a
 - ⌨️ Every control is reachable and operable with the keyboard, with a visible focus ring, and a **Skip to tasks** link is the first stop for keyboard users.
 - 🎯 Focus moves to a sensible place after completing, deleting, editing or restoring a task, and dialogs and menus return focus to the place they were opened from.
 - 🏷️ List and project buttons announce their counters, the current one is marked with `aria-current`, toggles expose `aria-pressed`, the palette follows the ARIA combobox pattern and the context menu the menu pattern with `menuitem` and `menuitemradio` roles.
-- 🔊 Notifications, palette result counts and drag and drop steps — including drops on the sidebar — are announced through live regions.
+- 🔊 Notifications, search and palette result counts and drag and drop steps — including drops on the sidebar — are announced through live regions.
+- 🗺️ Landmarks match the layout: the sidebar is the page's banner with a search landmark and three navigations, the task list is the main region, the inspector is complementary and the credits are the footer. Every dialog and the task details have a heading.
+- 🏷️ The browser tab is named after what is open — **Today · ToDo**, **Search · ToDo**, a project's name — in the interface language, so tabs, history and screen readers always say where you are.
+- 🔤 Text on the glass panels meets the WCAG AA contrast ratio of 4.5:1, including small captions and placeholders.
+- 🖍️ In Windows high contrast mode every selected list, option, colour and day keeps a system highlight ring, colour swatches keep their colours and only completed tasks are struck through.
 - 🌗 The interface respects reduced motion, reduced transparency, increased contrast and forced colours preferences — see [Design system](./design.md#-accessibility).
-- ✅ Automated axe audits of the main screens, dialogs, menus and the phone layout report no violations.
+- ✅ Automated axe audits of the main screens, dialogs, menus, search results and the phone layout report no violations, and Lighthouse scores 100 for accessibility, best practices and SEO.

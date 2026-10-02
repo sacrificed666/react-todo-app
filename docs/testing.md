@@ -24,7 +24,7 @@ The HTML coverage report is written to `coverage/index.html`.
 
 ```mermaid
 flowchart TB
-  UI["🖥️ UI flows · ~80 tests<br/>App, layouts, projects, planning, palette, context menu, calendar, details, rows, composer, back button"]
+  UI["🖥️ UI flows · ~85 tests<br/>App, layouts, projects, planning, palette, context menu, calendar, details, rows, composer, back button"]
   Model["🧠 Model · ~200 tests<br/>slices, history, projects, data document, repeats, groups, selectors, thunks, drag and drop, quick add in 8 languages"]
   Lib["🧰 Shared helpers · ~30 tests<br/>dates and calendars, keyboard, fuzzy search, refraction, Trusted Types"]
   UI --> Model --> Lib

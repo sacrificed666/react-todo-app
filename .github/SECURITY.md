@@ -1,23 +1,18 @@
 # 🛡️ Security policy
 
-## ✅ Supported versions
+## ✅ What is supported
 
-Only the latest release, deployed to [GitHub Pages](https://sacrificed666.github.io/react-todo-app/), receives security fixes.
-
-| Version | Supported |
-| ------- | --------- |
-| 3.1.x   | ✅        |
-| < 3.1   | ❌        |
+Only the current code on `main`, deployed to [GitHub Pages](https://sacrificed666.github.io/react-todo-app/), receives security fixes.
 
 ## 📮 Reporting a vulnerability
 
 Please **do not open a public issue** for security problems.
 
 1. Open the repository's **Security** tab and choose **Report a vulnerability** to send a private advisory.
-2. Describe the problem, the affected version or commit and the steps to reproduce it.
+2. Describe the problem, the affected commit and the steps to reproduce it.
 3. If you have a proof of concept, attach it to the advisory rather than publishing it.
 
-You can expect an acknowledgement within **3 working days** and a status update at least once a week until the report is resolved. Once a fix is released, the advisory is published and you are credited, unless you prefer to stay anonymous.
+You can expect an acknowledgement within **3 working days** and a status update at least once a week until the report is resolved. Once a fix is deployed, the advisory is published and you are credited, unless you prefer to stay anonymous.
 
 ## 🎯 Scope
 

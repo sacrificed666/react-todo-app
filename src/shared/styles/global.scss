@@ -115,3 +115,14 @@ svg {
 [data-project-color="gray"] {
   --project-color: var(--project-gray);
 }
+
+@media (forced-colors: active) {
+  [aria-current="page"],
+  [aria-pressed="true"],
+  [aria-checked="true"],
+  [role="option"][aria-selected="true"],
+  label:has(> input[type="radio"]:checked) {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}

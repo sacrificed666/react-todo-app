@@ -34,7 +34,7 @@ interface DueOptionsProps {
   onChoose: (value: string | null) => void;
 }
 
-export const DueOptions = ({ value, onChoose }: DueOptionsProps) => {
+const DueOptions = ({ value, onChoose }: DueOptionsProps) => {
   const today = useToday();
   const { t, locale } = useI18n();
   const weekStart = useWeekStart();

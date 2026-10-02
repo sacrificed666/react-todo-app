@@ -6,6 +6,7 @@ export const en = {
   "header.offlineHint": "You are offline. Changes are saved on this device.",
 
   "app.skip": "Skip to tasks",
+  "app.title": "ToDo — Liquid Glass to-do list and task manager",
 
   "search.placeholder": "Search tasks",
   "search.label": "Search tasks",
@@ -167,7 +168,6 @@ export const en = {
   "settings.glass": "Glass",
   "settings.glassHint": "Tinted glass is easier to read on bright backgrounds.",
   "settings.performance": "Performance",
-  "settings.appearance": "Appearance",
   "settings.scheme": "Colour scheme",
   "settings.accent": "Accent",
   "settings.accentLabel": "Accent colour",
@@ -230,7 +230,7 @@ export const en = {
   "toast.importTooLarge": "This file is too large to import",
   "toast.undone": "Undone: {action}",
   "toast.redone": "Redone: {action}",
-  "toast.updateReady": "A new version is available",
+  "toast.updateReady": "An update is ready",
   "toast.reload": "Reload",
   "toast.offlineReady": "Ready to work offline",
   "toast.added": "Added “{title}”",
@@ -295,7 +295,6 @@ export const en = {
   "menu.moveTo": "Move to project",
   "menu.back": "Back",
 
-  "calendar.label": "Calendar",
   "calendar.previous": "Previous month",
   "calendar.next": "Next month",
   "calendar.tasks": { one: "{count} task", other: "{count} tasks" },

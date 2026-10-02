@@ -56,7 +56,7 @@ Yes — in the **⋯** menu, in the command palette (<kbd>⌘</kbd>/<kbd>Ctrl</k
 
 Eight are built in: English, Ukrainian, German, Spanish, French, Italian, Dutch and Polish. Adding another one takes a message file and a few lines — see [Localization](./i18n.md#-adding-a-language).
 
-### 🔄 How do I get the latest version?
+### 🔄 How do I get updates?
 
 The app checks for updates in the background. When one is ready, a notification offers **Reload**; nothing changes until you choose it.
 

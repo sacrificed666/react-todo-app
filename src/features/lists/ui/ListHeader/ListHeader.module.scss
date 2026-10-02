@@ -79,13 +79,13 @@
   margin-block-start: 4px;
   font-size: 0.875rem;
   color: var(--color-text-secondary);
+}
 
-  span {
-    padding: 1px 9px;
-    border-radius: var(--radius-full);
-    background-color: var(--color-fill);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
+.progress {
+  padding: 1px 9px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-fill);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }

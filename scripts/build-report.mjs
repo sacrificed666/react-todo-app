@@ -21,13 +21,38 @@ const files = walk(dist);
 
 expect(html.includes('http-equiv="Content-Security-Policy"'), "index.html has no Content-Security-Policy meta tag");
 expect(html.includes("require-trusted-types-for"), "the Content-Security-Policy does not enforce Trusted Types");
-expect(!/<script(?![^>]*\bsrc=)[^>]*>/u.test(html), "index.html contains an inline script");
+expect(
+  !/<script(?![^>]*\b(?:src=|type="application\/ld\+json"))[^>]*>/u.test(html),
+  "index.html contains an inline script",
+);
 expect(
   files.some((file) => file.endsWith("sw.js")),
   "the service worker was not generated",
 );
 expect(Array.isArray(manifest.shortcuts) && manifest.shortcuts.length > 0, "the web manifest has no shortcuts");
 expect(manifest.share_target?.action === manifest.scope, "the web manifest has no share target");
+expect(
+  ["wide", "narrow"].every((formFactor) => manifest.screenshots?.some((shot) => shot.form_factor === formFactor)),
+  "the web manifest needs a wide and a narrow screenshot",
+);
+expect(html.includes('rel="canonical"'), "index.html has no canonical link");
+expect(html.includes('property="og:image"'), "index.html has no social preview image");
+
+const structuredData = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/u)?.[1];
+let parsedData = null;
+try {
+  parsedData = structuredData ? JSON.parse(structuredData) : null;
+} catch {
+  parsedData = null;
+}
+expect(parsedData?.["@type"] === "WebApplication", "index.html has no valid structured data");
+
+for (const asset of ["og-image.jpg", ...(manifest.screenshots ?? []).map((shot) => shot.src)]) {
+  expect(
+    files.some((file) => relative(dist, file) === asset),
+    `${asset} is referenced but missing from the build`,
+  );
+}
 
 const formatSize = (bytes) => `${(bytes / 1024).toFixed(1)} kB`;
 
@@ -50,7 +75,7 @@ const lines = [
   `| **Total** | | **${formatSize(total)}** |`,
   "",
   failures.length === 0
-    ? "✅ Content Security Policy, Trusted Types, service worker and web manifest are in place."
+    ? "✅ Content Security Policy, Trusted Types, service worker, web manifest and search metadata are in place."
     : failures.map((failure) => `❌ ${failure}`).join("\n"),
 ];
 

@@ -7,7 +7,8 @@ import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vitest/config";
 
 const base = "/react-todo-app/";
-const description = "A Liquid Glass ToDo application built with React, Redux Toolkit and Vite.";
+const description =
+  "A free, private task manager with projects, smart lists, repeats and a calendar. Works offline in eight languages and keeps your tasks on your device.";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -82,8 +83,25 @@ export default defineConfig({
         share_target: {
           action: base,
           method: "GET",
+          enctype: "application/x-www-form-urlencoded",
           params: { title: "title", text: "text", url: "url" },
         },
+        screenshots: [
+          {
+            src: "screenshots/wide.jpg",
+            sizes: "1280x800",
+            type: "image/jpeg",
+            form_factor: "wide",
+            label: "Smart lists, projects, the task list and the overview",
+          },
+          {
+            src: "screenshots/narrow.jpg",
+            sizes: "780x1688",
+            type: "image/jpeg",
+            form_factor: "narrow",
+            label: "Today with overdue tasks and the tab bar",
+          },
+        ],
         icons: [
           { src: "pwa-64x64.png", sizes: "64x64", type: "image/png" },
           { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },

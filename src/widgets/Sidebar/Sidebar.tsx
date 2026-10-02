@@ -24,7 +24,7 @@ const Credits = () => {
   const today = useToday();
 
   return (
-    <p className={styles.credits}>
+    <footer className={styles.credits}>
       © {today.slice(0, 4)}{" "}
       <a className={styles.link} href="https://github.com/sacrificed666" target="_blank" rel="noreferrer">
         Illia Movchko
@@ -38,13 +38,13 @@ const Credits = () => {
       >
         {t("credits.source")}
       </a>
-    </p>
+    </footer>
   );
 };
 
 const Navigator = () => {
   const { t } = useI18n();
-  const panelRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useLiquidGlass(panelRef, { bezel: 18, scale: 36 });
@@ -55,7 +55,7 @@ const Navigator = () => {
   });
 
   return (
-    <div ref={panelRef} className={styles.panel} data-glass-light="">
+    <header ref={panelRef} className={styles.panel} data-glass-light="">
       <div className={styles.top}>
         <Brand label={t("header.home")} />
         <div className={styles.tools}>
@@ -68,7 +68,7 @@ const Navigator = () => {
       <ListNav />
       <ProjectNav />
       <TagNav />
-    </div>
+    </header>
   );
 };
 
@@ -77,11 +77,11 @@ const Sidebar = () => {
   const wide = useMediaQuery(WIDE_LAYOUT);
 
   return (
-    <aside className={styles.sidebar}>
+    <div className={styles.sidebar}>
       {compact ? null : <Navigator />}
       {wide ? null : <Overview />}
       <Credits />
-    </aside>
+    </div>
   );
 };
 

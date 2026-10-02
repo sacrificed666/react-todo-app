@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import { makeProject, makeTodo, sampleTodos } from "@/test/factories";
 
-import { DATA_VERSION } from "./document";
 import { createExport, exportFileName, MAX_IMPORT_BYTES, MAX_IMPORT_TODOS, readImport } from "./transfer";
 
 const projects = [makeProject({ id: "work", name: "Work", color: "violet" })];
@@ -12,7 +11,6 @@ describe("createExport", () => {
   it("wraps todos and projects with metadata", () => {
     expect(createExport({ todos, projects }, new Date("2026-09-30T10:00:00.000Z"))).toEqual({
       app: "react-todo-app",
-      version: DATA_VERSION,
       exportedAt: "2026-09-30T10:00:00.000Z",
       todos,
       projects,
@@ -30,7 +28,7 @@ describe("readImport", () => {
     expect(readImport(text)).toEqual({ todos, projects });
   });
 
-  it("reads files from earlier versions without projects", () => {
+  it("reads older files without projects", () => {
     expect(readImport(JSON.stringify({ version: 5, todos: sampleTodos }))).toEqual({
       todos: sampleTodos,
       projects: [],

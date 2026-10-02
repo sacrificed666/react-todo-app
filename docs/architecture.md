@@ -33,12 +33,12 @@ flowchart TB
   features -. "typed hooks and store types only" .-> app
 ```
 
-| Layer       | Folder         | Contains                                                                                                   | May import                                                |
-| ----------- | -------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| 🚀 App      | `src/app`      | `main.tsx`, `App.tsx`, the store, persistence, launch intents, PWA registration, back button, error screen | everything                                                |
-| 🧩 Widgets  | `src/widgets`  | Page regions that compose several features                                                                 | features, shared, `@/app/hooks`, types from `@/app/store` |
-| ✨ Features | `src/features` | One folder per capability with a `model/` (state, logic) and a `ui/` (components)                          | other features, shared, `@/app/hooks`, store types        |
-| 🧰 Shared   | `src/shared`   | Store-agnostic UI primitives, hooks, helpers and styles                                                    | shared only                                               |
+| Layer       | Folder         | Contains                                                                                                                | May import                                                |
+| ----------- | -------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| 🚀 App      | `src/app`      | `main.tsx`, `App.tsx`, the store, persistence, launch intents, PWA registration, back button, page titles, error screen | everything                                                |
+| 🧩 Widgets  | `src/widgets`  | Page regions that compose several features                                                                              | features, shared, `@/app/hooks`, types from `@/app/store` |
+| ✨ Features | `src/features` | One folder per capability with a `model/` (state, logic) and a `ui/` (components)                                       | other features, shared, `@/app/hooks`, store types        |
+| 🧰 Shared   | `src/shared`   | Store-agnostic UI primitives, hooks, helpers and styles                                                                 | shared only                                               |
 
 | Feature            | Model                                                                                                                         | UI                                                                                                                                                                |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -250,7 +250,7 @@ sequenceDiagram
   UI-->>User: "Undone: delete project “Work”"
 ```
 
-- 🧠 Snapshots are cheap: Immer shares every unchanged todo and project between versions, so only the changed objects are new.
+- 🧠 Snapshots are cheap: Immer shares every unchanged todo and project between snapshots, so only the changed objects are new.
 - 🔢 The history keeps the last **50** changes and clears the redo stack whenever a new change is made.
 - 🔄 `dataReplaced` (a change from another tab) clears the history, because undoing would overwrite the other tab's work.
 - ⌨️ <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes and <kbd>⇧</kbd>+<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd> or <kbd>Ctrl</kbd>+<kbd>Y</kbd> redoes, except inside text fields where the browser's own undo applies.
@@ -323,11 +323,11 @@ flowchart LR
 
 | Key                          | Content                                                                                                 |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `react-todo-app/todos`       | `{ "version": 6, "todos": Todo[], "projects": Project[] }`                                              |
+| `react-todo-app/todos`       | `{ "todos": Todo[], "projects": Project[] }`                                                            |
 | `react-todo-app/preferences` | `{ "list", "sort", "showCompleted", "appearance", "accent", "backdrop", "glass", "locale", "effects" }` |
-| `toDoList`                   | Legacy data from version 1, migrated and removed on first launch                                        |
+| `toDoList`                   | Legacy data in the original format, migrated and removed on first launch                                |
 
-- 📂 **Loading** — `loadPersistedState()` reads both keys and falls back to safe defaults when data is missing or corrupted. A saved project view whose project is gone opens **All tasks**, the `filter` preference saved by version 2 is mapped to the matching list, and the language is detected from `navigator.languages` on the first launch.
+- 📂 **Loading** — `loadPersistedState()` reads both keys and falls back to safe defaults when data is missing or corrupted. A saved project view whose project is gone opens **All tasks**, an old `filter` preference is mapped to the matching list, and the language is detected from `navigator.languages` on the first launch.
 - 🛡️ **Validation** — everything read from storage, other tabs or imported files goes through `parseData()`, which runs `parseTodos()` and `parseProjects()`. They accept every earlier format, drop invalid entries, dates, colours and links, replace unsafe or duplicate ids and normalize timestamps.
 - 💾 **Saving** — a store subscriber writes the data document only when the `todos` or `projects` slice changed, and the preferences only when their serialized form changed.
 - 🔄 **Cross-tab sync** — a `storage` event from another tab dispatches `dataReplaced`. Because identical values are never rewritten, tabs do not ping-pong updates.
@@ -365,7 +365,7 @@ sequenceDiagram
   Main->>React: render <ErrorBoundary><App /></ErrorBoundary>
   Main->>DOM: focus the composer for ?action=new
   Main->>SW: startPwa() registers sw.js in production
-  SW-->>Store: toast "A new version is available" with Reload
+  SW-->>Store: toast "An update is ready" with Reload
 ```
 
 - 🧯 `ErrorBoundary` catches rendering errors and shows a recovery screen with **Reload**, **Download a backup** (the raw stored data) and **Reset view settings**. It reads the language from `<html lang>`, so it works even when the store is the problem.
@@ -392,7 +392,7 @@ sequenceDiagram
 ```
 
 - 🔖 Each entry carries a unique marker, so leftover entries from an earlier page load are never mistaken for the current one.
-- 🧩 Switching from one overlay to another keeps the same entry, because the hook only reacts when the app goes from “nothing open” to “something open” and back.
+- 🧩 Switching from one overlay to another keeps the same entry. When one closes and the next opens in the same moment — the palette running **Open settings** — the pending `history.back()` is cancelled, so the new sheet is not closed by the old one's Back.
 - 🖥️ On wide screens task details live in the inspector and are not part of the history.
 
 ## ✋ Drag and drop
@@ -437,7 +437,7 @@ App
 ├── titlebar                 Draggable strip in Window Controls Overlay mode
 ├── TaskDnd                  One DndContext for the list and the sidebar, with a drag overlay
 │   ├── Toolbar              Phones: brand, condensed title, 🔍, settings and ⋯ in a glass capsule
-│   ├── Sidebar              Sticky glass panel on desktop; overview and credits below the list on phones
+│   ├── Sidebar              Desktop: a <header> banner panel; overview and a <footer> with the credits below it
 │   │   ├── Brand, SettingsButton, ActionsMenu, OfflineBadge
 │   │   ├── TodoSearch       Search field with the ⌘K palette button, / shortcut
 │   │   ├── ListNav          Smart lists with counters, drop targets
@@ -450,7 +450,7 @@ App
 │   │   └── TodoList         Date groups, empty states, deferred search
 │   │       └── TodoSection  SortableContext, chunked rendering, one glass group per section
 │   │           └── TodoItem Checkbox, title, chips, actions, swipes, long press, keyboard, TaskMenu
-│   ├── Inspector            Wide screens: Overview, or TaskDetailsPanel with TaskDetails
+│   ├── Inspector            Wide screens: an <aside> with the Overview, or TaskDetailsPanel with TaskDetails
 │   └── ListsSheet           Phones: smart lists, projects and tags in a bottom sheet
 ├── TabBar                   Bottom glass tab bar on phones with a Lists tab
 ├── TaskDetailsDialog        Dialog with TaskDetails below 1240 px

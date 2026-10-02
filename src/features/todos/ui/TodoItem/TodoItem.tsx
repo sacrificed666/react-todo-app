@@ -493,7 +493,7 @@ const TodoItem = ({
               {due ? (
                 <span className={styles.chip} data-tone={todo.completed ? undefined : due.tone}>
                   <Icon name="calendar" className={styles.chipIcon} />
-                  {due.label}
+                  <time dateTime={todo.dueDate ?? undefined}>{due.label}</time>
                 </span>
               ) : null}
               {todo.repeat ? (

@@ -28,6 +28,7 @@ import Toolbar from "@/widgets/Toolbar/Toolbar";
 import Workspace, { WORKSPACE_ID } from "@/widgets/Workspace/Workspace";
 
 import { useBackToClose } from "./useBackToClose";
+import { useDocumentTitle } from "./useDocumentTitle";
 
 import styles from "./App.module.scss";
 
@@ -45,6 +46,7 @@ const App = () => {
   useDocumentSync();
   useListShortcuts();
   useAppBadge(counts.today);
+  useDocumentTitle();
 
   useBackToClose(overlay !== null || detailsOpen, () => {
     if (overlay) dispatch(overlayClosed(overlay.kind));

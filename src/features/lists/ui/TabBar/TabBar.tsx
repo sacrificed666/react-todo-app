@@ -49,6 +49,7 @@ const TabBar = () => {
       className={styles.bar}
       aria-label={t("lists.nav")}
       style={{ "--index": index, "--count": TABS.length + 1 }}
+      data-idle={searching && !browsing ? "" : undefined}
       data-glass-light=""
     >
       <span className={styles.indicator} aria-hidden="true" />

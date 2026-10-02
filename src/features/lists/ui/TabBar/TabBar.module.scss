@@ -29,7 +29,12 @@
     var(--glass-edge);
   transition:
     left var(--duration-slow) var(--ease-spring),
-    right var(--duration-slow) var(--ease-spring);
+    right var(--duration-slow) var(--ease-spring),
+    opacity var(--duration-base) var(--ease-out);
+
+  .bar[data-idle] & {
+    opacity: 0;
+  }
 }
 
 .tab {

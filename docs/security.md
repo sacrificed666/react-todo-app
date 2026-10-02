@@ -57,6 +57,8 @@ GitHub Pages cannot send custom headers, so the production build injects a CSP `
 
 A `referrer` meta tag sets `strict-origin-when-cross-origin`, and external links use `rel="noreferrer"`.
 
+The only `<script>` without a `src` in `index.html` is the `application/ld+json` block with structured data for search engines. Browsers treat it as data and never run it, so it needs no exception in the policy; the build report allows exactly this type and fails on any other inline script.
+
 ## 🛂 Trusted Types
 
 With Trusted Types enforced, assigning a string to a dangerous DOM sink — `innerHTML`, `script.src`, `ServiceWorkerContainer.register()` and others — throws. The app never needs HTML strings: React renders every title and note as text.

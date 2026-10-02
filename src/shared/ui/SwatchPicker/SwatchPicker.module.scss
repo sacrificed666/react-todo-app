@@ -25,6 +25,7 @@
 }
 
 .dot {
+  forced-color-adjust: none;
   display: grid;
   place-items: center;
   inline-size: 30px;

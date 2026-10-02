@@ -46,6 +46,7 @@ const TodoSearch = ({ inputRef, onClose }: TodoSearchProps) => {
         value={query}
         placeholder={t("search.placeholder")}
         aria-label={t("search.label")}
+        aria-keyshortcuts="/"
         autoComplete="off"
         enterKeyHint="search"
         onChange={(event) => dispatch(queryChanged(event.target.value))}

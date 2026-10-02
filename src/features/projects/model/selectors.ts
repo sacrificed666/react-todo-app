@@ -6,4 +6,3 @@ const projectSelectors = projectsAdapter.getSelectors((state: RootState) => stat
 
 export const selectProjects = projectSelectors.selectAll;
 export const selectProjectById = projectSelectors.selectById;
-export const selectProjectEntities = projectSelectors.selectEntities;

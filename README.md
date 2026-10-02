@@ -32,7 +32,8 @@ A task manager wrapped in Apple-inspired **Liquid Glass**: translucent, refracti
 - 🔤 **Montserrat** — self-hosted variable font with Latin, Polish and Cyrillic coverage
 - 💾 **Local-first PWA** — autosave, cross-tab sync, JSON import and export, offline mode, app shortcuts, share target and update prompts
 - 🛡️ **Secure by default** — strict CSP with Trusted Types, validated imports, CodeQL and signed dependencies
-- ♿ **Accessible** — full keyboard control, ARIA menus and dialogs, screen reader announcements, reduced motion, transparency and contrast support, checked with axe
+- ♿ **Accessible** — WCAG AA contrast, full keyboard control, landmarks, live regions and page titles for screen readers, Windows high contrast, reduced motion and transparency support, checked with axe and Lighthouse
+- 🔗 **Shares nicely** — a rich preview card in chats and social networks, structured data for search engines and screenshots in the install dialog
 
 <p align="center">
   <img src="./docs/images/mobile-dark.jpg" alt="Today on a phone with overdue tasks and the tab bar" width="260" />

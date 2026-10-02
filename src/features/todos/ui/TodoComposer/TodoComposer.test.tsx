@@ -78,3 +78,19 @@ describe("TodoComposer options row", () => {
     expect(composer()).not.toHaveAttribute("data-engaged");
   });
 });
+
+describe("TodoComposer keyboard", () => {
+  it("clears the text with Escape and leaves the field on the second press", async () => {
+    const { user } = renderApp([]);
+    const input = screen.getByRole("textbox", { name: "New task" });
+
+    await user.type(input, "Half-written task");
+    await user.keyboard("{Escape}");
+    expect(input).toHaveValue("");
+    expect(input).toHaveFocus();
+
+    await user.keyboard("{Escape}");
+    expect(input).not.toHaveFocus();
+    expect(composer()).not.toHaveAttribute("data-engaged");
+  });
+});

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
@@ -84,6 +84,17 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
   const effectiveProject = parsed.projectId ?? project;
   const canSubmit = normalizeTitle(parsed.title) !== "";
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Escape" || event.nativeEvent.isComposing) return;
+    event.preventDefault();
+    if (title) {
+      setTitle("");
+      return;
+    }
+    event.currentTarget.blur();
+    setEngaged(false);
+  };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const draft = {
@@ -119,6 +130,7 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
         enterKeyHint="done"
         onFocus={() => setEngaged(true)}
         onChange={(event) => setTitle(event.target.value)}
+        onKeyDown={handleKeyDown}
       />
       <div className={styles.options}>
         <DuePicker

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { makeProject, makeTodo } from "@/test/factories";
 
-import { DATA_VERSION, linkProjects, parseData, serializeData } from "./document";
+import { linkProjects, parseData, serializeData } from "./document";
 
 const work = makeProject({ id: "work", name: "Work" });
 
@@ -31,9 +31,8 @@ describe("linkProjects", () => {
 });
 
 describe("serializeData", () => {
-  it("writes the current version", () => {
+  it("writes tasks and projects", () => {
     expect(JSON.parse(serializeData({ todos: [], projects: [work] }))).toEqual({
-      version: DATA_VERSION,
       todos: [],
       projects: [work],
     });

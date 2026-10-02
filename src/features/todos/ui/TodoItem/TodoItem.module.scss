@@ -147,6 +147,14 @@
     color: var(--color-text-tertiary);
     text-decoration-color: var(--color-text-tertiary);
   }
+
+  @media (forced-colors: active) {
+    text-decoration: none;
+
+    .row[data-completed] & {
+      text-decoration: line-through;
+    }
+  }
 }
 
 .editor {

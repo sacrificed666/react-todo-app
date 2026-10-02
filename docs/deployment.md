@@ -71,6 +71,7 @@ The same constant feeds the manifest `id`, `scope`, `start_url`, shortcuts and s
 | 📤 `share_target`     | `GET` with `title`, `text` and `url`, turned into a task by `app/launch.ts`                |
 | 🏷️ `categories`       | `productivity`, `utilities`                                                                |
 | 🖼️ Icons              | 64, 192 and 512 px PNGs plus a maskable 512 px icon                                        |
+| 📸 `screenshots`      | A wide (1280 × 800) and a narrow (780 × 1688) screenshot for the richer install dialog     |
 
 - 📦 **Precache** — HTML, JavaScript (including every language chunk), CSS, the Montserrat font files, icons and the backdrop artwork, so the app starts offline after the first visit.
 - 🏳️ **Flags** — images from flagcdn.com are cached cache-first in a `flags` cache (opaque responses allowed, up to 16 entries for a year).
@@ -79,7 +80,7 @@ The same constant feeds the manifest `id`, `scope`, `start_url`, shortcuts and s
 
 ### 🔄 Update flow
 
-Updates use the **prompt** strategy, so a new version never replaces the running one while you work:
+Updates use the **prompt** strategy, so an update never replaces the running app while you work:
 
 ```mermaid
 sequenceDiagram
@@ -88,12 +89,27 @@ sequenceDiagram
   actor User
   Page->>SW: registerSW() finds a new sw.js
   SW-->>Page: onNeedRefresh
-  Page->>User: "A new version is available" · Reload
+  Page->>User: "An update is ready" · Reload
   User->>Page: Reload
   Page->>SW: updateServiceWorker(true) → skipWaiting
   SW-->>Page: controller changes, page reloads
   Note over Page: First install only:<br/>"Ready to work offline"
 ```
+
+## 🔎 Search engines and sharing
+
+`index.html` carries everything a crawler or a chat app needs before any JavaScript runs:
+
+| Metadata                       | Purpose                                                                                   |
+| ------------------------------ | ----------------------------------------------------------------------------------------- |
+| 📰 `<title>` and `description` | A descriptive title and a 150-character summary for search results                        |
+| 🔗 `canonical`                 | One address for the app, whatever query parameters a shortcut or share adds               |
+| 🖼️ Open Graph and Twitter      | Title, description and a 1200 × 630 preview (`public/og-image.jpg`) with alternative text |
+| 🌍 `og:locale`                 | English plus the seven other interface languages as alternates                            |
+| 🧾 JSON-LD                     | A `WebApplication` description: category, price, languages, features, author and licence  |
+| 🙈 `<noscript>`                | A heading and a summary for visitors and crawlers without JavaScript                      |
+
+Inside the app, `useDocumentTitle()` names the tab after the open list in the interface language, and the main list keeps the descriptive title. The build report fails when the canonical link, the preview image, valid structured data or the manifest screenshots go missing.
 
 ## 🤖 Dependency updates
 

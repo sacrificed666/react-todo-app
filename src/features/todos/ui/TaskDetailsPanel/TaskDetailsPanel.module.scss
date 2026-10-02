@@ -2,10 +2,10 @@
 
 .panel {
   @include glass(var(--radius-xl), var(--glass-tint-strong), var(--glass-blur-thick));
+  display: flex;
+  flex-direction: column;
   max-block-size: calc(100dvh - 32px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
+  overflow: hidden;
   transition:
     opacity var(--duration-base) var(--ease-out),
     translate var(--duration-slow) var(--ease-spring);
@@ -19,4 +19,11 @@
   &:focus-visible {
     outline: none;
   }
+}
+
+.body {
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }

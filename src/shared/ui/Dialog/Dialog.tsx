@@ -11,10 +11,11 @@ interface DialogProps {
   onClose: () => void;
   placement?: "center" | "top";
   className?: string;
+  header?: ReactNode;
   children: ReactNode;
 }
 
-const Dialog = ({ open, label, onClose, placement = "center", className, children }: DialogProps) => {
+const Dialog = ({ open, label, onClose, placement = "center", className, header, children }: DialogProps) => {
   const ref = useRef<HTMLDialogElement>(null);
   const handleClose = useEffectEvent(onClose);
 
@@ -50,7 +51,12 @@ const Dialog = ({ open, label, onClose, placement = "center", className, childre
       className={cx(styles.dialog, className)}
       data-placement={placement}
     >
-      {open ? children : null}
+      {open ? (
+        <>
+          {header}
+          <div className={styles.body}>{children}</div>
+        </>
+      ) : null}
     </dialog>
   );
 };

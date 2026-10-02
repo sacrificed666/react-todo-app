@@ -76,6 +76,11 @@ const Panel = () => {
 
 `useLiquidGlass()` is optional: skip it for surfaces that repeat many times, such as list rows. `data-glass-light` enables the pointer highlight.
 
+Two rules keep the rim where it belongs:
+
+- 📜 **The glass never scrolls itself.** The rim (`::before`) and the sheen (`::after`) are absolutely positioned, so a scrolling surface would carry them away with its content. Let an inner element scroll instead, the way `Dialog`, `Popover`, `ContextMenu` and the details panel do with their `.body`.
+- 📌 **Top-layer surfaces are `position: fixed`.** The mixin sets `position: relative`, which the browser turns into `absolute` for a modal dialog or a popover, pinning it to the top of the document instead of the screen. Set `position: fixed` after the `@include`.
+
 ### ⌘ Adding a command to the palette
 
 Commands are plain objects. Commands that also belong in the **⋯** menu — undo, redo, bulk actions, export — are defined once in `features/commands/model/useTaskCommands.ts` with a `disabled` state; navigation, project and appearance commands are built in `CommandPalette.tsx`:
@@ -101,7 +106,7 @@ Modal surfaces are described by `view.overlay`, so only one is open at a time an
 2. Render a `Dialog` whose `open` is `selectOverlayKind(state) === "your-kind"` and whose `onClose` dispatches `overlayClosed("your-kind")`.
 3. Open it with `overlayOpened({ kind: "your-kind" })` from a button or a palette command.
 
-On phones `Dialog` turns into a bottom sheet automatically.
+On phones `Dialog` turns into a bottom sheet automatically. Pass a `header` to keep a title and its buttons in place while the content scrolls and fades out beneath them, as the settings do.
 
 ## 📝 Commit messages
 

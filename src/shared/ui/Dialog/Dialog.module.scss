@@ -2,13 +2,13 @@
 
 .dialog {
   @include glass(var(--radius-xl), var(--glass-tint-strong), var(--glass-blur-thick));
+  position: fixed;
   inline-size: min(34rem, calc(100vw - 24px));
   max-block-size: min(44rem, calc(100dvh - 48px));
   margin: auto;
   padding: 0;
   border: 0;
-  overflow: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
   color: var(--color-text);
   outline: none;
   opacity: 1;
@@ -20,6 +20,11 @@
     translate var(--duration-slow) var(--ease-spring),
     overlay var(--duration-base) allow-discrete,
     display var(--duration-base) allow-discrete;
+
+  &[open] {
+    display: flex;
+    flex-direction: column;
+  }
 
   &:focus-visible {
     outline: none;
@@ -78,5 +83,18 @@
 
   @media (forced-colors: active) {
     border: 1px solid CanvasText;
+  }
+}
+
+.body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+
+  &:not(:first-child) {
+    scroll-padding-block-start: 14px;
+    mask-image: linear-gradient(transparent, #000 14px);
   }
 }

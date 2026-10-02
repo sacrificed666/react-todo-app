@@ -27,8 +27,6 @@
 .panel {
   inline-size: min(16rem, calc(100vw - 24px));
   max-block-size: min(24rem, calc(100dvh - 32px));
-  overflow-y: auto;
-  overscroll-behavior: contain;
 }
 
 .heading {

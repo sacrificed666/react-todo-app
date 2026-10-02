@@ -59,20 +59,13 @@ const Section = ({ icon, title, children }: SectionProps) => {
   );
 };
 
-const SettingsContent = ({ onClose }: { onClose: () => void }) => {
+const SettingsContent = () => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
   const { appearance, accent, backdrop, glass, locale, effects } = useAppSelector(selectSettings);
 
   return (
     <div className={styles.content}>
-      <div className={styles.head}>
-        <h2 className={styles.title}>{t("settings.title")}</h2>
-        <button type="button" className={styles.done} onClick={onClose}>
-          {t("settings.done")}
-        </button>
-      </div>
-
       <Section icon="palette" title={t("settings.theme")}>
         <SegmentedControl
           label={t("settings.scheme")}
@@ -171,8 +164,21 @@ const SettingsDialog = () => {
   const close = () => dispatch(overlayClosed("settings"));
 
   return (
-    <Dialog open={open} label={t("settings.title")} onClose={close} className={styles.dialog}>
-      <SettingsContent onClose={close} />
+    <Dialog
+      open={open}
+      label={t("settings.title")}
+      onClose={close}
+      className={styles.dialog}
+      header={
+        <div className={styles.head}>
+          <h2 className={styles.title}>{t("settings.title")}</h2>
+          <button type="button" className={styles.done} onClick={close}>
+            {t("settings.done")}
+          </button>
+        </div>
+      }
+    >
+      <SettingsContent />
     </Dialog>
   );
 };

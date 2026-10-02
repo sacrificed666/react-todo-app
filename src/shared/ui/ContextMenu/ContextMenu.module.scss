@@ -11,8 +11,7 @@
   margin: 0;
   padding: 6px;
   border: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
   color: var(--color-text);
   box-shadow: var(--glass-shadow-lifted), var(--glass-edge);
   transform-origin: top left;
@@ -23,6 +22,11 @@
     scale var(--duration-base) var(--ease-spring),
     overlay var(--duration-fast) allow-discrete,
     display var(--duration-fast) allow-discrete;
+
+  &:popover-open {
+    display: flex;
+    flex-direction: column;
+  }
 
   &[data-origin="bottom"] {
     transform-origin: bottom left;
@@ -47,4 +51,11 @@
   @media (forced-colors: active) {
     border: 1px solid CanvasText;
   }
+}
+
+.body {
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }

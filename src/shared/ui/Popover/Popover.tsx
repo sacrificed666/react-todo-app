@@ -42,7 +42,7 @@ const Popover = ({ id, popoverRef, anchorName, label, align = "end", className, 
       style={{ positionAnchor: anchorName }}
       onBeforeToggle={handleBeforeToggle}
     >
-      {children}
+      <div className={styles.body}>{children}</div>
     </dialog>
   );
 };

@@ -143,7 +143,7 @@ const ContextMenu = ({
       }}
       onContextMenu={(event) => event.preventDefault()}
     >
-      {children}
+      <div className={styles.body}>{children}</div>
     </div>
   );
 };

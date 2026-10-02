@@ -47,7 +47,9 @@ const TaskDetailsPanel = ({ todo }: DetailsPanelProps) => {
 
   return (
     <section ref={ref} className={styles.panel} aria-label={t("details.title")} tabIndex={-1} data-glass-light="">
-      <TaskDetails todo={todo} onClose={close} />
+      <div className={styles.body}>
+        <TaskDetails todo={todo} onClose={close} />
+      </div>
     </section>
   );
 };

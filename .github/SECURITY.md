@@ -16,7 +16,7 @@ You can expect an acknowledgement within **3 working days** and a status update 
 
 ## 🎯 Scope
 
-ToDo App is a static, offline-first web app: there is no backend, no account and no network traffic apart from loading the app itself and the language flag images from flagcdn.com. Reports are especially welcome about:
+Todo App is a static, offline-first web app: there is no backend, no account and no network traffic apart from loading the app itself and the language flag images from flagcdn.com. Reports are especially welcome about:
 
 - 💉 script injection through task titles, notes, imported files, shared content or URL parameters;
 - 🧱 ways to bypass the Content Security Policy or Trusted Types;

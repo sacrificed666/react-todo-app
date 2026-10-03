@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import ProjectIcon from "@/features/projects/ui/ProjectIcon/ProjectIcon";
 import { selectListCounts } from "@/features/todos/model/selectors";
-import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
+import { useRefraction } from "@/shared/hooks/useRefraction";
 import { useToday } from "@/shared/hooks/useToday";
 import { tap } from "@/shared/lib/haptics";
 import Icon from "@/shared/ui/Icon/Icon";
@@ -31,7 +31,7 @@ const TabBar = () => {
   const tabIndex = (TABS as readonly string[]).indexOf(list);
   const index = browsing || tabIndex === -1 ? TABS.length : tabIndex;
 
-  useLiquidGlass(barRef, { bezel: 22, scale: 44 });
+  useRefraction(barRef, { bezel: 22, scale: 44 });
 
   const select = (id: ListId) => {
     tap();

@@ -15,7 +15,7 @@ flowchart LR
 1. 🌿 Create a branch from `main`.
 2. ✅ Make your changes, add tests and run `npm run check`.
 3. 📬 Open a pull request and fill in the checklist from the template.
-4. 🚀 Merge once everything is green — `main` deploys automatically.
+4. 🚀 Merge once everything is green. `main` deploys automatically.
 
 Bugs and ideas go through the issue forms in `.github/ISSUE_TEMPLATE`; security problems are reported privately as described in the [security policy](../.github/SECURITY.md).
 
@@ -41,7 +41,7 @@ The codebase contains no comments: names, small functions and types carry the in
 | A reusable component, hook or helper without state | `src/shared/ui`, `src/shared/hooks`, `src/shared/lib` |
 | Startup, persistence or browser integration        | `src/app/`                                            |
 
-Imports only point downwards — `app → widgets → features → shared`. Features and widgets may use `useAppDispatch`, `useAppSelector` and the store **types** from `@/app`, nothing else. Oxlint reports any other direction.
+Imports only point downwards: `app → widgets → features → shared`. Features and widgets may use `useAppDispatch`, `useAppSelector` and the store **types** from `@/app`, nothing else. Oxlint reports any other direction.
 
 ### 📐 Conventions
 
@@ -50,7 +50,7 @@ Imports only point downwards — `app → widgets → features → shared`. Feat
 | 🧩 Components       | One folder per component: `ComponentName/ComponentName.tsx` and `ComponentName.module.scss`, arrow functions, default export                     |
 | 🪝 Hooks            | `useSomething.ts` next to the feature that owns it, or in `src/shared/hooks` when it is generic                                                  |
 | 🗃️ Redux            | Past-tense action names (`todoAdded`), pure reducers, timestamps and ids in `prepare` callbacks, side effects in thunks                          |
-| 🌍 Texts            | Never hard-code UI text. Add a key to `en.ts` and `uk.ts` and use `t()`; notifications store `{ key, params }` — see [Localization](./i18n.md)   |
+| 🌍 Texts            | Never hard-code UI text. Add a key to `en.ts` and `uk.ts` and use `t()`; notifications store `{ key, params }`, see [Localization](./i18n.md)    |
 | 🎨 Styles           | Tokens from `_tokens.scss`, the `glass()`, `hover`, `pressable` and `visually-hidden` mixins, logical properties (`inline-size`, `margin-block`) |
 | 📥 Imports          | Use the `@/` alias for anything outside the current feature, relative paths inside it                                                            |
 | 🏷️ State attributes | Use `data-*` attributes (`data-completed`, `data-leaving`, `data-swipe`) for visual states instead of extra class names                          |
@@ -61,7 +61,7 @@ Imports only point downwards — `app → widgets → features → shared`. Feat
 ```tsx
 const Panel = () => {
   const ref = useRef<HTMLDivElement>(null);
-  useLiquidGlass(ref, { bezel: 18, scale: 40 });
+  useRefraction(ref, { bezel: 18, scale: 40 });
   return <div ref={ref} className={styles.panel} data-glass-light="" />;
 };
 ```
@@ -74,7 +74,7 @@ const Panel = () => {
 }
 ```
 
-`useLiquidGlass()` is optional: skip it for surfaces that repeat many times, such as list rows. `data-glass-light` enables the pointer highlight.
+`useRefraction()` is optional: skip it for surfaces that repeat many times, such as list rows. `data-glass-light` enables the pointer highlight.
 
 Two rules keep the rim where it belongs:
 
@@ -83,7 +83,7 @@ Two rules keep the rim where it belongs:
 
 ### ⌘ Adding a command to the palette
 
-Commands are plain objects. Commands that also belong in the **⋯** menu — undo, redo, bulk actions, export — are defined once in `features/commands/model/useTaskCommands.ts` with a `disabled` state; navigation, project and appearance commands are built in `CommandPalette.tsx`:
+Commands are plain objects. Commands that also belong in the **⋯** menu (undo, redo, bulk actions, export) are defined once in `features/commands/model/useTaskCommands.ts` with a `disabled` state; navigation, project and appearance commands are built in `CommandPalette.tsx`:
 
 ```ts
 {

@@ -3,7 +3,7 @@ import { useLayoutEffect, type RefObject } from "react";
 import { attachRefraction, isRefractionSupported, type RefractionOptions } from "../lib/refraction";
 import { useEffectsLevel } from "./useEffectsLevel";
 
-export const useLiquidGlass = (ref: RefObject<HTMLElement | null>, { bezel, scale }: RefractionOptions = {}) => {
+export const useRefraction = (ref: RefObject<HTMLElement | null>, { bezel, scale }: RefractionOptions = {}) => {
   const level = useEffectsLevel();
 
   useLayoutEffect(() => {

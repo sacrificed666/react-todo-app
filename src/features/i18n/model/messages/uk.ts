@@ -3,12 +3,12 @@ import type { Messages } from "../translate";
 export const uk: Messages = {
   "header.showSearch": "Показати пошук",
   "header.palette": "Палітра команд",
-  "header.home": "ToDo — на головну",
+  "header.home": "Завдання, головна сторінка",
   "header.offline": "Офлайн",
   "header.offlineHint": "Немає з’єднання. Зміни зберігаються на цьому пристрої.",
 
   "app.skip": "Перейти до завдань",
-  "app.title": "ToDo — список справ і менеджер завдань у стилі Liquid Glass",
+  "app.name": "Завдання",
 
   "search.placeholder": "Пошук завдань",
   "search.label": "Пошук завдань",
@@ -53,7 +53,7 @@ export const uk: Messages = {
   "project.edit": "Редагувати проєкт",
   "project.name": "Назва",
   "project.namePlaceholder": "Робота, 🏠 Дім, Поїздка до Львова",
-  "project.nameHint": "Почніть назву з емодзі — він стане іконкою проєкту.",
+  "project.nameHint": "Почніть назву з емодзі, і він стане іконкою проєкту.",
   "project.color": "Колір",
   "project.create": "Створити",
   "project.save": "Зберегти",
@@ -93,7 +93,7 @@ export const uk: Messages = {
   "sort.dueDate": "За терміном",
   "sort.priority": "За важливістю",
   "sort.newest": "Спершу нові",
-  "sort.alphabetical": "За назвою А–Я",
+  "sort.alphabetical": "За назвою А-Я",
 
   "composer.placeholder": "Додати завдання",
   "composer.label": "Нове завдання",
@@ -260,7 +260,7 @@ export const uk: Messages = {
     other: "Імпортовано {count} завдання",
   },
   "toast.nothingImported": "Нічого нового для імпорту",
-  "toast.invalidImport": "Цей файл не є експортом ToDo",
+  "toast.invalidImport": "Цей файл не є експортом завдань",
   "toast.importTooLarge": "Файл завеликий для імпорту",
   "toast.undone": "Скасовано: {action}",
   "toast.redone": "Повторено: {action}",

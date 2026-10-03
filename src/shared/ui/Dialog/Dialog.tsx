@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useLayoutEffect, useRef, type ReactNode } from "react";
 
-import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
+import { useRefraction } from "@/shared/hooks/useRefraction";
 import { cx } from "@/shared/lib/cx";
 
 import styles from "./Dialog.module.scss";
@@ -19,7 +19,7 @@ const Dialog = ({ open, label, onClose, placement = "center", className, header,
   const ref = useRef<HTMLDialogElement>(null);
   const handleClose = useEffectEvent(onClose);
 
-  useLiquidGlass(ref, { bezel: 24, scale: 40 });
+  useRefraction(ref, { bezel: 24, scale: 40 });
 
   useLayoutEffect(() => {
     const dialog = ref.current;

@@ -1,7 +1,7 @@
 {
   "name": "react-todo-app",
   "private": true,
-  "description": "A Liquid Glass ToDo application built with React, Redux Toolkit and Vite.",
+  "description": "A private, offline-first to-do list built with React, Redux Toolkit and Vite.",
   "homepage": "https://sacrificed666.github.io/react-todo-app/",
   "license": "MIT",
   "author": "Illia Movchko (https://github.com/sacrificed666)",

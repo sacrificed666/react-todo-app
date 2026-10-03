@@ -3,12 +3,12 @@ import type { Messages } from "../translate";
 export const nl: Messages = {
   "header.showSearch": "Zoeken tonen",
   "header.palette": "Opdrachtenpalet",
-  "header.home": "ToDo-startpagina",
+  "header.home": "Taken, startpagina",
   "header.offline": "Offline",
   "header.offlineHint": "Je bent offline. Wijzigingen worden op dit apparaat bewaard.",
 
   "app.skip": "Naar de taken",
-  "app.title": "ToDo — takenlijst en takenbeheer in Liquid Glass-stijl",
+  "app.name": "Taken",
 
   "search.placeholder": "Taken zoeken",
   "search.label": "Taken zoeken",
@@ -86,7 +86,7 @@ export const nl: Messages = {
   "sort.dueDate": "Deadline",
   "sort.priority": "Belangrijkheid",
   "sort.newest": "Nieuwste eerst",
-  "sort.alphabetical": "Titel A–Z",
+  "sort.alphabetical": "Titel A-Z",
 
   "composer.placeholder": "Taak toevoegen",
   "composer.label": "Nieuwe taak",
@@ -228,7 +228,7 @@ export const nl: Messages = {
   "toast.cleared": { one: "{count} voltooide taak gewist", other: "{count} voltooide taken gewist" },
   "toast.imported": { one: "{count} taak geïmporteerd", other: "{count} taken geïmporteerd" },
   "toast.nothingImported": "Niets nieuws om te importeren",
-  "toast.invalidImport": "Dit bestand is geen geldige ToDo-export",
+  "toast.invalidImport": "Dit bestand is geen geldige takenexport",
   "toast.importTooLarge": "Dit bestand is te groot om te importeren",
   "toast.undone": "Ongedaan gemaakt: {action}",
   "toast.redone": "Opnieuw uitgevoerd: {action}",

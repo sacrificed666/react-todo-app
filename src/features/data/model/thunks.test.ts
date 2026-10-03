@@ -68,7 +68,7 @@ describe("importData", () => {
     const store = setupStore();
     store.dispatch(importData("{not json"));
     expect(selectToast(store.getState())?.tone).toBe("error");
-    expect(toastText(store)).toBe("This file is not a valid ToDo export");
+    expect(toastText(store)).toBe("This file is not a valid task export");
   });
 });
 

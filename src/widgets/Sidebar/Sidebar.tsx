@@ -9,8 +9,8 @@ import ProjectNav from "@/features/projects/ui/ProjectNav/ProjectNav";
 import TodoSearch from "@/features/search/ui/TodoSearch/TodoSearch";
 import SettingsButton from "@/features/settings/ui/SettingsButton/SettingsButton";
 import Overview from "@/features/stats/ui/Overview/Overview";
-import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { useRefraction } from "@/shared/hooks/useRefraction";
 import { useShortcut } from "@/shared/hooks/useShortcut";
 import { useToday } from "@/shared/hooks/useToday";
 import { isPlainKey } from "@/shared/lib/keyboard";
@@ -47,7 +47,7 @@ const Navigator = () => {
   const panelRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  useLiquidGlass(panelRef, { bezel: 18, scale: 36 });
+  useRefraction(panelRef, { bezel: 18, scale: 36 });
 
   useShortcut(isPlainKey("/"), (event) => {
     event.preventDefault();
@@ -57,7 +57,7 @@ const Navigator = () => {
   return (
     <header ref={panelRef} className={styles.panel} data-glass-light="">
       <div className={styles.top}>
-        <Brand label={t("header.home")} />
+        <Brand label={t("header.home")} name={t("app.name")} />
         <div className={styles.tools}>
           <OfflineBadge />
           <SettingsButton variant="ghost" />

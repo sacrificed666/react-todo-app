@@ -6,7 +6,7 @@ import { projectIdOf, type ViewId } from "@/features/lists/model/lists";
 import { splitProjectName } from "@/features/projects/model/project";
 import { selectProjects } from "@/features/projects/model/selectors";
 import ProjectPicker from "@/features/projects/ui/ProjectPicker/ProjectPicker";
-import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
+import { useRefraction } from "@/shared/hooks/useRefraction";
 import { useShortcut } from "@/shared/hooks/useShortcut";
 import { useToday } from "@/shared/hooks/useToday";
 import { addDays } from "@/shared/lib/date";
@@ -46,7 +46,7 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
   const [engaged, setEngaged] = useState(false);
   const expanded = engaged || title !== "";
 
-  useLiquidGlass(formRef, { bezel: 20, scale: 44 });
+  useRefraction(formRef, { bezel: 20, scale: 44 });
 
   useEffect(() => {
     if (!engaged) return;

@@ -45,8 +45,8 @@ flowchart TB
 | ✅ `todos`         | `Todo` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, checklists       | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker` |
 | 📁 `projects`      | `Project` model with colours and emoji icons, slice, selectors, `createProject()` and `deleteProject()`                       | `ProjectNav`, `ProjectDialog`, `ProjectPicker`, `ProjectIcon`                                                                                                     |
 | 📚 `lists`         | Smart lists and project views (`ViewId`), date groups, sort orders, view slice with overlays, `useViewInfo()`, list shortcuts | `ListNav`, `TagNav`, `TabBar`, `ListsSheet`, `ListHeader`, `SortMenu`                                                                                             |
-| 💾 `data`          | The stored document (`parseData`, `serializeData`), import and export, `dataReplaced` and `dataImported`, undo history        | —                                                                                                                                                                 |
-| 🔎 `search`        | —                                                                                                                             | `TodoSearch`                                                                                                                                                      |
+| 💾 `data`          | The stored document (`parseData`, `serializeData`), import and export, `dataReplaced` and `dataImported`, undo history        | None                                                                                                                                                              |
+| 🔎 `search`        | None                                                                                                                          | `TodoSearch`                                                                                                                                                      |
 | 📊 `stats`         | The 7-day activity, streak and project progress selectors                                                                     | `Overview`                                                                                                                                                        |
 | ⌘ `commands`       | `useTaskCommands()` shared by both menus, command ranking                                                                     | `ActionsMenu`, `CommandPalette`                                                                                                                                   |
 | 🎨 `settings`      | Appearance, accent, background, glass, language and effects, `changeLocale()`, document sync                                  | `SettingsDialog`, `SettingsButton`                                                                                                                                |
@@ -104,7 +104,7 @@ interface RootState {
 
 - 🗂️ `todos` and `projects` are normalized with `createEntityAdapter`. The order of `ids` is the manual order of tasks and the sidebar order of projects, so drag and drop only rearranges `ids`.
 - 🧭 `view.list` is a `ViewId`: a smart list (`"all"`, `"today"`, …) or a project view `` `project:${id}` ``. `selectList()` falls back to `"all"` when the project no longer exists, so undoing a project's creation or deleting it in another tab never leaves an empty screen.
-- 🪟 `view.overlay` describes the one open modal surface — the palette, the settings, the phones' Lists sheet or the project dialog. `overlayClosed(kind)` only closes the overlay of that kind, so a late close event from one dialog can never close the next one.
+- 🪟 `view.overlay` describes the one open modal surface: the palette, the settings, the phones' Lists sheet or the project dialog. `overlayClosed(kind)` only closes the overlay of that kind, so a late close event from one dialog can never close the next one.
 - 👁️ Only `list`, `sort` and `showCompleted` of the view are persisted.
 - 🎨 `settings` holds the colour scheme, accent, background, glass style, language and effects level.
 - 🔔 `toast` holds the current notification as a **message key with parameters**, so it is translated at render time and switches language together with the rest of the UI.
@@ -183,7 +183,7 @@ sequenceDiagram
   Slice-->>Row: "Pay rent" completed + "Pay rent" due 31 Mar
 ```
 
-`nextOccurrence()` in `features/todos/model/repeat.ts` advances daily and weekly series from the due date, skips weekends for `weekdays` and counts monthly and yearly series from the **anchor** — the first date of the series — so a series that started on the 31st returns to the 31st after a short month. Choosing a new date by hand moves the anchor; **Move to today** keeps it. Because the whole change is one action, one undo removes the copy and reopens the original.
+`nextOccurrence()` in `features/todos/model/repeat.ts` advances daily and weekly series from the due date, skips weekends for `weekdays` and counts monthly and yearly series from the **anchor**: the first date of the series. A series that started on the 31st returns to the 31st after a short month. Choosing a new date by hand moves the anchor; **Move to today** keeps it. Because the whole change is one action, one undo removes the copy and reopens the original.
 
 ## 🍰 Slices and actions
 
@@ -263,7 +263,7 @@ Thunks coordinate several slices:
 | -------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ➕ `addTodo(draft)`              | todos    | Adds a todo, clears a search that would hide it and, when it belongs to another list or project, shows a notification with **Show**. Returns `false` for blanks |
 | ✅ `toggleTodo(id, day)`         | todos    | Toggles a todo and returns `true` when it was the last active task of the current list or project, after showing `toast.allDone`                                |
-| 🎯 `dropTodo(id, target, today)` | todos    | Applies a drop on the sidebar — schedule, star, complete or move to a project — and offers **Undo**                                                             |
+| 🎯 `dropTodo(id, target, today)` | todos    | Applies a drop on the sidebar (schedule, star, complete or move to a project) and offers **Undo**                                                               |
 | 📄 `duplicateTodo(id)`           | todos    | Duplicates a todo, confirms it in a notification and returns the id of the copy                                                                                 |
 | 🗑️ `removeTodos(ids)`            | todos    | Captures each todo with its index, removes them, closes their details and shows a notification with a **Restore** action                                        |
 | 📆 `rescheduleOverdue(today)`    | todos    | Moves every overdue todo to today in one undoable step and offers **Undo** in the notification                                                                  |
@@ -282,11 +282,11 @@ Selectors that depend on the calendar take today's date key as a second argument
 
 - 🗂️ `selectTodos`, `selectTodoById`, `selectProjects`, `selectProjectById` from the entity adapters;
 - 🧭 `selectList`, `selectCurrentProject`, `selectSearching`, `selectOverlay` and `useViewInfo()`, which turns the view into a title, icon and kind (`list`, `project` or `search`);
-- 🔢 `selectListCounts(state, today)` — active counters for every list, plus `overdue` and `total`; `selectProjectCounts` — active tasks per project;
-- 📈 `selectListProgress(state, today)` — done and total for the open list or project;
-- 👁️ `selectVisibleTodos(state, today, query?)` — `{ active, completed }` after applying the view, the search (title **and** notes, across every list) and the sort order. The task list passes a deferred query, so typing stays instant;
-- 📅 `selectDueDateCounts` — active tasks per day, for the calendar dots;
-- 🔥 `selectActivity(state, today)` — completions for each of the last seven days and the current streak; `selectProjectProgress` — done and total per project;
+- 🔢 `selectListCounts(state, today)`: active counters for every list, plus `overdue` and `total`; `selectProjectCounts`: active tasks per project;
+- 📈 `selectListProgress(state, today)`: done and total for the open list or project;
+- 👁️ `selectVisibleTodos(state, today, query?)`: `{ active, completed }` after applying the view, the search (title **and** notes, across every list) and the sort order. The task list passes a deferred query, so typing stays instant;
+- 📅 `selectDueDateCounts`: active tasks per day, for the calendar dots;
+- 🔥 `selectActivity(state, today)`: completions for each of the last seven days and the current streak; `selectProjectProgress`: done and total per project;
 - 🧹 `selectCompletedIds`, `selectHistory`, `selectSettings`, `selectToast` and small field selectors.
 
 ## ✍️ Quick add
@@ -310,7 +310,7 @@ flowchart LR
   Due --> Title["title = remaining words + tags"]
 ```
 
-- 📁 Mentions match the full project name or the name without its emoji, case- and accent-insensitively with `localeCompare(…, { sensitivity: "base" })`, and must end at a space or the end of the text — `anna@work.com` and `@workshop` stay untouched. The longest matching name wins, so `@trip to lviv` beats `@trip`.
+- 📁 Mentions match the full project name or the name without its emoji, case- and accent-insensitively with `localeCompare(…, { sensitivity: "base" })`, and must end at a space or the end of the text, so `anna@work.com` and `@workshop` stay untouched. The longest matching name wins, so `@trip to lviv` beats `@trip`.
 - 📅 `parseDatePhrase()` and `parseRepeatPhrase()` understand phrases in all eight languages, validate calendar dates and roll `dd.mm` over to the next year when the date has passed. The full list is in [Features](./features.md#-quick-add).
 
 ## 🗂️ Date groups
@@ -327,12 +327,12 @@ flowchart LR
 | `react-todo-app/preferences` | `{ "list", "sort", "showCompleted", "appearance", "accent", "backdrop", "glass", "locale", "effects" }` |
 | `toDoList`                   | Legacy data in the original format, migrated and removed on first launch                                |
 
-- 📂 **Loading** — `loadPersistedState()` reads both keys and falls back to safe defaults when data is missing or corrupted. A saved project view whose project is gone opens **All tasks**, an old `filter` preference is mapped to the matching list, and the language is detected from `navigator.languages` on the first launch.
-- 🛡️ **Validation** — everything read from storage, other tabs or imported files goes through `parseData()`, which runs `parseTodos()` and `parseProjects()`. They accept every earlier format, drop invalid entries, dates, colours and links, replace unsafe or duplicate ids and normalize timestamps.
-- 💾 **Saving** — a store subscriber writes the data document only when the `todos` or `projects` slice changed, and the preferences only when their serialized form changed.
-- 🔄 **Cross-tab sync** — a `storage` event from another tab dispatches `dataReplaced`. Because identical values are never rewritten, tabs do not ping-pong updates.
-- 🎨 **Theme before paint** — `main.tsx` calls `applySettings()` before React renders; `useDocumentSync()` keeps `<html lang data-appearance data-accent data-backdrop data-glass data-effects>` and the `theme-color` meta tag in sync afterwards.
-- 🚫 **Unavailable storage** — private modes or blocked storage simply disable persistence; the app keeps working in memory.
+- 📂 **Loading**: `loadPersistedState()` reads both keys and falls back to safe defaults when data is missing or corrupted. A saved project view whose project is gone opens **All tasks**, an old `filter` preference is mapped to the matching list, and the language is detected from `navigator.languages` on the first launch.
+- 🛡️ **Validation**: everything read from storage, other tabs or imported files goes through `parseData()`, which runs `parseTodos()` and `parseProjects()`. They accept every earlier format, drop invalid entries, dates, colours and links, replace unsafe or duplicate ids and normalize timestamps.
+- 💾 **Saving**: a store subscriber writes the data document only when the `todos` or `projects` slice changed, and the preferences only when their serialized form changed.
+- 🔄 **Cross-tab sync**: a `storage` event from another tab dispatches `dataReplaced`. Because identical values are never rewritten, tabs do not ping-pong updates.
+- 🎨 **Theme before paint**: `main.tsx` calls `applySettings()` before React renders; `useDocumentSync()` keeps `<html lang data-appearance data-accent data-backdrop data-glass data-effects>` and the `theme-color` meta tag in sync afterwards.
+- 🚫 **Unavailable storage**: private modes or blocked storage simply disable persistence; the app keeps working in memory.
 
 ```mermaid
 sequenceDiagram
@@ -392,7 +392,7 @@ sequenceDiagram
 ```
 
 - 🔖 Each entry carries a unique marker, so leftover entries from an earlier page load are never mistaken for the current one.
-- 🧩 Switching from one overlay to another keeps the same entry. When one closes and the next opens in the same moment — the palette running **Open settings** — the pending `history.back()` is cancelled, so the new sheet is not closed by the old one's Back.
+- 🧩 Switching from one overlay to another keeps the same entry. When one closes and the next opens in the same moment, as when the palette runs **Open settings**, the pending `history.back()` is cancelled, so the new sheet is not closed by the old one's Back.
 - 🖥️ On wide screens task details live in the inspector and are not part of the history.
 
 ## ✋ Drag and drop
@@ -400,13 +400,13 @@ sequenceDiagram
 `TaskDnd` wraps the whole layout in one `DndContext`, so tasks can travel from the list to the sidebar.
 
 - 🧲 **Collision detection** first looks for a sidebar drop target under the pointer (`pointerWithin`) and otherwise falls back to `closestCenter` among the sortable rows.
-- 🎯 **Targets** — `useDropTarget(view, label)` registers smart lists and projects as droppables with ids like `drop:today` and `drop:project:work`; `dropTodo()` turns a drop into a schedule, star, completion or project change.
-- 🪞 **Overlay** — a `DragOverlay` shows a glass copy of the task aligned with the handle, while the original row stays in place as a faded placeholder.
+- 🎯 **Targets**: `useDropTarget(view, label)` registers smart lists and projects as droppables with ids like `drop:today` and `drop:project:work`; `dropTodo()` turns a drop into a schedule, star, completion or project change.
+- 🪞 **Overlay**: a `DragOverlay` shows a glass copy of the task aligned with the handle, while the original row stays in place as a faded placeholder.
 - 🔊 **Announcements** describe picking up, moving over a row or a list, dropping and cancelling.
 
 ## ⚡ Effects level
 
-`applySettings()` resolves the **Effects** setting (`auto` becomes `full` on capable Apple devices and `lite` elsewhere), writes it to `<html data-effects>` and hands it to a tiny external store in `shared/lib/effects.ts`. Styles key the aurora animation, blend modes, grain and pointer light off the attribute; `useLiquidGlass()` and `usePointerLight()` read the store with `useSyncExternalStore`, so switching levels attaches or removes refraction without a reload. The trade-offs are described in [Design system](./design.md#-effects-and-performance).
+`applySettings()` resolves the **Effects** setting (`auto` becomes `full` on capable Apple devices and `lite` elsewhere), writes it to `<html data-effects>` and hands it to a tiny external store in `shared/lib/effects.ts`. Styles key the aurora animation, blend modes, grain and pointer light off the attribute; `useRefraction()` and `usePointerLight()` read the store with `useSyncExternalStore`, so switching levels attaches or removes refraction without a reload. The trade-offs are described in [Design system](./design.md#-effects-and-performance).
 
 ## 🏎️ Rendering performance
 
@@ -417,8 +417,8 @@ Large lists stay responsive through a few targeted techniques, measured with 200
 | 🧠 `memo(TodoItem)` and rows that read the current list from the store only when they act | Changing one task re-renders one row instead of all of them    |
 | 🧷 A stable `items` array for every `SortableContext`                                     | dnd-kit no longer re-renders every sortable row on each change |
 | 🧩 Sections render the first 120 rows at once and the rest in a transition                | Opening a long list paints in about 0.1 s instead of 0.8 s     |
-| ⏳ The task list filters with `useDeferredValue(query)`                                   | Each keystroke in the search takes 30–50 ms                    |
-| 🪟 `content-visibility: auto` with `contain-intrinsic-size` on rows (off during drags)    | Scrolling 2000 tasks went from 10 to 44–52 fps                 |
+| ⏳ The task list filters with `useDeferredValue(query)`                                   | Each keystroke in the search takes 30-50 ms                    |
+| 🪟 `content-visibility: auto` with `contain-intrinsic-size` on rows (off during drags)    | Scrolling 2000 tasks went from 10 to 44-52 fps                 |
 | 📱 One pointer-type subscription for the whole list instead of one per row                | Fewer media query listeners                                    |
 
 ## 🔔 Notifications
@@ -464,19 +464,19 @@ Reusable, store-agnostic primitives live in `shared/ui`: `Icon`, `IconButton`, `
 
 ## 🖱️ Interaction details
 
-- 🪟 **Popovers** — `Popover` renders a native `<dialog popover>` anchored to its trigger with CSS anchor positioning, falls back to measured coordinates in older browsers and gets light dismiss, <kbd>Esc</kbd> and top-layer rendering from the platform.
-- 📋 **Context menus** — `ContextMenu` is a `role="menu"` popover placed at the pointer and kept inside the viewport. It moves focus with the arrow keys, closes on <kbd>Tab</kbd> and returns focus to where it was opened. When a long press opened it, clicks are ignored until the finger is lifted, so the release cannot pick an item.
-- 🗔 **Dialogs** — `Dialog` wraps a modal `<dialog>` opened with `showModal()` in a layout effect, closes on <kbd>Esc</kbd> or a backdrop click (`closedby="any"`) and returns focus to the element that opened it. On phones it becomes a bottom sheet.
-- 🌊 **Leave transitions** — when completing, deleting, starring, rescheduling or moving takes a task out of the current list, `TodoItem` first marks itself as leaving, waits for its CSS transitions with `waitForTransitions()`, and only then dispatches the action inside `flushSync`.
-- ⏳ **Deferred completion** — completing a task waits about 0.4 s so the check mark can be seen. A second click during that window cancels the change.
-- 👆 **Touch** — horizontal moves of more than 12 px become swipes, a press held for about half a second without moving opens the menu, and a tap on the title opens the details. Vertical movement is left to the browser (`touch-action: pan-y`).
-- ⌨️ **Row commands** — a native `keydown` listener on each row handles <kbd>↑</kbd>/<kbd>↓</kbd>, <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd>, <kbd>S</kbd>, <kbd>D</kbd>, <kbd>E</kbd>, <kbd>I</kbd>, <kbd>Delete</kbd>, <kbd>⇧</kbd>+<kbd>F10</kbd> and the menu key, but ignores text fields, open popovers and active drags.
-- 🎯 **Focus management** — after a task moves, disappears or is restored, focus goes to the same task, a neighbour or the composer, so keyboard users never lose their place.
-- 🧠 **View-aware composer** — the composer is keyed by the open view, so switching lists or projects resets its date, importance and project to that view's defaults.
-- 🐢 **Reduced motion** — `prefersReducedMotion()` skips the delays, transitions and confetti entirely.
+- 🪟 **Popovers**: `Popover` renders a native `<dialog popover>` anchored to its trigger with CSS anchor positioning, falls back to measured coordinates in older browsers and gets light dismiss, <kbd>Esc</kbd> and top-layer rendering from the platform.
+- 📋 **Context menus**: `ContextMenu` is a `role="menu"` popover placed at the pointer and kept inside the viewport. It moves focus with the arrow keys, closes on <kbd>Tab</kbd> and returns focus to where it was opened. When a long press opened it, clicks are ignored until the finger is lifted, so the release cannot pick an item.
+- 🗔 **Dialogs**: `Dialog` wraps a modal `<dialog>` opened with `showModal()` in a layout effect, closes on <kbd>Esc</kbd> or a backdrop click (`closedby="any"`) and returns focus to the element that opened it. On phones it becomes a bottom sheet.
+- 🌊 **Leave transitions**: when completing, deleting, starring, rescheduling or moving takes a task out of the current list, `TodoItem` first marks itself as leaving, waits for its CSS transitions with `waitForTransitions()`, and only then dispatches the action inside `flushSync`.
+- ⏳ **Deferred completion**: completing a task waits about 0.4 s so the check mark can be seen. A second click during that window cancels the change.
+- 👆 **Touch**: horizontal moves of more than 12 px become swipes, a press held for about half a second without moving opens the menu, and a tap on the title opens the details. Vertical movement is left to the browser (`touch-action: pan-y`).
+- ⌨️ **Row commands**: a native `keydown` listener on each row handles <kbd>↑</kbd>/<kbd>↓</kbd>, <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd>, <kbd>S</kbd>, <kbd>D</kbd>, <kbd>E</kbd>, <kbd>I</kbd>, <kbd>Delete</kbd>, <kbd>⇧</kbd>+<kbd>F10</kbd> and the menu key, but ignores text fields, open popovers and active drags.
+- 🎯 **Focus management**: after a task moves, disappears or is restored, focus goes to the same task, a neighbour or the composer, so keyboard users never lose their place.
+- 🧠 **View-aware composer**: the composer is keyed by the open view, so switching lists or projects resets its date, importance and project to that view's defaults.
+- 🐢 **Reduced motion**: `prefersReducedMotion()` skips the delays, transitions and confetti entirely.
 
 ## 🛠️ Tooling decisions
 
 - ⚛️ **React Compiler** runs through `@rolldown/plugin-babel` with `reactCompilerPreset()`, so components are written without manual `useMemo` or `useCallback`; `memo` is used once, for task rows rendered in a loop. Oxlint enables the matching React Compiler rules (`purity`, `refs`, `immutability`, `set-state-in-effect` and others).
 - 🔷 **TypeScript 7** type-checks the project with the native compiler. Oxlint's type-aware rules use `oxlint-tsgolint`, so the project does not depend on the JavaScript TypeScript API.
-- 🧭 **Path alias** — `@/` points to `src/` in TypeScript, Vite, Sass and Vitest.
+- 🧭 **Path alias**: `@/` points to `src/` in TypeScript, Vite, Sass and Vitest.

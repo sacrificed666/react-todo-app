@@ -3,12 +3,12 @@ import type { Messages } from "../translate";
 export const de: Messages = {
   "header.showSearch": "Suche anzeigen",
   "header.palette": "Befehlspalette",
-  "header.home": "ToDo – Startseite",
+  "header.home": "Aufgaben, Startseite",
   "header.offline": "Offline",
   "header.offlineHint": "Du bist offline. Änderungen werden auf diesem Gerät gespeichert.",
 
   "app.skip": "Zu den Aufgaben springen",
-  "app.title": "ToDo — To-do-Liste und Aufgabenplaner im Liquid-Glass-Stil",
+  "app.name": "Aufgaben",
 
   "search.placeholder": "Aufgaben durchsuchen",
   "search.label": "Aufgaben durchsuchen",
@@ -86,7 +86,7 @@ export const de: Messages = {
   "sort.dueDate": "Fälligkeit",
   "sort.priority": "Wichtigkeit",
   "sort.newest": "Neueste zuerst",
-  "sort.alphabetical": "Titel A–Z",
+  "sort.alphabetical": "Titel A-Z",
 
   "composer.placeholder": "Aufgabe hinzufügen",
   "composer.label": "Neue Aufgabe",
@@ -228,7 +228,7 @@ export const de: Messages = {
   "toast.cleared": { one: "{count} erledigte Aufgabe entfernt", other: "{count} erledigte Aufgaben entfernt" },
   "toast.imported": { one: "{count} Aufgabe importiert", other: "{count} Aufgaben importiert" },
   "toast.nothingImported": "Nichts Neues zum Importieren",
-  "toast.invalidImport": "Diese Datei ist kein gültiger ToDo-Export",
+  "toast.invalidImport": "Diese Datei ist kein gültiger Aufgabenexport",
   "toast.importTooLarge": "Diese Datei ist zu groß für den Import",
   "toast.undone": "Rückgängig gemacht: {action}",
   "toast.redone": "Wiederholt: {action}",

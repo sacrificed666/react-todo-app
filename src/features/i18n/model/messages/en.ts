@@ -1,12 +1,12 @@
 export const en = {
   "header.showSearch": "Show search",
   "header.palette": "Command palette",
-  "header.home": "ToDo home",
+  "header.home": "Tasks, home page",
   "header.offline": "Offline",
   "header.offlineHint": "You are offline. Changes are saved on this device.",
 
   "app.skip": "Skip to tasks",
-  "app.title": "ToDo — Liquid Glass to-do list and task manager",
+  "app.name": "Tasks",
 
   "search.placeholder": "Search tasks",
   "search.label": "Search tasks",
@@ -84,7 +84,7 @@ export const en = {
   "sort.dueDate": "Due date",
   "sort.priority": "Importance",
   "sort.newest": "Newest first",
-  "sort.alphabetical": "Title A–Z",
+  "sort.alphabetical": "Title A-Z",
 
   "composer.placeholder": "Add a task",
   "composer.label": "New task",
@@ -226,7 +226,7 @@ export const en = {
   "toast.cleared": { one: "Cleared {count} completed task", other: "Cleared {count} completed tasks" },
   "toast.imported": { one: "Imported {count} task", other: "Imported {count} tasks" },
   "toast.nothingImported": "Nothing new to import",
-  "toast.invalidImport": "This file is not a valid ToDo export",
+  "toast.invalidImport": "This file is not a valid task export",
   "toast.importTooLarge": "This file is too large to import",
   "toast.undone": "Undone: {action}",
   "toast.redone": "Redone: {action}",

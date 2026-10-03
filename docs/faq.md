@@ -2,7 +2,7 @@
 
 ### 💾 Where are my tasks stored?
 
-In your browser's `localStorage`, on your device only — tasks and projects together. There is no account and no server; the only request to another site loads the language flags from flagcdn.com, without your tasks or even the page address. See [Security](./security.md#️-data-on-the-device).
+In your browser's `localStorage`, on your device only, tasks and projects together. There is no account and no server; the only request to another site loads the language flags from flagcdn.com, without your tasks or even the page address. See [Security](./security.md#️-data-on-the-device).
 
 ### 📲 How do I move my tasks to another device or browser?
 
@@ -10,15 +10,15 @@ Open **⋯ → Export tasks** on the old device and **⋯ → Import tasks** on 
 
 ### 📁 What is the difference between projects and tags?
 
-A task belongs to **one project** at most — Work, 🏠 Home, Trip to Lviv — and each project has its own page, colour and icon in the sidebar. **Tags** are `#words` in the title: a task can have many, and clicking one searches every list for it. Use projects for areas of your life and tags for themes that cut across them, like `#calls` or `#urgent`.
+A task belongs to **one project** at most, such as Work, 🏠 Home or Trip to Lviv, and each project has its own page, colour and icon in the sidebar. **Tags** are `#words` in the title: a task can have many, and clicking one searches every list for it. Use projects for areas of your life and tags for themes that cut across them, like `#calls` or `#urgent`.
 
 ### 🗑️ What happens to the tasks when I delete a project?
 
-They are deleted with it — the dialog tells you how many before you confirm. If you change your mind, press **Undo** in the notification or <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd>: the project comes back with every task. To keep the tasks, move them to another project first, for example by dragging them onto it in the sidebar.
+They are deleted with it, and the dialog tells you how many before you confirm. If you change your mind, press **Undo** in the notification or <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd>: the project comes back with every task. To keep the tasks, move them to another project first, for example by dragging them onto it in the sidebar.
 
 ### 🧯 The app shows “Something went wrong”. Are my tasks gone?
 
-No. The error screen sits on top of your data: **Download a backup** saves the stored tasks and projects as a JSON file, **Reset view settings** clears only your preferences — the selected list, sort order, theme and language — and **Reload the app** starts over. If the problem persists, please [open an issue](https://github.com/sacrificed666/react-todo-app/issues/new/choose).
+No. The error screen sits on top of your data: **Download a backup** saves the stored tasks and projects as a JSON file, **Reset view settings** clears only your preferences (the selected list, sort order, theme and language) and **Reload the app** starts over. If the problem persists, please [open an issue](https://github.com/sacrificed666/react-todo-app/issues/new/choose).
 
 ### 🐢 The app feels slow on my computer. What can I do?
 
@@ -26,7 +26,7 @@ Open **Settings → Performance** and choose **Reduced**. It keeps the glass loo
 
 ### 🖼️ How do I change the colours or the background?
 
-Open **Settings** with the sliders button. Pick one of ten **accents**, one of six **backgrounds** — Aurora, Spectrum, Sunset, Ocean, Nebula or Plain — and the **glass** style. **Tinted** glass is denser and easier to read on bright backgrounds. The command palette can switch all of them too: type `background`, `accent` or `glass`.
+Open **Settings** with the sliders button. Pick one of ten **accents**, one of six **backgrounds** (Aurora, Spectrum, Sunset, Ocean, Nebula or Plain) and the **glass** style. **Tinted** glass is denser and easier to read on bright backgrounds. The command palette can switch all of them too: type `background`, `accent` or `glass`.
 
 ### 🔮 Why do the glass edges bend the background only in some browsers?
 
@@ -34,7 +34,7 @@ The refraction uses an SVG filter inside `backdrop-filter`, which only Chromium-
 
 ### 🖱️ Is there a right-click menu?
 
-Yes. Right-click a task — or press and hold it on a phone, or press <kbd>⇧</kbd>+<kbd>F10</kbd> — to schedule it with one tap, pick a date in the calendar, star or complete it, move it to a project, rename, duplicate or delete it. See [Features](./features.md#️-context-menu).
+Yes. Right-click a task, press and hold it on a phone or press <kbd>⇧</kbd>+<kbd>F10</kbd> to schedule it with one tap, pick a date in the calendar, star or complete it, move it to a project, rename, duplicate or delete it. See [Features](./features.md#️-context-menu).
 
 ### ⚡ Which words does quick add understand?
 
@@ -50,11 +50,11 @@ On phones and in the installed app, the settings, the Lists sheet, task details 
 
 ### ⌨️ Is there a list of keyboard shortcuts?
 
-Yes — in the **⋯** menu, in the command palette (<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd>) and in [Features](./features.md#️-keyboard-shortcuts).
+Yes, in the **⋯** menu, in the command palette (<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd>) and in [Features](./features.md#️-keyboard-shortcuts).
 
 ### 🌍 Can I use the app in another language?
 
-Eight are built in: English, Ukrainian, German, Spanish, French, Italian, Dutch and Polish. Adding another one takes a message file and a few lines — see [Localization](./i18n.md#-adding-a-language).
+Eight are built in: English, Ukrainian, German, Spanish, French, Italian, Dutch and Polish. Adding another one takes a message file and a few lines, see [Localization](./i18n.md#-adding-a-language).
 
 ### 🔄 How do I get updates?
 

@@ -104,7 +104,7 @@ const getDefinitions = () => {
 
 export const attachRefraction = (element: HTMLElement, { bezel = 18, scale = 36 }: RefractionOptions = {}) => {
   sequence += 1;
-  const id = `liquid-glass-${sequence}`;
+  const id = `refraction-${sequence}`;
   const filter = document.createElementNS(SVG_NS, "filter");
   const image = document.createElementNS(SVG_NS, "feImage");
   const displacement = document.createElementNS(SVG_NS, "feDisplacementMap");

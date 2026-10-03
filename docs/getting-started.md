@@ -21,20 +21,20 @@ The dev server prints a local URL. The app is served under the `/react-todo-app/
 
 ## 📜 npm scripts
 
-| Script                  | What it does                                                                  |
-| ----------------------- | ----------------------------------------------------------------------------- |
-| `npm run dev`           | 🔥 Starts the Vite dev server with hot module replacement                     |
-| `npm run build`         | 📦 Type-checks the project and builds the production bundle into `dist/`      |
-| `npm run preview`       | 👀 Serves the production build locally, including the service worker          |
-| `npm run typecheck`     | 🧠 Runs the TypeScript 7 compiler in build mode without emitting files        |
-| `npm run lint`          | 🧹 Lints the code with Oxlint, including type-aware and React Compiler rules  |
-| `npm run lint:fix`      | 🩹 Applies the automatic Oxlint fixes                                         |
-| `npm run format`        | 🎨 Formats every supported file with Oxfmt                                    |
-| `npm run format:check`  | 🔎 Fails if a file is not formatted                                           |
-| `npm test`              | 👁️ Starts Vitest in watch mode                                                |
-| `npm run test:run`      | 🧪 Runs the whole test suite once                                             |
-| `npm run test:coverage` | 📊 Runs the tests with V8 coverage and enforces the coverage thresholds       |
-| `npm run check`         | ✅ Lint, format check, type check and tests in one go — run it before pushing |
+| Script                  | What it does                                                                 |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| `npm run dev`           | 🔥 Starts the Vite dev server with hot module replacement                    |
+| `npm run build`         | 📦 Type-checks the project and builds the production bundle into `dist/`     |
+| `npm run preview`       | 👀 Serves the production build locally, including the service worker         |
+| `npm run typecheck`     | 🧠 Runs the TypeScript 7 compiler in build mode without emitting files       |
+| `npm run lint`          | 🧹 Lints the code with Oxlint, including type-aware and React Compiler rules |
+| `npm run lint:fix`      | 🩹 Applies the automatic Oxlint fixes                                        |
+| `npm run format`        | 🎨 Formats every supported file with Oxfmt                                   |
+| `npm run format:check`  | 🔎 Fails if a file is not formatted                                          |
+| `npm test`              | 👁️ Starts Vitest in watch mode                                               |
+| `npm run test:run`      | 🧪 Runs the whole test suite once                                            |
+| `npm run test:coverage` | 📊 Runs the tests with V8 coverage and enforces the coverage thresholds      |
+| `npm run check`         | ✅ Lint, format check, type check and tests in one go, run it before pushing |
 
 After `npm run build`, `node scripts/build-report.mjs` prints the bundle sizes and verifies the security headers, exactly as the pipeline does.
 
@@ -69,7 +69,7 @@ react-todo-app/
 │   │   └── notifications/           Toast state, the Toaster and the offline badge
 │   ├── shared/
 │   │   ├── ui/                      Icon, IconButton, Checkbox, Popover, Dialog, ContextMenu, Calendar, SwatchPicker, SegmentedControl, ProgressBar, EmptyState, Brand
-│   │   ├── hooks/                   Liquid glass, effects level, shortcuts, media queries, scroll position, online status, app badge, today, pointer light
+│   │   ├── hooks/                   Refraction, effects level, shortcuts, media queries, scroll position, online status, app badge, today, pointer light
 │   │   ├── lib/                     Dates and calendars, keyboard, fuzzy search, storage, motion, refraction, effects, haptics, confetti, Trusted Types
 │   │   ├── styles/                  Design tokens, accent and background palettes, glass and menu mixins, global styles
 │   │   └── assets/                  Flow-lines artwork used by the backdrop
@@ -87,9 +87,9 @@ Every feature has a `model/` folder for state and logic and, when it renders som
 
 Editor settings are not committed. For the best experience in VS Code, install:
 
-- 🦀 **Oxc** — inline Oxlint diagnostics and Oxfmt formatting on save
-- ⚡ **Vitest** — run and debug tests from the editor
-- 📝 **EditorConfig** — consistent whitespace settings (`.editorconfig` is part of the repository)
+- 🦀 **Oxc**: inline Oxlint diagnostics and Oxfmt formatting on save
+- ⚡ **Vitest**: run and debug tests from the editor
+- 📝 **EditorConfig**: consistent whitespace settings (`.editorconfig` is part of the repository)
 
 ## 👉 Next steps
 

@@ -3,12 +3,12 @@ import type { Messages } from "../translate";
 export const fr: Messages = {
   "header.showSearch": "Afficher la recherche",
   "header.palette": "Palette de commandes",
-  "header.home": "Accueil ToDo",
+  "header.home": "Tâches, page d’accueil",
   "header.offline": "Hors ligne",
   "header.offlineHint": "Vous êtes hors ligne. Les modifications sont enregistrées sur cet appareil.",
 
   "app.skip": "Aller aux tâches",
-  "app.title": "ToDo — liste de tâches et gestionnaire de tâches au style Liquid Glass",
+  "app.name": "Tâches",
 
   "search.placeholder": "Rechercher des tâches",
   "search.label": "Rechercher des tâches",
@@ -89,7 +89,7 @@ export const fr: Messages = {
   "sort.dueDate": "Échéance",
   "sort.priority": "Importance",
   "sort.newest": "Plus récentes",
-  "sort.alphabetical": "Titre A–Z",
+  "sort.alphabetical": "Titre A-Z",
 
   "composer.placeholder": "Ajouter une tâche",
   "composer.label": "Nouvelle tâche",
@@ -234,7 +234,7 @@ export const fr: Messages = {
   "toast.cleared": { one: "{count} tâche terminée effacée", other: "{count} tâches terminées effacées" },
   "toast.imported": { one: "{count} tâche importée", other: "{count} tâches importées" },
   "toast.nothingImported": "Rien de nouveau à importer",
-  "toast.invalidImport": "Ce fichier n’est pas un export ToDo valide",
+  "toast.invalidImport": "Ce fichier n’est pas un export de tâches valide",
   "toast.importTooLarge": "Ce fichier est trop volumineux pour être importé",
   "toast.undone": "Annulé\u00a0: {action}",
   "toast.redone": "Rétabli\u00a0: {action}",

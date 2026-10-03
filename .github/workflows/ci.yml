@@ -1,4 +1,4 @@
-name: 🚀 React ToDo App | CI/CD
+name: 🚀 Todo App | CI/CD
 
 on:
   push:

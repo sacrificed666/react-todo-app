@@ -1,39 +1,83 @@
-# 📝 React ToDo App
+# 📝 Todo App
 
 [![CI/CD](https://github.com/sacrificed666/react-todo-app/actions/workflows/ci.yml/badge.svg)](https://github.com/sacrificed666/react-todo-app/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/sacrificed666/react-todo-app/actions/workflows/codeql.yml/badge.svg)](https://github.com/sacrificed666/react-todo-app/actions/workflows/codeql.yml)
 
-A task manager wrapped in Apple-inspired **Liquid Glass**: translucent, refractive islands floating over a living backdrop — no header bar, no footer, just your tasks. Built with React 19, Redux Toolkit and Vite 8 — smooth on any computer, offline-first, available in eight languages and private by design.
+A private to-do list that lives in your browser. Plan the day with smart lists, group tasks into
+projects, repeat them on a schedule and find anything with one search, on a computer or a phone,
+online or offline.
+
+Built with React 19, Redux Toolkit and Vite 8 as a static, local-first web app. Your tasks stay on
+your device: no account, no server and no analytics.
 
 **[🌐 Live demo](https://sacrificed666.github.io/react-todo-app/)**
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/images/desktop-dark.jpg" />
-  <img src="./docs/images/desktop-light.jpg" alt="ToDo App with the sidebar, projects, the task list and the overview in Liquid Glass" />
+  <img src="./docs/images/desktop-light.jpg" alt="Tasks with the sidebar, projects, the task list and the overview" />
 </picture>
 
-## ✨ Highlights
+---
 
-- 🫧 **Liquid Glass UI** — floating glass islands instead of header and footer bars, grouped task panels with specular rims, spring motion and real edge refraction in Chromium
-- 📁 **Projects** — group tasks into Work, 🏠 Home or a trip, with ten colours, emoji icons, `@project` in quick add and progress bars in the overview
-- 🖱️ **Context menu** — right-click or long-press any task to schedule, star, complete, move, rename, duplicate or delete it
-- 📅 **Calendar** — a glass month view with dots on busy days and the first day of the week your region expects
-- ✋ **Drag to organise** — drop a task on Today, Upcoming, Important, Completed or a project in the sidebar
-- 🎨 **Make it yours** — ten accents, six backgrounds (Aurora, Spectrum, Sunset, Ocean, Nebula, Plain) and clear or tinted glass
-- 🔎 **Search everything** — one search across every list and project, and a <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> palette for everything else
-- ✍️ **Quick add** — type `Call mom tomorrow @home !`, `Teammeeting am Freitag` or `Полити квіти щотижня` and the date, repeat, project and importance are filled in for you
-- 🔁 **Repeating tasks** — every day, weekday, week, month or year; monthly tasks keep their day even after a short month
-- 🗂️ **Planning views** — Today separates overdue tasks with a one-click **Move to today**, Upcoming is grouped by day and month
-- ⚡ **Fast everywhere** — an **Effects** setting keeps Windows laptops at 60 fps, and lists with thousands of tasks stay instant
-- 🌍 **Eight languages with flags** — English, Українська, Deutsch, Español, Français, Italiano, Nederlands and Polski, with correct plurals, dates and typography, loaded on demand
-- 🗒️ **Details and checklists** — notes, `- [ ]` checklists with progress chips, `#tags` with a tag cloud, duplicate and delete
-- ↩️ **Undo everything** — 50 steps of undo and redo for tasks and projects, with a description of each change
-- 📱 **Made for phones too** — a floating tab bar with a Lists sheet, swipes, long press, haptics and a Back button that closes sheets
-- 🔤 **Montserrat** — self-hosted variable font with Latin, Polish and Cyrillic coverage
-- 💾 **Local-first PWA** — autosave, cross-tab sync, JSON import and export, offline mode, app shortcuts, share target and update prompts
-- 🛡️ **Secure by default** — strict CSP with Trusted Types, validated imports, CodeQL and signed dependencies
-- ♿ **Accessible** — WCAG AA contrast, full keyboard control, landmarks, live regions and page titles for screen readers, Windows high contrast, reduced motion and transparency support, checked with axe and Lighthouse
-- 🔗 **Shares nicely** — a rich preview card in chats and social networks, structured data for search engines and screenshots in the install dialog
+## ✨ What it does
+
+### 📚 Smart lists
+
+**All tasks**, **Today**, **Upcoming**, **Important** and **Completed**, each with a counter. Today keeps
+overdue tasks apart and moves them all to today in one step, Upcoming is grouped by day and month,
+and the installed app shows the Today count as a badge on its icon.
+
+### 📁 Projects
+
+Group tasks into Work, 🏠 Home or a trip. Every project has one of ten colours, an optional emoji
+icon, its own page with progress, and a place in the overview. Deleting a project can be undone
+together with all of its tasks.
+
+### ✍️ Quick add
+
+Type `Call mom tomorrow @home !`, `Teammeeting am Freitag` or `Полити квіти щотижня` and the date,
+repeat, project and importance are filled in for you, in all eight languages.
+
+### ✅ Tasks
+
+- **Repeats** every day, weekday, week, month or year. Monthly tasks keep their day after a short month.
+- **Details** with notes, `- [ ]` checklists with a progress chip and `#tags` with a tag cloud.
+- **A context menu** on right-click or long press to schedule, star, complete, move, rename,
+  duplicate or delete a task.
+- **A calendar** with dots on busy days, starting the week on the day your region expects.
+- **Drag and drop** to reorder tasks or drop them on a list or project in the sidebar.
+- **Undo and redo** for the last 50 changes to tasks and projects, each with a description.
+
+### 🔎 Search and commands
+
+One search across every list and project, and a <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> palette for
+navigation, actions, sorting, appearance and language. Almost everything has a keyboard shortcut.
+
+### 🎨 Appearance
+
+Light, dark or automatic theme, ten accents, six backgrounds (Aurora, Spectrum, Sunset, Ocean,
+Nebula and Plain) and clear or tinted glass panels. The **Effects** setting keeps older laptops at
+60 fps, and lists with thousands of tasks stay instant.
+
+### 📱 Phones
+
+A floating tab bar with a Lists sheet, swipes to complete or delete, long press, haptics and a Back
+button that closes sheets instead of leaving the app.
+
+### 💾 Your data
+
+Autosave, sync between tabs, JSON import and export, offline mode, app shortcuts, a share target and
+update prompts. Imported files are validated field by field.
+
+### 🌍 Eight languages
+
+English, Ukrainian, German, Spanish, French, Italian, Dutch and Polish, with correct plurals, dates
+and typography, loaded on demand.
+
+### ♿ Accessibility
+
+WCAG AA contrast, full keyboard control, landmarks, live regions and page titles for screen readers,
+Windows high contrast, reduced motion and reduced transparency, checked with axe and Lighthouse.
 
 <p align="center">
   <img src="./docs/images/mobile-dark.jpg" alt="Today on a phone with overdue tasks and the tab bar" width="260" />
@@ -42,43 +86,34 @@ A task manager wrapped in Apple-inspired **Liquid Glass**: translucent, refracti
 
 ![Task details in the inspector column](./docs/images/desktop-details.jpg)
 
-![The six backgrounds](./docs/images/backgrounds.jpg)
-
-## ⚛️ Front-end
-
-![TypeScript](https://skillicons.dev/icons?i=ts)
-![React](https://skillicons.dev/icons?i=react)
-![Redux](https://skillicons.dev/icons?i=redux)
-![Vite](https://skillicons.dev/icons?i=vite)
-![SASS](https://skillicons.dev/icons?i=sass)
-
-## 🧰 Tooling
-
-![Node.js](https://skillicons.dev/icons?i=nodejs)
-![Vitest](https://skillicons.dev/icons?i=vitest)
-![GitHub Actions](https://skillicons.dev/icons?i=githubactions)
-
-TypeScript 7 · Oxlint · Oxfmt · Vitest 5 · Testing Library · React Compiler · Montserrat · CodeQL · GitHub Pages
+---
 
 ## 🚀 Quick start
 
-Requires Node.js 24.15 or newer.
+Requires **Node.js 24.15** or newer.
 
 ```bash
 npm ci
-npm run dev
+npm run dev          # http://localhost:5173/react-todo-app/
 ```
 
-Open `http://localhost:5173/react-todo-app/`. Run `npm run check` before pushing to lint, format-check, type-check and test in one go.
+```bash
+npm run check        # lint, format check, type check and tests in one go
+npm run build        # production build in dist/
+```
+
+---
 
 ## 📚 Documentation
 
-| Guide                                           | Topics                                                |
+Everything else lives in [`docs/`](./docs):
+
+|                                                 |                                                       |
 | ----------------------------------------------- | ----------------------------------------------------- |
 | 🏁 [Getting started](./docs/getting-started.md) | Requirements, scripts and project layout              |
 | ✨ [Features](./docs/features.md)               | Everything the app can do, shortcuts and gestures     |
 | 🏗️ [Architecture](./docs/architecture.md)       | Layers, state, undo and redo, persistence and startup |
-| 🎨 [Design system](./docs/design.md)            | Liquid Glass, refraction, backdrop and motion         |
+| 🎨 [Design system](./docs/design.md)            | Glass surfaces, refraction, backgrounds and motion    |
 | 🌍 [Localization](./docs/i18n.md)               | Messages, plurals, dates and adding a language        |
 | 🛡️ [Security](./docs/security.md)               | CSP, Trusted Types, validation and supply chain       |
 | 🧪 [Testing](./docs/testing.md)                 | Test stack, helpers, conventions and coverage         |
@@ -86,10 +121,28 @@ Open `http://localhost:5173/react-todo-app/`. Run `npm run check` before pushing
 | 🤝 [Contributing](./docs/contributing.md)       | Workflow, code style and commit conventions           |
 | ❓ [FAQ](./docs/faq.md)                         | Common questions                                      |
 
+---
+
+## 🧱 Stack
+
+React 19 with the React Compiler, Redux Toolkit, TypeScript 7, Vite 8 and Sass modules. dnd-kit for
+drag and drop, the self-hosted Montserrat variable font, Vitest 5 with Testing Library, Oxlint and
+Oxfmt. The interface, the calendar and the charts are written by hand, without a UI library.
+Deployed to GitHub Pages by GitHub Actions and scanned by CodeQL.
+
+## 📌 Good to know
+
+- **Tasks stay in this browser.** They are saved to `localStorage`; use **⋯** → **Export tasks** to back
+  them up or move them to another device.
+- **Clearing site data deletes them.** Export first if you clear your browser's storage.
+- **Tabs sync, devices do not.** Changes appear in every open tab of the same browser right away.
+- **Slow computer?** Pick **Reduced** effects or the **Plain** background in the settings.
+- **Edge refraction is Chromium only.** Other browsers get the same glass without the lens effect.
+
 ## ✍️ Author
 
 **[Illia Movchko](https://github.com/sacrificed666)**
 
 ## 📝 License
 
-This project is licensed under the **[MIT License](https://choosealicense.com/licenses/mit/)**.
+Licensed under the **[MIT License](https://choosealicense.com/licenses/mit/)**.

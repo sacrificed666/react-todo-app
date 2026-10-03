@@ -10,7 +10,7 @@ const items = [
   { id: "today", group: "lists", label: "Go to Today" },
   { id: "all", group: "lists", label: "Go to All tasks", keywords: "inbox" },
   { id: "due", group: "sort", label: "Sort by: Due date" },
-  { id: "title", group: "sort", label: "Sort by: Title A–Z" },
+  { id: "title", group: "sort", label: "Sort by: Title A-Z" },
   { id: "task", group: "tasks", label: "Buy a sorting box" },
 ] satisfies Array<{ id: string; group: Group; label: string; keywords?: string }>;
 

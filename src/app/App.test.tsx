@@ -32,7 +32,7 @@ describe("App shell", () => {
     renderApp(plannedTodos);
 
     const banner = screen.getByRole("banner");
-    expect(within(banner).getByRole("link", { name: "ToDo home" })).toHaveTextContent("ToDo");
+    expect(within(banner).getByRole("link", { name: "Tasks, home page" })).toHaveTextContent("Tasks");
     expect(within(banner).getByRole("searchbox", { name: "Search tasks" })).toHaveAttribute("aria-keyshortcuts", "/");
     expect(within(banner).getByRole("navigation", { name: "Projects" })).toBeInTheDocument();
     expect(within(screen.getByRole("contentinfo")).getByRole("link", { name: "Source code" })).toBeInTheDocument();
@@ -114,17 +114,19 @@ describe("App shell", () => {
     expect(screen.getByRole("button", { name: "Сьогодні (2)" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Вихідний код" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Нове завдання" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Завдання, головна сторінка" })).toHaveTextContent("Завдання");
+    expect(document.title).toBe("Завдання");
   });
 
   it("names the browser tab after the open list", async () => {
     const { user } = renderApp(plannedTodos);
-    expect(document.title).toBe("ToDo — Liquid Glass to-do list and task manager");
+    expect(document.title).toBe("Tasks");
 
     await user.click(screen.getByRole("button", { name: /^Today/ }));
-    expect(document.title).toBe("Today · ToDo");
+    expect(document.title).toBe("Today · Tasks");
 
     await user.type(screen.getByRole("searchbox", { name: "Search tasks" }), "dentist");
-    expect(document.title).toBe("Search · ToDo");
+    expect(document.title).toBe("Search · Tasks");
   });
 
   it("offers a skip link to the task list", () => {
@@ -471,7 +473,7 @@ describe("Sorting and search", () => {
     expect(screen.getAllByRole("button", { name: /^Reorder/ })).toHaveLength(4);
 
     const menu = await openPopover(user, screen.getByRole("button", { name: "Sort tasks: Manual" }));
-    await user.click(menu.getByRole("button", { name: "Title A–Z" }));
+    await user.click(menu.getByRole("button", { name: "Title A-Z" }));
 
     expect(itemTitles(section(/^To do/))).toEqual([
       "Daily standup",
@@ -480,7 +482,7 @@ describe("Sorting and search", () => {
       "Send the invoice",
     ]);
     expect(screen.queryByRole("button", { name: /^Reorder/ })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Sort tasks: Title A–Z" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sort tasks: Title A-Z" })).toBeInTheDocument();
   });
 
   it("searches tasks with the slash shortcut", async () => {

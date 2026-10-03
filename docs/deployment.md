@@ -73,9 +73,9 @@ The same constant feeds the manifest `id`, `scope`, `start_url`, shortcuts and s
 | 🖼️ Icons              | 64, 192 and 512 px PNGs plus a maskable 512 px icon                                        |
 | 📸 `screenshots`      | A wide (1280 × 800) and a narrow (780 × 1688) screenshot for the richer install dialog     |
 
-- 📦 **Precache** — HTML, JavaScript (including every language chunk), CSS, the Montserrat font files, icons and the backdrop artwork, so the app starts offline after the first visit.
-- 🏳️ **Flags** — images from flagcdn.com are cached cache-first in a `flags` cache (opaque responses allowed, up to 16 entries for a year).
-- 🖼️ **Runtime cache** — other images use a cache-first strategy (up to 32 entries for a year).
+- 📦 **Precache**: HTML, JavaScript (including every language chunk), CSS, the Montserrat font files, icons and the backdrop artwork, so the app starts offline after the first visit.
+- 🏳️ **Flags**: images from flagcdn.com are cached cache-first in a `flags` cache (opaque responses allowed, up to 16 entries for a year).
+- 🖼️ **Runtime cache**: other images use a cache-first strategy (up to 32 entries for a year).
 - 🧪 The service worker is not active during `npm run dev`. Use `npm run build && npm run preview` to test offline behaviour.
 
 ### 🔄 Update flow
@@ -123,4 +123,4 @@ Every Dependabot pull request goes through the same pipeline, including the depe
 
 ## 🖐️ Manual deployment
 
-Open **Actions → 🚀 React ToDo App | CI/CD → Run workflow** and choose `main`. Runs started on other branches verify and build but never deploy.
+Open **Actions → 🚀 Todo App | CI/CD → Run workflow** and choose `main`. Runs started on other branches verify and build but never deploy.

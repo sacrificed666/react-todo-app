@@ -3,7 +3,7 @@ import { useEffect, useEffectEvent, useRef } from "react";
 import { useAppDispatch } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { detailsClosed } from "@/features/lists/model/viewSlice";
-import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
+import { useRefraction } from "@/shared/hooks/useRefraction";
 
 import type { Todo } from "../../model/todo";
 import { toggleId } from "../ids";
@@ -20,7 +20,7 @@ const TaskDetailsPanel = ({ todo }: DetailsPanelProps) => {
   const { t } = useI18n();
   const ref = useRef<HTMLElement>(null);
 
-  useLiquidGlass(ref, { bezel: 22, scale: 40 });
+  useRefraction(ref, { bezel: 22, scale: 40 });
 
   const close = () => {
     const row = document.getElementById(toggleId(todo.id));

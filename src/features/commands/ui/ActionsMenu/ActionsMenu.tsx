@@ -50,7 +50,7 @@ const ActionsMenu = ({ variant = "glass" }: ActionsMenuProps) => {
     { keys: ["N"], label: t("shortcuts.newTask") },
     { keys: ["/"], label: t("shortcuts.search") },
     { keys: [apple ? "⌘" : "Ctrl", "K"], label: t("shortcuts.palette") },
-    { keys: ["1", "–", "5"], label: t("shortcuts.lists") },
+    { keys: ["1-5"], label: t("shortcuts.lists") },
     { keys: ["↑", "↓"], label: t("shortcuts.navigate") },
     { keys: [apple ? "⌥" : "Alt", "↑", "↓"], label: t("shortcuts.reorder") },
     { keys: ["S", "D", "E", "I"], label: t("shortcuts.taskActions") },

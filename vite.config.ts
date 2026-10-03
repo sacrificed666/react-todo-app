@@ -8,7 +8,7 @@ import { defineConfig } from "vitest/config";
 
 const base = "/react-todo-app/";
 const description =
-  "A free, private task manager with projects, smart lists, repeats and a calendar. Works offline in eight languages and keeps your tasks on your device.";
+  "A free, private to-do list with projects, smart lists, repeating tasks and a calendar. Works offline in eight languages and keeps your tasks on your device.";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -57,8 +57,8 @@ export default defineConfig({
       injectRegister: false,
       manifest: {
         id: base,
-        name: "ToDo App",
-        short_name: "ToDo",
+        name: "Tasks",
+        short_name: "Tasks",
         description,
         lang: "en",
         dir: "ltr",

@@ -1,4 +1,4 @@
-name: 🛡️ React ToDo App | CodeQL
+name: 🛡️ Todo App | CodeQL
 
 on:
   push:

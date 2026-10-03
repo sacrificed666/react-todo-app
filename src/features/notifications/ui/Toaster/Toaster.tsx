@@ -7,7 +7,7 @@ import { useI18n } from "@/features/i18n/model/useI18n";
 import { listChanged } from "@/features/lists/model/viewSlice";
 import { undoRemoval } from "@/features/todos/model/thunks";
 import { toggleId } from "@/features/todos/ui/ids";
-import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
+import { useRefraction } from "@/shared/hooks/useRefraction";
 import { applyUpdate } from "@/shared/lib/serviceWorker";
 import Icon from "@/shared/ui/Icon/Icon";
 import type { IconName } from "@/shared/ui/Icon/icons";
@@ -34,7 +34,7 @@ const ToastCard = ({ toast }: ToastCardProps) => {
   const persistent = toast.action?.type === "reload";
   const paused = hovered || focused || persistent;
 
-  useLiquidGlass(ref, { bezel: 20, scale: 36 });
+  useRefraction(ref, { bezel: 20, scale: 36 });
 
   useEffect(() => {
     if (paused) return;

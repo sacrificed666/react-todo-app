@@ -3,12 +3,12 @@ import type { Messages } from "../translate";
 export const es: Messages = {
   "header.showSearch": "Mostrar búsqueda",
   "header.palette": "Paleta de comandos",
-  "header.home": "Inicio de ToDo",
+  "header.home": "Tareas, página de inicio",
   "header.offline": "Sin conexión",
   "header.offlineHint": "No tienes conexión. Los cambios se guardan en este dispositivo.",
 
   "app.skip": "Ir a las tareas",
-  "app.title": "ToDo — lista de tareas y gestor de tareas con estilo Liquid Glass",
+  "app.name": "Tareas",
 
   "search.placeholder": "Buscar tareas",
   "search.label": "Buscar tareas",
@@ -86,7 +86,7 @@ export const es: Messages = {
   "sort.dueDate": "Vencimiento",
   "sort.priority": "Importancia",
   "sort.newest": "Más recientes",
-  "sort.alphabetical": "Título A–Z",
+  "sort.alphabetical": "Título A-Z",
 
   "composer.placeholder": "Añadir una tarea",
   "composer.label": "Nueva tarea",
@@ -228,7 +228,7 @@ export const es: Messages = {
   "toast.cleared": { one: "Se borró {count} tarea completada", other: "Se borraron {count} tareas completadas" },
   "toast.imported": { one: "Se importó {count} tarea", other: "Se importaron {count} tareas" },
   "toast.nothingImported": "No hay nada nuevo que importar",
-  "toast.invalidImport": "Este archivo no es una exportación válida de ToDo",
+  "toast.invalidImport": "Este archivo no es una exportación de tareas válida",
   "toast.importTooLarge": "Este archivo es demasiado grande para importarlo",
   "toast.undone": "Deshecho: {action}",
   "toast.redone": "Rehecho: {action}",

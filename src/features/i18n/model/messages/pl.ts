@@ -3,12 +3,12 @@ import type { Messages } from "../translate";
 export const pl: Messages = {
   "header.showSearch": "Pokaż wyszukiwanie",
   "header.palette": "Paleta poleceń",
-  "header.home": "Strona główna ToDo",
+  "header.home": "Zadania, strona główna",
   "header.offline": "Offline",
   "header.offlineHint": "Jesteś offline. Zmiany są zapisywane na tym urządzeniu.",
 
   "app.skip": "Przejdź do zadań",
-  "app.title": "ToDo — lista zadań i menedżer zadań w stylu Liquid Glass",
+  "app.name": "Zadania",
 
   "search.placeholder": "Szukaj zadań",
   "search.label": "Szukaj zadań",
@@ -93,7 +93,7 @@ export const pl: Messages = {
   "sort.dueDate": "Termin",
   "sort.priority": "Ważność",
   "sort.newest": "Od najnowszych",
-  "sort.alphabetical": "Tytuł A–Z",
+  "sort.alphabetical": "Tytuł A-Z",
 
   "composer.placeholder": "Dodaj zadanie",
   "composer.label": "Nowe zadanie",
@@ -260,7 +260,7 @@ export const pl: Messages = {
     other: "Zaimportowano {count} zadania",
   },
   "toast.nothingImported": "Nie ma nic nowego do zaimportowania",
-  "toast.invalidImport": "Ten plik nie jest prawidłowym eksportem ToDo",
+  "toast.invalidImport": "Ten plik nie jest prawidłowym eksportem zadań",
   "toast.importTooLarge": "Ten plik jest za duży, aby go zaimportować",
   "toast.undone": "Cofnięto: {action}",
   "toast.redone": "Ponowiono: {action}",

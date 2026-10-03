@@ -12,7 +12,7 @@ import { LIST_TITLE_ID } from "@/features/lists/ui/ListHeader/ListHeader";
 import OfflineBadge from "@/features/notifications/ui/OfflineBadge/OfflineBadge";
 import TodoSearch from "@/features/search/ui/TodoSearch/TodoSearch";
 import SettingsButton from "@/features/settings/ui/SettingsButton/SettingsButton";
-import { useLiquidGlass } from "@/shared/hooks/useLiquidGlass";
+import { useRefraction } from "@/shared/hooks/useRefraction";
 import { useScrolledPast } from "@/shared/hooks/useScrolledPast";
 import { useShortcut } from "@/shared/hooks/useShortcut";
 import { isPlainKey } from "@/shared/lib/keyboard";
@@ -36,7 +36,7 @@ const Toolbar = () => {
   const [searchView, setSearchView] = useState<ViewId | null>(null);
   const searchVisible = searchView === list || query !== "";
 
-  useLiquidGlass(groupRef, { bezel: 14, scale: 30 });
+  useRefraction(groupRef, { bezel: 14, scale: 30 });
 
   const openSearch = () => {
     flushSync(() => setSearchView(list));
@@ -67,7 +67,7 @@ const Toolbar = () => {
         </div>
       ) : (
         <>
-          <Brand label={t("header.home")} compact className={styles.brand} />
+          <Brand label={t("header.home")} className={styles.brand} />
           <p className={styles.title} aria-hidden="true">
             {view.title}
           </p>

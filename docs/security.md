@@ -1,6 +1,6 @@
 # 🛡️ Security
 
-ToDo App is a static, local-first web app: no backend, no accounts, no cookies and no analytics. The only request to another origin is for language flag images from flagcdn.com. That removes whole classes of problems, but the browser still handles untrusted data — imported files, shared content, URL parameters and data written by other tabs — so the app treats all of it as hostile until validated.
+Todo App is a static, local-first web app: no backend, no accounts, no cookies and no analytics. The only request to another origin is for language flag images from flagcdn.com. That removes whole classes of problems, but the browser still handles untrusted data (imported files, shared content, URL parameters and data written by other tabs), so the app treats all of it as hostile until validated.
 
 To report a vulnerability, follow the [security policy](../.github/SECURITY.md).
 
@@ -53,7 +53,7 @@ GitHub Pages cannot send custom headers, so the production build injects a CSP `
 | `base-uri`, `form-action`                               | `'self'`                                 | 🧭 Prevents base tag and form hijacking                                               |
 | `require-trusted-types-for`                             | `'script'`                               | 🛂 DOM XSS sinks only accept Trusted Types                                            |
 | `trusted-types`                                         | `default`                                | 📜 Only the app's own policy may create them                                          |
-| `upgrade-insecure-requests`                             | —                                        | 🔐 Any accidental `http:` URL is upgraded                                             |
+| `upgrade-insecure-requests`                             | No value                                 | 🔐 Any accidental `http:` URL is upgraded                                             |
 
 A `referrer` meta tag sets `strict-origin-when-cross-origin`, and external links use `rel="noreferrer"`.
 
@@ -61,9 +61,9 @@ The only `<script>` without a `src` in `index.html` is the `application/ld+json`
 
 ## 🛂 Trusted Types
 
-With Trusted Types enforced, assigning a string to a dangerous DOM sink — `innerHTML`, `script.src`, `ServiceWorkerContainer.register()` and others — throws. The app never needs HTML strings: React renders every title and note as text.
+With Trusted Types enforced, assigning a string to a dangerous DOM sink such as `innerHTML`, `script.src` or `ServiceWorkerContainer.register()` throws. The app never needs HTML strings: React renders every title and note as text.
 
-The only sink in use is the service worker registration. `shared/lib/trustedTypes.ts` installs a `default` policy that allows exactly one URL — the app's own `sw.js` on the same origin — and rejects everything else:
+The only sink in use is the service worker registration. `shared/lib/trustedTypes.ts` installs a `default` policy that allows exactly one URL, the app's own `sw.js` on the same origin, and rejects everything else:
 
 ```ts
 installScriptUrlPolicy([`${import.meta.env.BASE_URL}sw.js`]);
@@ -85,20 +85,20 @@ installScriptUrlPolicy([`${import.meta.env.BASE_URL}sw.js`]);
 | 🔗 URL parameters          | Only `list`, `action`, `title`, `text` and `url` are read; they become plain text and are removed from the address bar                                                             |
 | 🎨 Preferences             | Every value is checked against the allowed appearances, accents, backgrounds, glass styles, languages, effects and sort orders; a saved project view must name an existing project |
 
-Objects are rebuilt field by field, so unknown properties — including `__proto__` — never reach the store.
+Objects are rebuilt field by field, so unknown properties, including `__proto__`, never reach the store.
 
 ## 🏳️ Flag images
 
 The language picker shows flags from `https://flagcdn.com`, the only third-party origin the app talks to.
 
-- 🖼️ They are plain `<img>` elements — an SVG loaded as an image cannot run scripts or reach the page — and the CSP allows nothing else from that origin.
+- 🖼️ They are plain `<img>` elements (an SVG loaded as an image cannot run scripts or reach the page), and the CSP allows nothing else from that origin.
 - 🕵️ `referrerpolicy="no-referrer"` keeps the app's address out of the requests, and nothing about your tasks is ever sent.
 - 💤 `loading="lazy"` inside closed menus means no request is made until the settings or the palette's language commands are opened; the service worker then serves them from its `flags` cache.
 
 ## 🗄️ Data on the device
 
 - 💾 Tasks, projects and preferences live in `localStorage` of the site's origin and never leave the device.
-- ⬅️ The history entries that let **Back** close sheets carry only a random marker — never task data — and are removed when the sheet closes.
+- ⬅️ The history entries that let **Back** close sheets carry only a random marker, never task data, and are removed when the sheet closes.
 - 🧹 Clearing the site data in the browser removes everything; the error screen offers **Download a backup** first.
 - 🔄 The service worker only caches the app's own files and asks before activating an update.
 

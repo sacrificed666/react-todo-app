@@ -27,7 +27,7 @@ describe("CommandPalette", () => {
   it("navigates options with the arrow keys and closes with Escape", async () => {
     const { user, store } = renderApp();
 
-    await user.click(screen.getByRole("button", { name: "Command palette" }));
+    await user.click(screen.getByRole("button", { name: /^Command palette \(/ }));
     await user.type(combobox(), "sort by");
 
     const options = within(palette()).getAllByRole("option");

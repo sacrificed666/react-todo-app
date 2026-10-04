@@ -199,8 +199,12 @@ With **Full** effects, `shared/lib/refraction.ts` and the `useRefraction()` hook
 
 Things worth knowing:
 
-- 🌐 Only Chromium renders SVG filters inside `backdrop-filter`. The hook enables itself only there (and never when the user prefers reduced transparency); other browsers get the same glass without the lens.
-- ⚠️ Chromium ignores `blur()` when it follows `url()` in a `backdrop-filter` chain, so the mixin always puts `blur()` first.
+> [!NOTE]
+> Only Chromium renders SVG filters inside `backdrop-filter`. The hook enables itself only there (and never when the user prefers reduced transparency); other browsers get the same glass without the lens.
+
+> [!WARNING]
+> Chromium ignores `blur()` when it follows `url()` in a `backdrop-filter` chain, so the mixin always puts `blur()` first. Keep that order when changing the glass mixin.
+
 - 🧬 `--glass-refraction` is registered as a non-inherited custom property, so nested glass never picks up its parent's filter.
 - 🎚️ Strength is tuned per component through `useRefraction(ref, { bezel, scale })`, for example `{ bezel: 22, scale: 44 }` for the tab bar.
 
@@ -248,20 +252,7 @@ Notable interactions:
 
 ## ♿ Accessibility
 
-| Preference                                | Adaptation                                                                                                                                                                                                                                                                   |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🐢 `prefers-reduced-motion: reduce`       | Durations drop to 1 ms, the orbs stop, completion and deletion are instant                                                                                                                                                                                                   |
-| 🌫️ `prefers-reduced-transparency: reduce` | Surfaces become opaque, blur and refraction are disabled, even with Tinted glass                                                                                                                                                                                             |
-| 🌗 `prefers-contrast: more`               | Stronger text, separators and rims, denser glass                                                                                                                                                                                                                             |
-| 🖍️ `forced-colors: active`                | Glass gains a real border, checkboxes use system colours, every selected item (current list, pressed toggle, checked option, chosen colour or day) gets a `Highlight` ring, swatches and background previews keep their colours, and only completed tasks are struck through |
-
-Additionally:
-
-- 🎯 focus is always visible through a 2 px ring, except for text fields that are the only control of their surface (the palette and search inputs), where the surface itself shows the state;
-- ⏭️ a **Skip to tasks** link appears at the top-left on the first <kbd>Tab</kbd>;
-- 👆 touch devices get 40 px hit targets for the row actions, a long press instead of hover menus and no text-selection callout on rows;
-- 🔤 secondary and tertiary text are tuned to pass WCAG AA (4.5:1) on the panels in both appearances (tertiary is 58 % white in dark mode and 64 % ink in light mode), and every accent is tuned separately for light and dark;
-- 🧭 small uppercase headings in the sidebar use secondary text, because they sit on the most see-through glass.
+The design adapts to reduced motion, reduced transparency, increased contrast and forced colours; text is tuned to 4.5:1 on every glass surface. The full list of adaptations and how they are tested is in [Accessibility](./accessibility.md#-preferences).
 
 ## 🖼️ Iconography
 

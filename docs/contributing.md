@@ -6,16 +6,18 @@
 flowchart LR
   Branch[🌿 Branch from main] --> Code[✏️ Change + tests + docs]
   Code --> Check[✅ npm run check]
-  Check --> PR[📬 Pull request]
-  PR --> CI[🔍 CI · 🔬 CodeQL · 🛡️ dependency review]
+  Check --> E2E[🎭 npm run test:e2e]
+  E2E --> PR[📬 Pull request]
+  PR --> CI[🔍 CI · 🎭 E2E · 🔬 CodeQL · 🛡️ dependency review]
   CI --> Merge[🔀 Merge]
   Merge --> Deploy[🚀 Automatic deploy]
 ```
 
 1. 🌿 Create a branch from `main`.
 2. ✅ Make your changes, add tests and run `npm run check`.
-3. 📬 Open a pull request and fill in the checklist from the template.
-4. 🚀 Merge once everything is green. `main` deploys automatically.
+3. 🎭 For anything people see, run `npm run test:e2e` as well: it covers the production build, offline mode, the Content Security Policy, accessibility and the Lighthouse budget.
+4. 📬 Open a pull request and fill in the checklist from the template.
+5. 🚀 Merge once everything is green. `main` deploys automatically.
 
 Bugs and ideas go through the issue forms in `.github/ISSUE_TEMPLATE`; security problems are reported privately as described in the [security policy](../.github/SECURITY.md).
 
@@ -29,7 +31,9 @@ Formatting and linting are automated, so reviews can focus on behaviour.
 
 ### 🚫 No comments
 
-The codebase contains no comments: names, small functions and types carry the intent instead. The rule is enforced by a custom Oxlint plugin in `lint/no-comments.js` (`local/no-comments`), which reports every comment in JavaScript and TypeScript files, including `eslint-disable`-style directives. Styles, configuration, workflow files and templates follow the same convention. If something needs explanation, prefer a better name, an extracted function or documentation in `docs/`.
+> [!IMPORTANT]
+> The codebase contains no comments: names, small functions and types carry the intent instead. A custom Oxlint plugin in `lint/no-comments.js` (`local/no-comments`) reports every comment in JavaScript and TypeScript files, including `eslint-disable`-style directives.
+> Styles, configuration, workflow files and templates follow the same convention. If something needs explanation, prefer a better name, an extracted function or documentation in `docs/`.
 
 ### 🧭 Where code goes
 
@@ -40,21 +44,25 @@ The codebase contains no comments: names, small functions and types carry the in
 | A region composed of several features              | `src/widgets/<Widget>/`                               |
 | A reusable component, hook or helper without state | `src/shared/ui`, `src/shared/hooks`, `src/shared/lib` |
 | Startup, persistence or browser integration        | `src/app/`                                            |
+| A text                                             | Every catalog in `src/features/i18n/model/messages/`  |
+| A browser scenario                                 | `e2e/*.spec.ts`, with helpers in `e2e/helpers.ts`     |
 
-Imports only point downwards: `app → widgets → features → shared`. Features and widgets may use `useAppDispatch`, `useAppSelector` and the store **types** from `@/app`, nothing else. Oxlint reports any other direction.
+> [!WARNING]
+> Imports only point downwards: `app → widgets → features → shared`. Features and widgets may use `useAppDispatch`, `useAppSelector` and the store **types** from `@/app`, nothing else. Oxlint fails the build for any other direction.
 
 ### 📐 Conventions
 
-| Topic               | Convention                                                                                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 🧩 Components       | One folder per component: `ComponentName/ComponentName.tsx` and `ComponentName.module.scss`, arrow functions, default export                     |
-| 🪝 Hooks            | `useSomething.ts` next to the feature that owns it, or in `src/shared/hooks` when it is generic                                                  |
-| 🗃️ Redux            | Past-tense action names (`todoAdded`), pure reducers, timestamps and ids in `prepare` callbacks, side effects in thunks                          |
-| 🌍 Texts            | Never hard-code UI text. Add a key to `en.ts` and `uk.ts` and use `t()`; notifications store `{ key, params }`, see [Localization](./i18n.md)    |
-| 🎨 Styles           | Tokens from `_tokens.scss`, the `glass()`, `hover`, `pressable` and `visually-hidden` mixins, logical properties (`inline-size`, `margin-block`) |
-| 📥 Imports          | Use the `@/` alias for anything outside the current feature, relative paths inside it                                                            |
-| 🏷️ State attributes | Use `data-*` attributes (`data-completed`, `data-leaving`, `data-swipe`) for visual states instead of extra class names                          |
-| 🧪 Tests            | Next to the code as `*.test.ts(x)`; query by role and accessible name                                                                            |
+| Topic               | Convention                                                                                                                                          |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🧩 Components       | One folder per component: `ComponentName/ComponentName.tsx` and `ComponentName.module.scss`, arrow functions, default export                        |
+| 🪝 Hooks            | `useSomething.ts` next to the feature that owns it, or in `src/shared/hooks` when it is generic                                                     |
+| 🗃️ Redux            | Past-tense action names (`todoAdded`), pure reducers, timestamps and ids in `prepare` callbacks, side effects in thunks                             |
+| 🌍 Texts            | Never hard-code UI text. Add a key to all eight catalogs and use `t()`; notifications store `{ key, params }`, see [Localization](./i18n.md)        |
+| 🎨 Styles           | Tokens from `_tokens.scss`, the `glass()`, `hover`, `pressable` and `visually-hidden` mixins, logical properties (`inline-size`, `margin-block`)    |
+| 📥 Imports          | Use the `@/` alias for anything outside the current feature, relative paths inside it                                                               |
+| 🏷️ State attributes | Use `data-*` attributes (`data-completed`, `data-leaving`, `data-swipe`) for visual states instead of extra class names                             |
+| ♿ Names            | Every accessible name contains the visible label; when an `aria-label` adds a counter, keep a space between the label and the counter in the markup |
+| 🧪 Tests            | Next to the code as `*.test.ts(x)`; query by role and accessible name                                                                               |
 
 ### 🫧 Adding a glass surface
 

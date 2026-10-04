@@ -71,6 +71,9 @@ installScriptUrlPolicy([`${import.meta.env.BASE_URL}sw.js`]);
 
 `scripts/build-report.mjs` checks on every CI run that the built `index.html` still contains the policy, enforces Trusted Types and has no inline scripts.
 
+> [!NOTE]
+> The end-to-end test `e2e/security.spec.ts` proves the same in a real browser: a session of adding tasks, opening the settings and the palette produces no console errors and no `securitypolicyviolation` events, and assigning HTML to `innerHTML` throws a `TypeError`.
+
 ## ✅ Input validation
 
 | Input                      | Protection                                                                                                                                                                         |
@@ -110,6 +113,7 @@ flowchart LR
   PR --> CodeQL[🔬 CodeQL<br/>JS/TS and Actions]
   PR --> Verify[🔍 npm ci + npm audit signatures<br/>lint, types, tests]
   PR --> Build[🛠️ Build + build report<br/>CSP, Trusted Types, no inline scripts]
+  PR --> E2E[🎭 End to end<br/>no CSP violations in a real browser]
   Schedule([Every Monday]) --> Dependabot[🤖 Dependabot]
   Schedule --> CodeQL
   Dependabot --> PR
@@ -120,8 +124,12 @@ flowchart LR
 - 🔬 CodeQL scans the TypeScript code and the workflow files with the `security-extended` queries on every push, pull request and weekly.
 - 🔐 Workflows run with a read-only token, checkouts do not persist credentials, and only the deploy job may write to Pages.
 - 🤖 Dependabot proposes npm and GitHub Actions updates every week.
+- 🧾 npm runs dependency install scripts only for packages approved in `allowScripts` in `package.json`; the two that exist (`@parcel/watcher` and `fsevents`, both shipping prebuilt binaries) are denied.
 
 ## ☑️ Checklist for contributors
+
+> [!CAUTION]
+> Trusted Types make any HTML string assignment throw at runtime, in production only. Test new DOM code with `npm run test:e2e`, which runs the production build.
 
 - [ ] Never render user content with `dangerouslySetInnerHTML` or assign HTML strings to the DOM.
 - [ ] Route every new kind of input through a parser that rebuilds the data and caps its size.

@@ -98,7 +98,8 @@ npm run dev          # http://localhost:5173/react-todo-app/
 ```
 
 ```bash
-npm run check        # lint, format check, type check and tests in one go
+npm run check        # lint, format check, type check and unit tests in one go
+npm run test:e2e     # browsers, offline mode, accessibility and Lighthouse on the production build
 npm run build        # production build in dist/
 ```
 
@@ -108,15 +109,16 @@ npm run build        # production build in dist/
 
 Everything else lives in [`docs/`](./docs):
 
-|                                                 |                                                       |
+| Guide                                           | Topics                                                |
 | ----------------------------------------------- | ----------------------------------------------------- |
 | 🏁 [Getting started](./docs/getting-started.md) | Requirements, scripts and project layout              |
 | ✨ [Features](./docs/features.md)               | Everything the app can do, shortcuts and gestures     |
 | 🏗️ [Architecture](./docs/architecture.md)       | Layers, state, undo and redo, persistence and startup |
 | 🎨 [Design system](./docs/design.md)            | Glass surfaces, refraction, backgrounds and motion    |
 | 🌍 [Localization](./docs/i18n.md)               | Messages, plurals, dates and adding a language        |
+| ♿ [Accessibility](./docs/accessibility.md)     | Keyboard, screen readers, contrast modes and checks   |
 | 🛡️ [Security](./docs/security.md)               | CSP, Trusted Types, validation and supply chain       |
-| 🧪 [Testing](./docs/testing.md)                 | Test stack, helpers, conventions and coverage         |
+| 🧪 [Testing](./docs/testing.md)                 | Unit and browser tests, axe, Lighthouse and coverage  |
 | 🚀 [Deployment](./docs/deployment.md)           | CI/CD, CodeQL, GitHub Pages and PWA updates           |
 | 🤝 [Contributing](./docs/contributing.md)       | Workflow, code style and commit conventions           |
 | ❓ [FAQ](./docs/faq.md)                         | Common questions                                      |
@@ -127,14 +129,15 @@ Everything else lives in [`docs/`](./docs):
 
 React 19 with the React Compiler, Redux Toolkit, TypeScript 7, Vite 8 and Sass modules. dnd-kit for
 drag and drop, the self-hosted Montserrat variable font, Vitest 5 with Testing Library, Oxlint and
-Oxfmt. The interface, the calendar and the charts are written by hand, without a UI library.
-Deployed to GitHub Pages by GitHub Actions and scanned by CodeQL.
+Oxfmt, Playwright with axe and Lighthouse. The interface, the calendar and the charts are written by
+hand, without a UI library. Deployed to GitHub Pages by GitHub Actions and scanned by CodeQL.
 
 ## 📌 Good to know
 
-- **Tasks stay in this browser.** They are saved to `localStorage`; use **⋯** → **Export tasks** to back
-  them up or move them to another device.
-- **Clearing site data deletes them.** Export first if you clear your browser's storage.
+> [!WARNING]
+> **Tasks stay in this browser** and clearing its site data deletes them. Use **⋯** → **Export tasks** to
+> back them up or move them to another device.
+
 - **Tabs sync, devices do not.** Changes appear in every open tab of the same browser right away.
 - **Slow computer?** Pick **Reduced** effects or the **Plain** background in the settings.
 - **Edge refraction is Chromium only.** Other browsers get the same glass without the lens effect.

@@ -136,6 +136,7 @@ export default defineConfig({
   ],
   test: {
     environment: "jsdom",
+    include: ["src/**/*.test.{ts,tsx}"],
     setupFiles: ["./src/test/setup.ts"],
     restoreMocks: true,
     unstubGlobals: true,
@@ -145,10 +146,10 @@ export default defineConfig({
       exclude: ["src/app/main.tsx", "src/test/**", "src/**/*.test.{ts,tsx}"],
       reporter: ["text", "html", "json-summary"],
       thresholds: {
-        statements: 88,
+        statements: 90,
         branches: 85,
-        functions: 85,
-        lines: 88,
+        functions: 90,
+        lines: 90,
       },
     },
   },

@@ -125,6 +125,7 @@ const TodoItem = ({
   const editorRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLButtonElement>(null);
   const toggleTimer = useRef(0);
+  const pendingCommit = useRef<(() => boolean) | null>(null);
   const pressTimer = useRef(0);
   const swipeRef = useRef<Swipe | null>(null);
   const suppressClick = useRef(false);
@@ -148,13 +149,20 @@ const TodoItem = ({
   const neighborId = nextId ?? previousId;
   const showProject = project !== undefined && project.id !== viewProjectId;
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    const flushToggle = () => {
+      const toggle = pendingCommit.current;
+      pendingCommit.current = null;
       clearTimeout(toggleTimer.current);
+      toggle?.();
+    };
+    window.addEventListener("pagehide", flushToggle);
+    return () => {
+      window.removeEventListener("pagehide", flushToggle);
+      flushToggle();
       clearTimeout(pressTimer.current);
-    },
-    [],
-  );
+    };
+  }, []);
 
   useEffect(() => {
     if (!editing) return;
@@ -185,8 +193,11 @@ const TodoItem = ({
 
   const commitToggle = () => {
     const origin = centerOf(document.getElementById(toggleId(todo.id)));
+    pendingCommit.current = () => dispatch(toggleTodo(todo.id, today));
     return leave(() => {
-      if (dispatch(toggleTodo(todo.id, today))) celebrate(origin);
+      const toggle = pendingCommit.current;
+      pendingCommit.current = null;
+      if (toggle?.()) celebrate(origin);
     });
   };
 
@@ -196,6 +207,7 @@ const TodoItem = ({
     tap();
 
     if (pendingToggle) {
+      pendingCommit.current = null;
       setPendingToggle(false);
       return;
     }
@@ -206,6 +218,7 @@ const TodoItem = ({
     }
 
     setPendingToggle(true);
+    pendingCommit.current = () => dispatch(toggleTodo(todo.id, today));
     toggleTimer.current = window.setTimeout(() => void commitToggle(), TOGGLE_DELAY);
   };
 

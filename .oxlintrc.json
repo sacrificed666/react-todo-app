@@ -14,7 +14,7 @@
     "browser": true,
     "es2024": true
   },
-  "ignorePatterns": ["dist", "dev-dist", "coverage"],
+  "ignorePatterns": ["dist", "dev-dist", "coverage", "playwright-report", "test-results"],
   "rules": {
     "local/no-comments": "error",
     "eqeqeq": "error",
@@ -93,7 +93,7 @@
   },
   "overrides": [
     {
-      "files": ["vite.config.ts", "lint/**", "scripts/**"],
+      "files": ["vite.config.ts", "lint/**", "scripts/**", "playwright.config.ts", "e2e/**"],
       "env": {
         "node": true
       }

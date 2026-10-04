@@ -40,7 +40,7 @@ const ListNavItem = ({ id, counts, current, onSelect }: ListNavItemProps) => {
         <span className={styles.icon}>
           <Icon name={LIST_ICONS[id]} filled={id === "important"} />
         </span>
-        <span className={styles.label}>{label}</span>
+        <span className={styles.label}>{label}</span>{" "}
         {counts[id] > 0 ? (
           <span
             className={styles.count}

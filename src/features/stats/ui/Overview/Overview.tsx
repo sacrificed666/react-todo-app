@@ -112,15 +112,16 @@ const Overview = () => {
                     type="button"
                     className={styles.project}
                     data-project-color={project.color}
-                    aria-label={`${label}, ${progress}`}
+                    aria-describedby={`${titleId}-${project.id}`}
                     onClick={() => dispatch(listChanged(projectView(project.id)))}
                   >
                     <ProjectIcon name={project.name} color={project.color} size="small" />
-                    <span className={styles.projectName}>{label}</span>
-                    <span className={styles.projectCount} aria-hidden="true">
-                      {done}/{total}
-                    </span>
+                    <span className={styles.projectName}>{label}</span>{" "}
+                    <span className={styles.projectCount}>{`${done}/${total}`}</span>
                     <span className={styles.projectBar} style={{ "--value": done / total }} aria-hidden="true" />
+                    <span id={`${titleId}-${project.id}`} hidden>
+                      {progress}
+                    </span>
                   </button>
                 </li>
               );

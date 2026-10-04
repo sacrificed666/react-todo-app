@@ -18,6 +18,7 @@ interface TodoSearchProps {
 const TodoSearch = ({ inputRef, onClose }: TodoSearchProps) => {
   const dispatch = useAppDispatch();
   const query = useAppSelector(selectQuery);
+  const shortcut = isApplePlatform() ? "⌘K" : "Ctrl K";
   const { t } = useI18n();
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -58,11 +59,11 @@ const TodoSearch = ({ inputRef, onClose }: TodoSearchProps) => {
         <button
           type="button"
           className={styles.hint}
-          aria-label={t("header.palette")}
+          aria-label={`${t("header.palette")} (${shortcut})`}
           aria-keyshortcuts="Meta+K Control+K"
           onClick={() => dispatch(overlayOpened({ kind: "palette" }))}
         >
-          {isApplePlatform() ? "⌘K" : "Ctrl K"}
+          {shortcut}
         </button>
       )}
     </search>

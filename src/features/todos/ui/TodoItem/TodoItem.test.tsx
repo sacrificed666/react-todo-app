@@ -214,3 +214,56 @@ describe("TodoItem context menu", () => {
     vi.useRealTimers();
   });
 });
+
+const withMotion = () =>
+  vi.spyOn(window, "matchMedia").mockImplementation(
+    (query) =>
+      ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener() {},
+        removeListener() {},
+        addEventListener() {},
+        removeEventListener() {},
+        dispatchEvent: () => false,
+      }) satisfies MediaQueryList,
+  );
+const isCompleted = (store: ReturnType<typeof renderApp>["store"], id: string) =>
+  selectTodos(store.getState()).find((todo) => todo.id === id)?.completed;
+
+describe("TodoItem completion with motion", () => {
+  it("saves a completion that is still animating when the page is closed", async () => {
+    withMotion();
+    const { user, store } = renderApp();
+    await user.click(screen.getByRole("checkbox", { name: "Call grandma" }));
+    expect(screen.getByRole("checkbox", { name: "Call grandma" })).toBeChecked();
+    expect(isCompleted(store, "call")).toBe(false);
+
+    act(() => {
+      window.dispatchEvent(new Event("pagehide"));
+    });
+    expect(isCompleted(store, "call")).toBe(true);
+  });
+
+  it("saves a completion that is still animating when another list opens", async () => {
+    withMotion();
+    const { user, store } = renderApp();
+    await user.click(screen.getByRole("checkbox", { name: "Call grandma" }));
+    await user.click(
+      within(screen.getByRole("navigation", { name: "Lists" })).getByRole("button", { name: /^Upcoming/ }),
+    );
+    expect(isCompleted(store, "call")).toBe(true);
+  });
+
+  it("drops a completion that was undone before it was saved", async () => {
+    withMotion();
+    const { user, store } = renderApp();
+    await user.click(screen.getByRole("checkbox", { name: "Call grandma" }));
+    await user.click(screen.getByRole("checkbox", { name: "Call grandma" }));
+    act(() => {
+      window.dispatchEvent(new Event("pagehide"));
+    });
+    expect(isCompleted(store, "call")).toBe(false);
+  });
+});

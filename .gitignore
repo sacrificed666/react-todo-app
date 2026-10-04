@@ -7,6 +7,9 @@ dist
 dist-ssr
 dev-dist
 coverage
+playwright-report
+test-results
+blob-report
 *.local
 
 .vscode

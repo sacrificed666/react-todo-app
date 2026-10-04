@@ -140,10 +140,10 @@ describe("App shell", () => {
     const { user } = renderApp(plannedTodos);
 
     const tabs = screen.getByRole("navigation", { name: "Lists" });
-    expect(within(tabs).getByRole("button", { name: "All tasks (4)" })).toHaveAttribute("aria-current", "page");
+    expect(within(tabs).getByRole("button", { name: "All (4)" })).toHaveAttribute("aria-current", "page");
     expect(within(tabs).getByText("Planned")).toBeInTheDocument();
 
-    await user.click(within(tabs).getByRole("button", { name: "Important (1)" }));
+    await user.click(within(tabs).getByRole("button", { name: "Starred (1)" }));
     expect(screen.getByRole("heading", { level: 1, name: "Important" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Overview" })).toBeInTheDocument();
   });
@@ -163,8 +163,8 @@ describe("Layout", () => {
     ]);
 
     const tags = screen.getByRole("navigation", { name: "Tags" });
-    const work = within(tags).getByRole("button", { name: "Show tasks tagged #work" });
-    expect(work).toHaveTextContent("work2");
+    const work = within(tags).getByRole("button", { name: "Show tasks tagged #work (2)" });
+    expect(work).toHaveTextContent("work 2");
 
     await user.click(work);
     expect(store.getState().view.query).toBe("#work");

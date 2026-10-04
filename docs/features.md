@@ -105,6 +105,9 @@ The target lights up while the task is over it, a glass copy of the task follows
 
 The composer understands a few words at the **end** of the title in all eight languages, whatever language the interface uses, and `@project` anywhere. A ✨ chip shows what it recognised before you press <kbd>Enter</kbd>.
 
+> [!TIP]
+> Phrases work in every language at once, so `Zadzwonić do mamy jutro` is recognised even with the English interface.
+
 | You type                       | You get                                              |
 | ------------------------------ | ---------------------------------------------------- |
 | `Call mom tomorrow`            | **Call mom**, due tomorrow                           |
@@ -365,13 +368,4 @@ Swipes and the long press confirm themselves with a short vibration; releasing a
 
 ## ♿ Accessibility
 
-- ⌨️ Every control is reachable and operable with the keyboard, with a visible focus ring, and a **Skip to tasks** link is the first stop for keyboard users.
-- 🎯 Focus moves to a sensible place after completing, deleting, editing or restoring a task, and dialogs and menus return focus to the place they were opened from.
-- 🏷️ List and project buttons announce their counters, the current one is marked with `aria-current`, toggles expose `aria-pressed`, the palette follows the ARIA combobox pattern and the context menu the menu pattern with `menuitem` and `menuitemradio` roles.
-- 🔊 Notifications, search and palette result counts and drag and drop steps, including drops on the sidebar, are announced through live regions.
-- 🗺️ Landmarks match the layout: the sidebar is the page's banner with a search landmark and three navigations, the task list is the main region, the inspector is complementary and the credits are the footer. Every dialog and the task details have a heading.
-- 🏷️ The browser tab is named after what is open (**Today · Tasks**, **Search · Tasks**, a project's name) in the interface language, so tabs, history and screen readers always say where you are.
-- 🔤 Text on the glass panels meets the WCAG AA contrast ratio of 4.5:1, including small captions and placeholders.
-- 🖍️ In Windows high contrast mode every selected list, option, colour and day keeps a system highlight ring, colour swatches keep their colours and only completed tasks are struck through.
-- 🌗 The interface respects reduced motion, reduced transparency, increased contrast and forced colours preferences, see [Design system](./design.md#-accessibility).
-- ✅ Automated axe audits of the main screens, dialogs, menus, search results and the phone layout report no violations, and Lighthouse scores 100 for accessibility, best practices and SEO.
+Every control works with the keyboard and screen readers, text meets WCAG AA contrast, and the app follows reduced motion, reduced transparency, increased contrast and forced colours preferences. Details and the automated checks are in [Accessibility](./accessibility.md).

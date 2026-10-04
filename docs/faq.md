@@ -4,9 +4,15 @@
 
 In your browser's `localStorage`, on your device only, tasks and projects together. There is no account and no server; the only request to another site loads the language flags from flagcdn.com, without your tasks or even the page address. See [Security](./security.md#️-data-on-the-device).
 
+> [!WARNING]
+> Clearing the site data in your browser deletes your tasks. Use **⋯ → Export tasks** to keep a backup.
+
 ### 📲 How do I move my tasks to another device or browser?
 
 Open **⋯ → Export tasks** on the old device and **⋯ → Import tasks** on the new one. The file contains your tasks and projects. Importing only adds what is not there yet, so it is safe to import the same file twice.
+
+> [!TIP]
+> Tabs of the same browser stay in sync on their own; export and import are only needed between browsers or devices.
 
 ### 📁 What is the difference between projects and tags?
 
@@ -56,10 +62,17 @@ Yes, in the **⋯** menu, in the command palette (<kbd>⌘</kbd>/<kbd>Ctrl</kbd>
 
 Eight are built in: English, Ukrainian, German, Spanish, French, Italian, Dutch and Polish. Adding another one takes a message file and a few lines, see [Localization](./i18n.md#-adding-a-language).
 
+### ♿ Can I use the app with a screen reader or only the keyboard?
+
+Yes. Every control works with the keyboard, lists and buttons announce their counters, notifications are read out, and Windows high contrast, increased contrast, reduced motion and reduced transparency are supported. Automated accessibility checks run on every change, see [Accessibility](./accessibility.md).
+
 ### 🔄 How do I get updates?
 
 The app checks for updates in the background. When one is ready, a notification offers **Reload**; nothing changes until you choose it.
 
 ### 🗑️ How do I delete everything?
 
-Clear the site data in your browser settings. Inside the app, deleting a project removes its tasks, and **Complete all** followed by **Clear completed** removes the rest. Export a backup first if you might need the tasks again.
+Clear the site data in your browser settings. Inside the app, deleting a project removes its tasks, and **Complete all** followed by **Clear completed** removes the rest.
+
+> [!CAUTION]
+> This cannot be undone once the page is closed. Export a backup first if you might need the tasks again.

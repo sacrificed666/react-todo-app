@@ -8,7 +8,8 @@
 | 📦 npm     | 11 or newer (ships with Node 24)                                                              |
 | 🌐 Browser | Any evergreen browser. Chromium-based browsers additionally render the glass refraction layer |
 
-If you use a version manager, run `nvm use` (or `fnm use`) in the project root.
+> [!TIP]
+> With a version manager, run `nvm use` (or `fnm use`) in the project root to switch to the Node.js line from `.nvmrc`.
 
 ## 📦 Install and run
 
@@ -17,26 +18,33 @@ npm ci
 npm run dev
 ```
 
-The dev server prints a local URL. The app is served under the `/react-todo-app/` base path, the same one used on GitHub Pages, so open `http://localhost:5173/react-todo-app/`.
+The dev server prints a local URL.
+
+> [!IMPORTANT]
+> The app is served under the `/react-todo-app/` base path, the same one used on GitHub Pages, so open `http://localhost:5173/react-todo-app/`, not the root of the server.
 
 ## 📜 npm scripts
 
-| Script                  | What it does                                                                 |
-| ----------------------- | ---------------------------------------------------------------------------- |
-| `npm run dev`           | 🔥 Starts the Vite dev server with hot module replacement                    |
-| `npm run build`         | 📦 Type-checks the project and builds the production bundle into `dist/`     |
-| `npm run preview`       | 👀 Serves the production build locally, including the service worker         |
-| `npm run typecheck`     | 🧠 Runs the TypeScript 7 compiler in build mode without emitting files       |
-| `npm run lint`          | 🧹 Lints the code with Oxlint, including type-aware and React Compiler rules |
-| `npm run lint:fix`      | 🩹 Applies the automatic Oxlint fixes                                        |
-| `npm run format`        | 🎨 Formats every supported file with Oxfmt                                   |
-| `npm run format:check`  | 🔎 Fails if a file is not formatted                                          |
-| `npm test`              | 👁️ Starts Vitest in watch mode                                               |
-| `npm run test:run`      | 🧪 Runs the whole test suite once                                            |
-| `npm run test:coverage` | 📊 Runs the tests with V8 coverage and enforces the coverage thresholds      |
-| `npm run check`         | ✅ Lint, format check, type check and tests in one go, run it before pushing |
+| Script                  | What it does                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------- |
+| `npm run dev`           | 🔥 Starts the Vite dev server with hot module replacement                         |
+| `npm run build`         | 📦 Type-checks the project and builds the production bundle into `dist/`          |
+| `npm run preview`       | 👀 Serves the production build locally, including the service worker              |
+| `npm run typecheck`     | 🧠 Runs the TypeScript 7 compiler in build mode without emitting files            |
+| `npm run lint`          | 🧹 Lints the code with Oxlint, including type-aware and React Compiler rules      |
+| `npm run lint:fix`      | 🩹 Applies the automatic Oxlint fixes                                             |
+| `npm run format`        | 🎨 Formats every supported file with Oxfmt                                        |
+| `npm run format:check`  | 🔎 Fails if a file is not formatted                                               |
+| `npm test`              | 👁️ Starts Vitest in watch mode                                                    |
+| `npm run test:run`      | 🧪 Runs the whole test suite once                                                 |
+| `npm run test:coverage` | 📊 Runs the tests with V8 coverage and enforces the coverage thresholds           |
+| `npm run test:e2e`      | 🎭 Builds and previews the app, then runs Playwright, axe and Lighthouse          |
+| `npm run check`         | ✅ Lint, format check, type check and unit tests in one go, run it before pushing |
 
 After `npm run build`, `node scripts/build-report.mjs` prints the bundle sizes and verifies the security headers, exactly as the pipeline does.
+
+> [!TIP]
+> Install the browser for the end-to-end tests once with `npx playwright install chromium`.
 
 ## 🗂️ Project layout
 
@@ -44,12 +52,13 @@ After `npm run build`, `node scripts/build-report.mjs` prints the bundle sizes a
 react-todo-app/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/              Bug report and feature request forms
-│   ├── workflows/ci.yml             CI/CD: verify, build, dependency review, deploy
+│   ├── workflows/ci.yml             CI/CD: verify, build, end-to-end tests, dependency review, deploy
 │   ├── workflows/codeql.yml         CodeQL code scanning
 │   ├── dependabot.yml               Weekly dependency and GitHub Actions updates
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   └── SECURITY.md                  How to report vulnerabilities
 ├── docs/                            This documentation and its screenshots
+├── e2e/                             Playwright specs and their helpers
 ├── lint/no-comments.js              Custom Oxlint rule that forbids comments
 ├── public/                          Favicons, PWA icons, the social preview and the install screenshots, copied as-is
 ├── scripts/                         Coverage summary and build report for the pipeline
@@ -77,6 +86,7 @@ react-todo-app/
 │   └── types/                       Global type declarations
 ├── index.html
 ├── vite.config.ts                   Vite, React Compiler, PWA, CSP and Vitest configuration
+├── playwright.config.ts             Browsers and the preview server for end-to-end tests
 ├── .oxlintrc.json                   Lint rules and layer boundaries
 └── .oxfmtrc.json                    Formatting rules
 ```
@@ -89,6 +99,7 @@ Editor settings are not committed. For the best experience in VS Code, install:
 
 - 🦀 **Oxc**: inline Oxlint diagnostics and Oxfmt formatting on save
 - ⚡ **Vitest**: run and debug tests from the editor
+- 🎭 **Playwright Test for VS Code**: run end-to-end tests and record locators
 - 📝 **EditorConfig**: consistent whitespace settings (`.editorconfig` is part of the repository)
 
 ## 👉 Next steps

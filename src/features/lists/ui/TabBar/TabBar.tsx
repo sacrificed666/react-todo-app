@@ -60,9 +60,12 @@ const TabBar = () => {
           className={styles.tab}
           data-tone={id}
           aria-current={id === list && !browsing && !searching ? "page" : undefined}
-          aria-label={t("lists.counter", { label: t(`lists.${id}`), count: counts[id] })}
+          aria-label={t("lists.counter", { label: t(`lists.${id}.short`), count: counts[id] })}
           onClick={() => select(id)}
         >
+          <span className={styles.label} aria-hidden="true">
+            {t(`lists.${id}.short`)}
+          </span>{" "}
           <span className={styles.icon}>
             <Icon name={LIST_ICONS[id]} filled={id === "important" && id === list} />
             {id === "today" && counts.today > 0 ? (
@@ -70,9 +73,6 @@ const TabBar = () => {
                 {counts.today}
               </span>
             ) : null}
-          </span>
-          <span className={styles.label} aria-hidden="true">
-            {t(`lists.${id}.short`)}
           </span>
         </button>
       ))}

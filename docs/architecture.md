@@ -333,6 +333,10 @@ flowchart LR
 - 🔄 **Cross-tab sync**: a `storage` event from another tab dispatches `dataReplaced`. Because identical values are never rewritten, tabs do not ping-pong updates.
 - 🎨 **Theme before paint**: `main.tsx` calls `applySettings()` before React renders; `useDocumentSync()` keeps `<html lang data-appearance data-accent data-backdrop data-glass data-effects>` and the `theme-color` meta tag in sync afterwards.
 - 🚫 **Unavailable storage**: private modes or blocked storage simply disable persistence; the app keeps working in memory.
+- ⏱️ **Pending completions**: a completed row waits 420 ms before it leaves the list so the check animation can play. If the page is hidden or closed, or the row disappears because another list opened, the pending completion is saved right away, so nothing is lost.
+
+> [!IMPORTANT]
+> The store subscriber writes synchronously after every change. Anything that delays a dispatch, such as an animation, must save its change on `pagehide` and on unmount, the way `TodoItem` does for completions.
 
 ```mermaid
 sequenceDiagram

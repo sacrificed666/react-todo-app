@@ -8,6 +8,7 @@ The app is deployed to **GitHub Pages** at <https://sacrificed666.github.io/reac
 flowchart LR
   Trigger{{"push to main · pull request · manual run"}} --> Verify
   Trigger --> Build
+  Trigger --> E2E
   Trigger -. pull requests only .-> Review[🛡️ Dependency review]
   Trigger --> CodeQL[🔬 CodeQL]
   Weekly{{"every Monday"}} --> CodeQL
@@ -22,22 +23,33 @@ flowchart LR
     B1[npm ci] --> B2[vite build] --> B3[build report] --> B4[Pages artifact]
   end
 
+  subgraph E2E[🎭 e2e]
+    direction TB
+    E1[npm ci] --> E2[Chromium from cache] --> E3[vite build + preview] --> E4[Playwright · axe · Lighthouse]
+  end
+
   Verify --> Deploy[🚀 Deploy to GitHub Pages]
   Build --> Deploy
+  E2E --> Deploy
 ```
 
-| Job                    | Runs on                       | What it does                                                                                                                                 |
-| ---------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🔍 `verify`            | every trigger                 | `npm ci`, `npm audit signatures`, Oxlint with GitHub annotations, Oxfmt check, TypeScript, Vitest with coverage, coverage summary and report |
-| 🛠️ `build`             | every trigger                 | Production build and `scripts/build-report.mjs`; on `main` it also uploads `dist/` as the Pages artifact                                     |
-| 🛡️ `dependency-review` | pull requests                 | Fails the pull request if it introduces dependencies with high-severity vulnerabilities                                                      |
-| 🔬 `analyze` (CodeQL)  | pushes, pull requests, weekly | Scans TypeScript and the workflow files with the `security-extended` query suite                                                             |
-| 🚀 `deploy`            | `main` pushes and manual runs | Waits for `verify` and `build`, then publishes the artifact to the `github-pages` environment                                                |
+| Job                    | Runs on                       | What it does                                                                                                                                                                                                                  |
+| ---------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔍 `verify`            | every trigger                 | `npm ci`, `npm audit signatures`, Oxlint with GitHub annotations, Oxfmt check, TypeScript, Vitest with coverage, coverage summary and report                                                                                  |
+| 🛠️ `build`             | every trigger                 | Production build and `scripts/build-report.mjs`; on `main` it also uploads `dist/` as the Pages artifact                                                                                                                      |
+| 🎭 `e2e`               | every trigger                 | Chromium from a cache keyed by the Playwright version, the production build in `vite preview`, Playwright on desktop and phone, axe, offline, CSP, forced colours, reflow and the Lighthouse budget, with the report uploaded |
+| 🛡️ `dependency-review` | pull requests                 | Fails the pull request if it introduces dependencies with high-severity vulnerabilities                                                                                                                                       |
+| 🔬 `analyze` (CodeQL)  | pushes, pull requests, weekly | Scans TypeScript and the workflow files with the `security-extended` query suite                                                                                                                                              |
+| 🚀 `deploy`            | `main` pushes and manual runs | Waits for `verify`, `build` and `e2e`, then publishes the artifact to the `github-pages` environment                                                                                                                          |
 
 Details:
 
-- ⚡ `verify` and `build` run in parallel, so feedback arrives quickly while deployment still requires both to pass.
+- ⚡ `verify`, `build` and `e2e` run in parallel, so feedback arrives quickly while deployment still requires all three to pass.
 - 📏 The build report lists every file with its gzip size on the run's summary page and **fails** the job if the CSP, Trusted Types, the service worker, the manifest shortcuts or the share target are missing, or if an inline script appears.
+
+> [!IMPORTANT]
+> A failing end-to-end test, accessibility violation or Lighthouse budget blocks the deployment, so a broken page never reaches GitHub Pages.
+
 - 🛑 Pull request runs cancel superseded runs of the same branch; deployments are never cancelled halfway.
 - 🔐 The default token is read-only, checkouts use `persist-credentials: false`, and only the `deploy` job receives `pages: write` and `id-token: write`.
 - 🟢 Node.js is installed from `.nvmrc` and npm downloads are cached.
@@ -48,7 +60,8 @@ Details:
 2. Open **Settings → Code security** and enable **Private vulnerability reporting**, **Dependabot alerts** and **Code scanning** (CodeQL uploads its results there).
 3. Push to `main` or start the workflow manually from the **Actions** tab.
 
-The workflow creates the `github-pages` environment on its first run.
+> [!NOTE]
+> The workflow creates the `github-pages` environment on its first run.
 
 ## 🧭 Base path
 
@@ -123,4 +136,7 @@ Every Dependabot pull request goes through the same pipeline, including the depe
 
 ## 🖐️ Manual deployment
 
-Open **Actions → 🚀 Todo App | CI/CD → Run workflow** and choose `main`. Runs started on other branches verify and build but never deploy.
+Open **Actions → 🚀 Todo App | CI/CD → Run workflow** and choose `main`.
+
+> [!WARNING]
+> Runs started on other branches verify, build and test but never deploy.

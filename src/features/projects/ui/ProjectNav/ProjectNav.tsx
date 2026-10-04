@@ -47,7 +47,7 @@ const ProjectNavItem = ({ project, count, current, onSelect, onKeyDown }: Projec
         onKeyDown={onKeyDown}
       >
         <ProjectIcon name={project.name} color={project.color} />
-        <span className={styles.label}>{label}</span>
+        <span className={styles.label}>{label}</span>{" "}
         {count > 0 ? (
           <span className={styles.count} aria-hidden="true">
             {count}

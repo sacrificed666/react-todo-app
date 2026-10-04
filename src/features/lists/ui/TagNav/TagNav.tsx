@@ -37,14 +37,14 @@ const TagNav = ({ onNavigate }: TagNavProps) => {
                 type="button"
                 className={styles.tag}
                 aria-pressed={active}
-                aria-label={t("todo.tag", { tag })}
+                aria-label={t("lists.counter", { label: t("todo.tag", { tag }), count })}
                 onClick={() => {
                   dispatch(queryChanged(active ? "" : tag));
                   onNavigate?.();
                 }}
               >
                 <Icon name="hash" className={styles.icon} />
-                <span className={styles.name}>{tag.slice(1)}</span>
+                <span className={styles.name}>{tag.slice(1)}</span>{" "}
                 <span className={styles.count} aria-hidden="true">
                   {count}
                 </span>

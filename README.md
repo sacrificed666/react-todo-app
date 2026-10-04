@@ -146,6 +146,12 @@ hand, without a UI library. Deployed to GitHub Pages by GitHub Actions and scann
 
 **[Illia Movchko](https://github.com/sacrificed666)**
 
+## ✨ Credits
+
+- **[dnd-kit](https://dndkit.com)**: dragging tasks to reorder them or drop them on a list or project
+- **[flagcdn](https://flagcdn.com)**: language flags
+- **[Montserrat](https://github.com/JulietaUla/Montserrat)**: the typeface, under the SIL Open Font License
+
 ## 📝 License
 
 Licensed under the **[MIT License](https://choosealicense.com/licenses/mit/)**.

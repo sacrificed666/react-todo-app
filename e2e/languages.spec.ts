@@ -35,7 +35,10 @@ test("switches the language in the settings and remembers it", async ({ page }) 
   await expect(page.locator("html")).toHaveAttribute("lang", "pl");
   await page.getByRole("dialog", { name: "Ustawienia" }).getByRole("button", { name: "Gotowe" }).click();
   await expect(page.getByRole("dialog", { name: "Ustawienia" })).toBeHidden();
-  await page.waitForLoadState("networkidle");
+  await page.waitForFunction(() => {
+    const state: unknown = history.state;
+    return typeof state !== "object" || state === null || !("todoOverlay" in state);
+  });
 
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", "pl");

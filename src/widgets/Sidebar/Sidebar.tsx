@@ -26,12 +26,14 @@ const Credits = () => {
 
   return (
     <footer className={styles.credits}>
-      © {today.slice(0, 4)} {SITE.author.name}
-      <span aria-hidden="true"> · </span>
+      <span>
+        © {today.slice(0, 4)} {SITE.author.name}
+      </span>
+      <span aria-hidden="true">·</span>
       <a className={styles.link} href={SITE.changelog} target="_blank" rel="noreferrer">
         v{SITE.version}
       </a>
-      <span aria-hidden="true"> · </span>
+      <span aria-hidden="true">·</span>
       <a className={styles.link} href={SITE.repository} target="_blank" rel="noreferrer">
         {t("credits.source")}
       </a>

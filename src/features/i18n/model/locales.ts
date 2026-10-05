@@ -1,27 +1,35 @@
-import type { Locale } from "./translate";
+export const LOCALES = ["en", "uk", "cs", "de", "es", "fr", "it", "nl", "pl", "pt"] as const;
 
-export const LOCALE_NAMES: Readonly<Record<Locale, string>> = {
-  en: "English",
-  uk: "Українська",
-  de: "Deutsch",
-  es: "Español",
-  fr: "Français",
-  it: "Italiano",
-  nl: "Nederlands",
-  pl: "Polski",
+export type Locale = (typeof LOCALES)[number];
+
+interface LocaleInfo {
+  name: string;
+  flag: string;
+  intl: string;
+}
+
+export const LOCALE_INFO: Readonly<Record<Locale, LocaleInfo>> = {
+  en: { name: "English", flag: "GB", intl: "en-GB" },
+  uk: { name: "Українська", flag: "UA", intl: "uk-UA" },
+  cs: { name: "Čeština", flag: "CZ", intl: "cs-CZ" },
+  de: { name: "Deutsch", flag: "DE", intl: "de-DE" },
+  es: { name: "Español", flag: "ES", intl: "es-ES" },
+  fr: { name: "Français", flag: "FR", intl: "fr-FR" },
+  it: { name: "Italiano", flag: "IT", intl: "it-IT" },
+  nl: { name: "Nederlands", flag: "NL", intl: "nl-NL" },
+  pl: { name: "Polski", flag: "PL", intl: "pl-PL" },
+  pt: { name: "Português", flag: "PT", intl: "pt-PT" },
 };
 
-const FLAG_CODES: Readonly<Record<Locale, string>> = {
-  en: "gb",
-  uk: "ua",
-  de: "de",
-  es: "es",
-  fr: "fr",
-  it: "it",
-  nl: "nl",
-  pl: "pl",
+export const isLocale = (value: unknown): value is Locale =>
+  typeof value === "string" && (LOCALES as readonly string[]).includes(value);
+
+export const detectLocale = (languages: readonly string[]): Locale => {
+  for (const language of languages) {
+    const primary = language.toLowerCase().split("-")[0];
+    if (isLocale(primary)) return primary;
+  }
+  return "en";
 };
 
-export const FLAG_ORIGIN = "https://flagcdn.com";
-
-export const flagUrl = (locale: Locale) => `${FLAG_ORIGIN}/${FLAG_CODES[locale]}.svg`;
+export const flagUrl = (locale: Locale) => `${import.meta.env.BASE_URL}flags/${LOCALE_INFO[locale].flag}.svg`;

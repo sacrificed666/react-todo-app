@@ -15,6 +15,7 @@ import { useShortcut } from "@/shared/hooks/useShortcut";
 import { useToday } from "@/shared/hooks/useToday";
 import { isPlainKey } from "@/shared/lib/keyboard";
 import { COMPACT_LAYOUT, WIDE_LAYOUT } from "@/shared/lib/media";
+import { SITE } from "@/shared/lib/site";
 import Brand from "@/shared/ui/Brand/Brand";
 
 import styles from "./Sidebar.module.scss";
@@ -25,17 +26,13 @@ const Credits = () => {
 
   return (
     <footer className={styles.credits}>
-      © {today.slice(0, 4)}{" "}
-      <a className={styles.link} href="https://github.com/sacrificed666" target="_blank" rel="noreferrer">
-        Illia Movchko
+      © {today.slice(0, 4)} {SITE.author.name}
+      <span aria-hidden="true"> · </span>
+      <a className={styles.link} href={SITE.changelog} target="_blank" rel="noreferrer">
+        v{SITE.version}
       </a>
       <span aria-hidden="true"> · </span>
-      <a
-        className={styles.link}
-        href="https://github.com/sacrificed666/react-todo-app"
-        target="_blank"
-        rel="noreferrer"
-      >
+      <a className={styles.link} href={SITE.repository} target="_blank" rel="noreferrer">
         {t("credits.source")}
       </a>
     </footer>

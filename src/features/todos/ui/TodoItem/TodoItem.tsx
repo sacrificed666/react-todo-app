@@ -115,7 +115,7 @@ const TodoItem = ({
 }: TodoItemProps) => {
   const dispatch = useAppDispatch();
   const today = useToday();
-  const { t, locale } = useI18n();
+  const { t, intlLocale } = useI18n();
   const store = useAppStore();
   const selected = useAppSelector((state) => selectDetailsId(state) === todo.id);
   const project = useAppSelector((state) =>
@@ -142,7 +142,7 @@ const TodoItem = ({
   });
 
   const checked = pendingToggle ? !todo.completed : todo.completed;
-  const due = todo.dueDate && !hideDueDate ? describeDueDate(todo.dueDate, today, locale) : null;
+  const due = todo.dueDate && !hideDueDate ? describeDueDate(todo.dueDate, today, intlLocale) : null;
   const tags = extractTags(todo.title);
   const title = stripTags(todo.title) || todo.title;
   const checklist = checklistProgress(todo.notes);

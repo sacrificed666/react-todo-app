@@ -1,7 +1,6 @@
 import { cx } from "@/shared/lib/cx";
 
-import { flagUrl } from "../../model/locales";
-import type { Locale } from "../../model/translate";
+import { flagUrl, type Locale } from "../../model/locales";
 
 import styles from "./LocaleFlag.module.scss";
 
@@ -15,11 +14,10 @@ const LocaleFlag = ({ locale, className }: LocaleFlagProps) => (
     className={cx(styles.flag, className)}
     src={flagUrl(locale)}
     alt=""
-    width={20}
-    height={15}
+    width={21}
+    height={14}
     loading="lazy"
     decoding="async"
-    referrerPolicy="no-referrer"
     draggable={false}
   />
 );

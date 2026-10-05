@@ -6,7 +6,7 @@ The app is deployed to **GitHub Pages** at <https://sacrificed666.github.io/reac
 
 ```mermaid
 flowchart LR
-  Trigger{{"push to main · pull request · manual run"}} --> Verify
+  Trigger{{"push · pull request · manual run<br/>main, staging, development"}} --> Verify
   Trigger --> Build
   Trigger --> E2E
   Trigger -. pull requests only .-> Review[🛡️ Dependency review]
@@ -15,12 +15,12 @@ flowchart LR
 
   subgraph Verify[🔍 verify]
     direction TB
-    V1[npm ci] --> V2[npm audit signatures] --> V3[Oxlint] --> V4[Oxfmt] --> V5[TypeScript] --> V6[Vitest + coverage]
+    V1[npm ci] --> V2[npm audit signatures] --> V3[Changelog entry] --> V4[Oxlint] --> V5[Oxfmt] --> V6[TypeScript] --> V7[Vitest + coverage]
   end
 
   subgraph Build[🛠️ build]
     direction TB
-    B1[npm ci] --> B2[vite build] --> B3[build report] --> B4[Pages artifact]
+    B1[npm ci] --> B2[vite build] --> B3[build report] --> B4[Pages or site artifact]
   end
 
   subgraph E2E[🎭 e2e]
@@ -35,12 +35,13 @@ flowchart LR
 
 | Job                    | Runs on                       | What it does                                                                                                                                                                                                                  |
 | ---------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🔍 `verify`            | every trigger                 | `npm ci`, `npm audit signatures`, Oxlint with GitHub annotations, Oxfmt check, TypeScript, Vitest with coverage, coverage summary and report                                                                                  |
-| 🛠️ `build`             | every trigger                 | Production build and `scripts/build-report.mjs`; on `main` it also uploads `dist/` as the Pages artifact                                                                                                                      |
+| 🔍 `verify`            | every trigger                 | `npm ci`, `npm audit signatures`, a changelog section for the current version, Oxlint with GitHub annotations, Oxfmt check, TypeScript, Vitest with coverage, coverage summary and report                                     |
+| 🛠️ `build`             | every trigger                 | Production build and `scripts/build-report.mjs`; on `main` it also uploads `dist/` as the Pages artifact, on `staging` and `development` as the `site-<branch>` artifact                                                      |
 | 🎭 `e2e`               | every trigger                 | Chromium from a cache keyed by the Playwright version, the production build in `vite preview`, Playwright on desktop and phone, axe, offline, CSP, forced colours, reflow and the Lighthouse budget, with the report uploaded |
 | 🛡️ `dependency-review` | pull requests                 | Fails the pull request if it introduces dependencies with high-severity vulnerabilities                                                                                                                                       |
 | 🔬 `analyze` (CodeQL)  | pushes, pull requests, weekly | Scans TypeScript and the workflow files with the `security-extended` query suite                                                                                                                                              |
 | 🚀 `deploy`            | `main` pushes and manual runs | Waits for `verify`, `build` and `e2e`, then publishes the artifact to the `github-pages` environment                                                                                                                          |
+| 🏷️ `release`           | `v*.*.*` tags                 | Checks that the tag matches `package.json` and sits on `main`, then publishes the GitHub release with the notes from `CHANGELOG.md`, see [Releases](./releases.md)                                                            |
 
 Details:
 
@@ -58,7 +59,8 @@ Details:
 
 1. Open **Settings → Pages** and set **Source** to **GitHub Actions**.
 2. Open **Settings → Code security** and enable **Private vulnerability reporting**, **Dependabot alerts** and **Code scanning** (CodeQL uploads its results there).
-3. Push to `main` or start the workflow manually from the **Actions** tab.
+3. Create `development` and `staging`, make `development` the default branch and protect `main` and `staging` as described in [Releases](./releases.md#️-one-time-github-setup).
+4. Push to `main` or start the workflow manually from the **Actions** tab.
 
 > [!NOTE]
 > The workflow creates the `github-pages` environment on its first run.
@@ -87,7 +89,7 @@ The same constant feeds the manifest `id`, `scope`, `start_url`, shortcuts and s
 | 📸 `screenshots`      | A wide (1280 × 800) and a narrow (780 × 1688) screenshot for the richer install dialog     |
 
 - 📦 **Precache**: HTML, JavaScript (including every language chunk), CSS, the Montserrat font files, icons and the backdrop artwork, so the app starts offline after the first visit.
-- 🏳️ **Flags**: images from flagcdn.com are cached cache-first in a `flags` cache (opaque responses allowed, up to 16 entries for a year).
+- 🏳️ **Flags**: the language flags in `public/flags/` are precached with the rest of the app.
 - 🖼️ **Runtime cache**: other images use a cache-first strategy (up to 32 entries for a year).
 - 🧪 The service worker is not active during `npm run dev`. Use `npm run build && npm run preview` to test offline behaviour.
 
@@ -128,6 +130,7 @@ Inside the app, `useDocumentTitle()` names the tab after the open list in the in
 
 `.github/dependabot.yml` checks for updates every Monday:
 
+- 🌱 pull requests target `development`, so updates reach GitHub Pages with the next release;
 - 📦 npm minor and patch updates are grouped into one pull request for production and one for development dependencies; major updates arrive separately;
 - ⚙️ GitHub Actions updates are grouped into a single pull request;
 - 📝 commit messages follow the project convention (`chore(deps): …`, `ci(deps): …`).

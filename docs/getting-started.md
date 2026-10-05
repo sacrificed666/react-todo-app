@@ -25,21 +25,22 @@ The dev server prints a local URL.
 
 ## 📜 npm scripts
 
-| Script                  | What it does                                                                      |
-| ----------------------- | --------------------------------------------------------------------------------- |
-| `npm run dev`           | 🔥 Starts the Vite dev server with hot module replacement                         |
-| `npm run build`         | 📦 Type-checks the project and builds the production bundle into `dist/`          |
-| `npm run preview`       | 👀 Serves the production build locally, including the service worker              |
-| `npm run typecheck`     | 🧠 Runs the TypeScript 7 compiler in build mode without emitting files            |
-| `npm run lint`          | 🧹 Lints the code with Oxlint, including type-aware and React Compiler rules      |
-| `npm run lint:fix`      | 🩹 Applies the automatic Oxlint fixes                                             |
-| `npm run format`        | 🎨 Formats every supported file with Oxfmt                                        |
-| `npm run format:check`  | 🔎 Fails if a file is not formatted                                               |
-| `npm test`              | 👁️ Starts Vitest in watch mode                                                    |
-| `npm run test:run`      | 🧪 Runs the whole test suite once                                                 |
-| `npm run test:coverage` | 📊 Runs the tests with V8 coverage and enforces the coverage thresholds           |
-| `npm run test:e2e`      | 🎭 Builds and previews the app, then runs Playwright, axe and Lighthouse          |
-| `npm run check`         | ✅ Lint, format check, type check and unit tests in one go, run it before pushing |
+| Script                  | What it does                                                                       |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `npm run dev`           | 🔥 Starts the Vite dev server with hot module replacement                          |
+| `npm run build`         | 📦 Type-checks the project and builds the production bundle into `dist/`           |
+| `npm run preview`       | 👀 Serves the production build locally, including the service worker               |
+| `npm run typecheck`     | 🧠 Runs the TypeScript 7 compiler in build mode without emitting files             |
+| `npm run lint`          | 🧹 Lints the code with Oxlint, including type-aware and React Compiler rules       |
+| `npm run lint:fix`      | 🩹 Applies the automatic Oxlint fixes                                              |
+| `npm run format`        | 🎨 Formats every supported file with Oxfmt                                         |
+| `npm run format:check`  | 🔎 Fails if a file is not formatted                                                |
+| `npm test`              | 👁️ Starts Vitest in watch mode                                                     |
+| `npm run test:run`      | 🧪 Runs the whole test suite once                                                  |
+| `npm run test:coverage` | 📊 Runs the tests with V8 coverage and enforces the coverage thresholds            |
+| `npm run test:e2e`      | 🎭 Builds and previews the app, then runs Playwright, axe and Lighthouse           |
+| `npm run flags`         | 🏳️ Copies the flag of every language from `country-flag-icons` into `public/flags` |
+| `npm run check`         | ✅ Lint, format check, type check and unit tests in one go, run it before pushing  |
 
 After `npm run build`, `node scripts/build-report.mjs` prints the bundle sizes and verifies the security headers, exactly as the pipeline does.
 
@@ -54,14 +55,15 @@ react-todo-app/
 │   ├── ISSUE_TEMPLATE/              Bug report and feature request forms
 │   ├── workflows/ci.yml             CI/CD: verify, build, end-to-end tests, dependency review, deploy
 │   ├── workflows/codeql.yml         CodeQL code scanning
+│   ├── workflows/release.yml        GitHub release for every version tag
 │   ├── dependabot.yml               Weekly dependency and GitHub Actions updates
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   └── SECURITY.md                  How to report vulnerabilities
 ├── docs/                            This documentation and its screenshots
 ├── e2e/                             Playwright specs and their helpers
 ├── lint/no-comments.js              Custom Oxlint rule that forbids comments
-├── public/                          Favicons, PWA icons, the social preview and the install screenshots, copied as-is
-├── scripts/                         Coverage summary and build report for the pipeline
+├── public/                          Favicons, PWA icons, language flags, the social preview and the install screenshots
+├── scripts/                         Flag sync, release notes, the coverage summary and the build report
 ├── src/
 │   ├── app/                         Entry point, App shell, store, persistence, launch intents, PWA, back button, error screen
 │   ├── widgets/                     Sidebar, Toolbar (phones), Workspace, Inspector, Backdrop
@@ -74,16 +76,17 @@ react-todo-app/
 │   │   ├── commands/                Shared task commands; the ⋯ menu and the ⌘K palette
 │   │   ├── search/                  Search field
 │   │   ├── settings/                Appearance, accent, background, glass, language and effects; the settings dialog
-│   │   ├── i18n/                    Messages in eight languages, the lazy catalog, names, flags, week starts and the translator
+│   │   ├── i18n/                    Messages in ten languages, the lazy catalog, names, flags, Intl tags, week starts and the translator
 │   │   └── notifications/           Toast state, the Toaster and the offline badge
 │   ├── shared/
 │   │   ├── ui/                      Icon, IconButton, Checkbox, Popover, Dialog, ContextMenu, Calendar, SwatchPicker, SegmentedControl, ProgressBar, EmptyState, Brand
 │   │   ├── hooks/                   Refraction, effects level, shortcuts, media queries, scroll position, online status, app badge, today, pointer light
-│   │   ├── lib/                     Dates and calendars, keyboard, fuzzy search, storage, motion, refraction, effects, haptics, confetti, Trusted Types
+│   │   ├── lib/                     Dates and calendars, keyboard, fuzzy search, storage, motion, refraction, effects, haptics, confetti, Trusted Types, site details
 │   │   ├── styles/                  Design tokens, accent and background palettes, glass and menu mixins, global styles
 │   │   └── assets/                  Flow-lines artwork used by the backdrop
 │   ├── test/                        Test setup, polyfills, factories and render helpers
 │   └── types/                       Global type declarations
+├── CHANGELOG.md                     Every release, newest first
 ├── index.html
 ├── vite.config.ts                   Vite, React Compiler, PWA, CSP and Vitest configuration
 ├── playwright.config.ts             Browsers and the preview server for end-to-end tests

@@ -7,7 +7,7 @@
 | ⚛️ UI            | React 19.3 with the React Compiler (automatic memoization)                                                             |
 | 🗃️ State         | Redux Toolkit 2.13 and React Redux 9.3, with a custom history reducer for undo and redo                                |
 | 🖐️ Drag and drop | dnd-kit (core, sortable) with a drag overlay, sidebar drop targets, keyboard support and screen reader announcements   |
-| 🌍 i18n          | Eight languages on top of `Intl` (plural rules, dates, relative time, week info), lazy-loaded per language             |
+| 🌍 i18n          | Ten languages on top of `Intl` (plural rules, dates, relative time, week info), lazy-loaded per language               |
 | 🎨 Styling       | Sass modules, CSS custom properties, `@property`, `@starting-style`, container queries, anchor positioning, Montserrat |
 | ⚡ Build         | Vite 8 (Rolldown), `@vitejs/plugin-react` 6, `vite-plugin-pwa`                                                         |
 | 🔷 Language      | TypeScript 7 (native compiler) in strict mode with `noUncheckedIndexedAccess`                                          |
@@ -40,18 +40,18 @@ flowchart TB
 | ✨ Features | `src/features` | One folder per capability with a `model/` (state, logic) and a `ui/` (components)                                       | other features, shared, `@/app/hooks`, store types        |
 | 🧰 Shared   | `src/shared`   | Store-agnostic UI primitives, hooks, helpers and styles                                                                 | shared only                                               |
 
-| Feature            | Model                                                                                                                         | UI                                                                                                                                                                |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ `todos`         | `Todo` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, checklists       | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker` |
-| 📁 `projects`      | `Project` model with colours and emoji icons, slice, selectors, `createProject()` and `deleteProject()`                       | `ProjectNav`, `ProjectDialog`, `ProjectPicker`, `ProjectIcon`                                                                                                     |
-| 📚 `lists`         | Smart lists and project views (`ViewId`), date groups, sort orders, view slice with overlays, `useViewInfo()`, list shortcuts | `ListNav`, `TagNav`, `TabBar`, `ListsSheet`, `ListHeader`, `SortMenu`                                                                                             |
-| 💾 `data`          | The stored document (`parseData`, `serializeData`), import and export, `dataReplaced` and `dataImported`, undo history        | None                                                                                                                                                              |
-| 🔎 `search`        | None                                                                                                                          | `TodoSearch`                                                                                                                                                      |
-| 📊 `stats`         | The 7-day activity, streak and project progress selectors                                                                     | `Overview`                                                                                                                                                        |
-| ⌘ `commands`       | `useTaskCommands()` shared by both menus, command ranking                                                                     | `ActionsMenu`, `CommandPalette`                                                                                                                                   |
-| 🎨 `settings`      | Appearance, accent, background, glass, language and effects, `changeLocale()`, document sync                                  | `SettingsDialog`, `SettingsButton`                                                                                                                                |
-| 🌍 `i18n`          | Typed messages for eight languages, the lazy catalog, native names and flags, `translate()`, `useI18n()`, `useWeekStart()`    | `LocaleFlag`                                                                                                                                                      |
-| 🔔 `notifications` | Toast slice and message formatting                                                                                            | `Toaster`, `OfflineBadge`                                                                                                                                         |
+| Feature            | Model                                                                                                                                                    | UI                                                                                                                                                                |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ✅ `todos`         | `Todo` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, checklists                                  | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker` |
+| 📁 `projects`      | `Project` model with colours and emoji icons, slice, selectors, `createProject()` and `deleteProject()`                                                  | `ProjectNav`, `ProjectDialog`, `ProjectPicker`, `ProjectIcon`                                                                                                     |
+| 📚 `lists`         | Smart lists and project views (`ViewId`), date groups, sort orders, view slice with overlays, `useViewInfo()`, list shortcuts                            | `ListNav`, `TagNav`, `TabBar`, `ListsSheet`, `ListHeader`, `SortMenu`                                                                                             |
+| 💾 `data`          | The stored document (`parseData`, `serializeData`), import and export, `dataReplaced` and `dataImported`, undo history                                   | None                                                                                                                                                              |
+| 🔎 `search`        | None                                                                                                                                                     | `TodoSearch`                                                                                                                                                      |
+| 📊 `stats`         | The 7-day activity, streak and project progress selectors                                                                                                | `Overview`                                                                                                                                                        |
+| ⌘ `commands`       | `useTaskCommands()` shared by both menus, command ranking                                                                                                | `ActionsMenu`, `CommandPalette`                                                                                                                                   |
+| 🎨 `settings`      | Appearance, accent, background, glass, language and effects, `changeLocale()`, document sync                                                             | `SettingsDialog`, `SettingsButton`                                                                                                                                |
+| 🌍 `i18n`          | Typed messages for ten languages, the lazy catalog, `LOCALE_INFO` with native names, flags and `Intl` tags, `translate()`, `useI18n()`, `useWeekStart()` | `LocaleFlag`                                                                                                                                                      |
+| 🔔 `notifications` | Toast slice and message formatting                                                                                                                       | `Toaster`, `OfflineBadge`                                                                                                                                         |
 
 ## 🔀 Data flow
 
@@ -223,7 +223,7 @@ Action names follow the Redux style guide and describe events in the past tense.
 |            | `accentChanged`              | Selects one of ten accents                                                                    |
 |            | `backdropChanged`            | Selects one of six backgrounds                                                                |
 |            | `glassChanged`               | Selects clear or tinted glass                                                                 |
-|            | `localeChanged`              | Selects one of eight languages                                                                |
+|            | `localeChanged`              | Selects one of ten languages                                                                  |
 |            | `effectsChanged`             | Selects Auto, Full or Reduced effects                                                         |
 | `toast`    | `toastShown`                 | Shows a notification with a tone and an optional action                                       |
 |            | `toastDismissed`             | Hides the notification if its id still matches                                                |
@@ -311,7 +311,7 @@ flowchart LR
 ```
 
 - 📁 Mentions match the full project name or the name without its emoji, case- and accent-insensitively with `localeCompare(…, { sensitivity: "base" })`, and must end at a space or the end of the text, so `anna@work.com` and `@workshop` stay untouched. The longest matching name wins, so `@trip to lviv` beats `@trip`.
-- 📅 `parseDatePhrase()` and `parseRepeatPhrase()` understand phrases in all eight languages, validate calendar dates and roll `dd.mm` over to the next year when the date has passed. The full list is in [Features](./features.md#-quick-add).
+- 📅 `parseDatePhrase()` and `parseRepeatPhrase()` understand phrases in all ten languages, validate calendar dates and roll `dd.mm` over to the next year when the date has passed. The full list is in [Features](./features.md#-quick-add).
 
 ## 🗂️ Date groups
 
@@ -441,7 +441,7 @@ App
 ├── titlebar                 Draggable strip in Window Controls Overlay mode
 ├── TaskDnd                  One DndContext for the list and the sidebar, with a drag overlay
 │   ├── Toolbar              Phones: brand, condensed title, 🔍, settings and ⋯ in a glass capsule
-│   ├── Sidebar              Desktop: a <header> banner panel; overview and a <footer> with the credits below it
+│   ├── Sidebar              Desktop: a <header> banner panel; overview and a <footer> with the author, version and source below it
 │   │   ├── Brand, SettingsButton, ActionsMenu, OfflineBadge
 │   │   ├── TodoSearch       Search field with the ⌘K palette button, / shortcut
 │   │   ├── ListNav          Smart lists with counters, drop targets

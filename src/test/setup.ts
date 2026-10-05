@@ -3,7 +3,7 @@ import { cleanup } from "@testing-library/react";
 import { afterEach } from "vitest";
 
 import { loadMessages } from "@/features/i18n/model/catalog";
-import { LOCALES } from "@/features/i18n/model/translate";
+import { LOCALES } from "@/features/i18n/model/locales";
 
 import { installDialogPolyfill } from "./dialog";
 import { installPopoverPolyfill } from "./popover";

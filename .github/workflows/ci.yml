@@ -2,8 +2,9 @@ name: 🚀 Todo App | CI/CD
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "staging", "development"]
   pull_request:
+    branches: ["main", "staging", "development"]
   workflow_dispatch:
 
 permissions:
@@ -35,6 +36,9 @@ jobs:
 
       - name: 🔏 NPM | Verify registry signatures
         run: npm audit signatures
+
+      - name: 🏷️ Release | Check the version and its changelog entry
+        run: node scripts/release-notes.mjs > /dev/null
 
       - name: 🧹 Oxlint | Lint code
         run: npm run lint -- --format github
@@ -84,6 +88,14 @@ jobs:
 
       - name: 📏 Build | Verify output and report bundle size
         run: node scripts/build-report.mjs >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 📤 Build | Upload the site of staging and development
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/development')
+        uses: actions/upload-artifact@v7
+        with:
+          name: site-${{ github.ref_name }}
+          path: dist
+          retention-days: 14
 
       - name: ⚙️ Pages | Configure GitHub Pages
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'

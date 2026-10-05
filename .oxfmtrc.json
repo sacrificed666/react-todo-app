@@ -2,5 +2,5 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "printWidth": 120,
   "sortImports": true,
-  "ignorePatterns": ["dist", "dev-dist", "coverage", "package-lock.json"]
+  "ignorePatterns": ["dist", "dev-dist", "coverage", "playwright-report", "test-results", "package-lock.json"]
 }

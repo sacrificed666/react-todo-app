@@ -35,7 +35,13 @@ describe("App shell", () => {
     expect(within(banner).getByRole("link", { name: "Tasks, home page" })).toHaveTextContent("Tasks");
     expect(within(banner).getByRole("searchbox", { name: "Search tasks" })).toHaveAttribute("aria-keyshortcuts", "/");
     expect(within(banner).getByRole("navigation", { name: "Projects" })).toBeInTheDocument();
-    expect(within(screen.getByRole("contentinfo")).getByRole("link", { name: "Source code" })).toBeInTheDocument();
+    const footer = screen.getByRole("contentinfo");
+    expect(within(footer).getByRole("link", { name: "Source code" })).toBeInTheDocument();
+    expect(within(footer).getByRole("link", { name: "v1.0.0" })).toHaveAttribute(
+      "href",
+      "https://github.com/sacrificed666/react-todo-app/blob/main/CHANGELOG.md",
+    );
+    expect(within(footer).queryByRole("link", { name: "Illia Movchko" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "All tasks" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Lists" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Today (2)" })).toBeInTheDocument();
@@ -150,9 +156,10 @@ describe("App shell", () => {
 });
 
 describe("Layout", () => {
-  it("shows no version number anywhere", () => {
+  it("shows the version once, in the footer", () => {
     renderApp();
-    expect(document.body).not.toHaveTextContent(/v\d+\.\d+\.\d+/);
+    expect(screen.getAllByText(/^v\d+\.\d+\.\d+$/u)).toHaveLength(1);
+    expect(within(screen.getByRole("contentinfo")).getByText("v1.0.0")).toBeInTheDocument();
   });
 
   it("filters by tag from the sidebar", async () => {

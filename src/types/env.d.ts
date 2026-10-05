@@ -7,3 +7,7 @@ interface TrustedTypePolicyFactory {
 }
 
 declare var trustedTypes: TrustedTypePolicyFactory | undefined;
+
+interface ImportMetaEnv {
+  readonly APP_VERSION: string;
+}

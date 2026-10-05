@@ -1,4 +1,4 @@
-import { detectLocale, isLocale, type Locale } from "@/features/i18n/model/translate";
+import { detectLocale, isLocale, type Locale } from "@/features/i18n/model/locales";
 import { prefersRichEffects, setEffectsLevel, type EffectsLevel } from "@/shared/lib/effects";
 import { isRecord } from "@/shared/lib/guards";
 

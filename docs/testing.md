@@ -31,10 +31,10 @@ The HTML coverage report is written to `coverage/index.html`, the Playwright rep
 
 ```mermaid
 flowchart TB
-  E2E["🎭 End to end<br/>tasks, reloads, tabs, shortcuts, languages, CSP and Trusted Types, offline, axe, forced colours, reflow, Lighthouse"]
-  UI["🖥️ UI flows · ~85 tests<br/>App, layouts, projects, planning, palette, context menu, calendar, details, rows, composer, back button"]
-  Model["🧠 Model · ~200 tests<br/>slices, history, projects, data document, repeats, groups, selectors, thunks, drag and drop, quick add in 8 languages"]
-  Lib["🧰 Shared helpers · ~30 tests<br/>dates and calendars, keyboard, fuzzy search, refraction, Trusted Types"]
+  E2E["🎭 End to end · ~20 tests per screen<br/>tasks, reloads, tabs, shortcuts, languages, CSP and Trusted Types, offline, axe, forced colours, reflow, Lighthouse"]
+  UI["🖥️ UI flows · ~88 tests<br/>App, layouts, projects, planning, palette, context menu, calendar, details, rows, composer, back button"]
+  Model["🧠 Model · ~202 tests<br/>slices, history, projects, data document, repeats, groups, selectors, thunks, drag and drop, quick add in 10 languages"]
+  Lib["🧰 Shared helpers · ~32 tests<br/>dates and calendars, keyboard, fuzzy search, refraction, Trusted Types"]
   E2E --> UI --> Model --> Lib
 ```
 
@@ -96,7 +96,6 @@ Tests sit next to the code they cover as `*.test.ts(x)`:
 flowchart LR
   PW[🎭 Playwright] -->|"npm run build && npm run preview"| App["🖥️ Vite preview<br/>localhost:4173/react-todo-app/"]
   PW -->|desktop and Pixel 7| App
-  PW -->|"route()"| Flags["🏳️ flagcdn.com stub"]
 ```
 
 `playwright.config.ts` builds the app and serves it with `vite preview` under the real base path, so the tests see the same files as GitHub Pages, with the injected Content Security Policy and the service worker.
@@ -107,7 +106,7 @@ flowchart LR
 | Spec                       | Checks                                                                                                                                              |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ✅ `tasks.spec.ts`         | Quick add, tasks kept after a reload, completing with undo, a completion saved while it is still animating, tab sync, app shortcuts and shared text |
-| 🌍 `languages.spec.ts`     | Starting in the browser's language, switching in the settings and keeping it after a reload                                                         |
+| 🌍 `languages.spec.ts`     | Starting in the browser's language (Ukrainian and Czech, with a Czech quick add), switching in the settings and keeping it after a reload           |
 | 🛡️ `security.spec.ts`      | No console errors or CSP violations during a session, the policy in place and Trusted Types blocking `innerHTML`                                    |
 | ✈️ `offline.spec.ts`       | The service worker takes over, and the app reloads and accepts new tasks without a network                                                          |
 | ♿ `accessibility.spec.ts` | axe on the main views, dialogs and the palette in both appearances and in Ukrainian, forced colours and reflow at 320 px                            |

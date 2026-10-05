@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { Locale } from "@/features/i18n/model/translate";
+import type { Locale } from "@/features/i18n/model/locales";
 
 import { DEFAULT_SETTINGS, type Effects } from "./settings";
 import type { Accent, Appearance, Backdrop, GlassStyle } from "./theme";

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { openPalette, runCommand, seed, stubFlags } from "./helpers";
+import { openPalette, runCommand, seed } from "./helpers";
 
 test("runs without console errors or policy violations", async ({ page }) => {
   const problems: string[] = [];
@@ -15,7 +15,6 @@ test("runs without console errors or policy violations", async ({ page }) => {
       violations.push(`${event.violatedDirective} ${event.blockedURI}`);
     });
   });
-  await stubFlags(page);
   await seed(page);
 
   await page.goto("./");

@@ -2,8 +2,7 @@ import { useEffect, useId, useState, type KeyboardEvent } from "react";
 import { flushSync } from "react-dom";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { LOCALE_NAMES } from "@/features/i18n/model/locales";
-import { LOCALES, type Locale } from "@/features/i18n/model/translate";
+import { LOCALE_INFO, LOCALES, type Locale } from "@/features/i18n/model/locales";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import LocaleFlag from "@/features/i18n/ui/LocaleFlag/LocaleFlag";
 import { LIST_ICONS } from "@/features/lists/model/listIcons";
@@ -80,7 +79,7 @@ const optionId = (listboxId: string, commandId: string) => `${listboxId}-${comma
 const PaletteContent = () => {
   const dispatch = useAppDispatch();
   const today = useToday();
-  const { t, locale } = useI18n();
+  const { t, intlLocale } = useI18n();
   const listboxId = useId();
   const list = useAppSelector(selectList);
   const sort = useAppSelector(selectSort);
@@ -134,7 +133,7 @@ const PaletteContent = () => {
           label: todo.title,
           keywords: todo.notes,
           icon: todo.completed ? "circleCheck" : todo.important ? "star" : "list",
-          hint: todo.dueDate ? describeDueDate(todo.dueDate, today, locale).label : undefined,
+          hint: todo.dueDate ? describeDueDate(todo.dueDate, today, intlLocale).label : undefined,
           run: () => dispatch(detailsOpened(todo.id)),
         }))
     : [];
@@ -226,7 +225,7 @@ const PaletteContent = () => {
     ...LOCALES.map((code): Command => ({
       id: `locale-${code}`,
       group: "language",
-      label: t("palette.locale", { language: LOCALE_NAMES[code] }),
+      label: t("palette.locale", { language: LOCALE_INFO[code].name }),
       keywords: `language ${code}`,
       icon: "globe",
       flag: code,

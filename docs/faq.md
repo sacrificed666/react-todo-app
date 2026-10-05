@@ -2,7 +2,7 @@
 
 ### 💾 Where are my tasks stored?
 
-In your browser's `localStorage`, on your device only, tasks and projects together. There is no account and no server; the only request to another site loads the language flags from flagcdn.com, without your tasks or even the page address. See [Security](./security.md#️-data-on-the-device).
+In your browser's `localStorage`, on your device only, tasks and projects together. There is no account and no server, and the app never talks to another site: even the language flags come from the app itself. See [Security](./security.md#️-data-on-the-device).
 
 > [!WARNING]
 > Clearing the site data in your browser deletes your tasks. Use **⋯ → Export tasks** to keep a backup.
@@ -44,7 +44,7 @@ Yes. Right-click a task, press and hold it on a phone or press <kbd>⇧</kbd>+<k
 
 ### ⚡ Which words does quick add understand?
 
-Dates like `tomorrow`, `next friday`, `in 3 days`, `20.10` and their equivalents in all eight languages (`morgen`, `mañana`, `demain`, `domani`, `jutro`…), repeats like `every monday` or `щотижня`, `!` for important at the end of the title and `@project` anywhere in it. The full list is in [Features](./features.md#-quick-add).
+Dates like `tomorrow`, `next friday`, `in 3 days`, `20.10` and their equivalents in all ten languages (`morgen`, `mañana`, `demain`, `domani`, `jutro`, `zítra`, `amanhã`…), repeats like `every monday` or `щотижня`, `!` for important at the end of the title and `@project` anywhere in it. The full list is in [Features](./features.md#-quick-add).
 
 ### 🔁 How do repeating tasks work?
 
@@ -60,7 +60,7 @@ Yes, in the **⋯** menu, in the command palette (<kbd>⌘</kbd>/<kbd>Ctrl</kbd>
 
 ### 🌍 Can I use the app in another language?
 
-Eight are built in: English, Ukrainian, German, Spanish, French, Italian, Dutch and Polish. Adding another one takes a message file and a few lines, see [Localization](./i18n.md#-adding-a-language).
+Ten are built in: English, Ukrainian, Czech, German, Spanish, French, Italian, Dutch, Polish and Portuguese. Adding another one takes a message file and a few lines, see [Localization](./i18n.md#-adding-a-language).
 
 ### ♿ Can I use the app with a screen reader or only the keyboard?
 

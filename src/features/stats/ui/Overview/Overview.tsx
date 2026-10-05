@@ -27,7 +27,7 @@ interface Stat {
 const Overview = () => {
   const dispatch = useAppDispatch();
   const today = useToday();
-  const { t, locale } = useI18n();
+  const { t, intlLocale } = useI18n();
   const counts = useAppSelector((state) => selectListCounts(state, today));
   const { days, streak } = useAppSelector((state) => selectActivity(state, today));
   const projects = useAppSelector(selectProjectProgress);
@@ -85,7 +85,7 @@ const Overview = () => {
       </div>
       <ol className={styles.chart}>
         {days.map(({ day, count }) => {
-          const weekday = formatWeekdayShort(day, locale);
+          const weekday = formatWeekdayShort(day, intlLocale);
           return (
             <li key={day} className={styles.day} data-today={day === today ? "" : undefined}>
               <span className={styles.bar} style={{ "--value": count / busiest }} aria-hidden="true">

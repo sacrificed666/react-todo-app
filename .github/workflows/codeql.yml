@@ -2,8 +2,9 @@ name: 🛡️ Todo App | CodeQL
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "staging", "development"]
   pull_request:
+    branches: ["main", "staging", "development"]
   schedule:
     - cron: "24 5 * * 1"
   workflow_dispatch:

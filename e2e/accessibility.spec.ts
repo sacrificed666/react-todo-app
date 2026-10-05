@@ -1,11 +1,11 @@
 import { AxeBuilder } from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-import { openPalette, preferences, runCommand, seed, stubFlags } from "./helpers";
+import { openPalette, preferences, runCommand, seed } from "./helpers";
 
 test.use({ reducedMotion: "reduce" });
 
-async function violations(page: Page) {
+const violations = async (page: Page) => {
   await expect(page.getByRole("main")).toBeVisible();
   const results = await new AxeBuilder({ page })
     .options({ rules: { "label-content-name-mismatch": { enabled: true } } })
@@ -14,17 +14,15 @@ async function violations(page: Page) {
     rule: violation.id,
     targets: violation.nodes.map((node) => node.target.join(" ")),
   }));
-}
+};
 
-function emphasis(locator: Locator): Promise<string> {
-  return locator.evaluate((element) => {
+const emphasis = (locator: Locator): Promise<string> =>
+  locator.evaluate((element) => {
     const style = getComputedStyle(element);
     return [style.backgroundColor, style.outlineStyle, style.outlineColor, style.borderColor].join(" ");
   });
-}
 
 test.beforeEach(async ({ page }) => {
-  await stubFlags(page);
   await seed(page);
 });
 

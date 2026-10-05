@@ -1,8 +1,7 @@
 import { useId, type ReactNode } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { LOCALE_NAMES } from "@/features/i18n/model/locales";
-import { LOCALES } from "@/features/i18n/model/translate";
+import { LOCALE_INFO, LOCALES } from "@/features/i18n/model/locales";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import LocaleFlag from "@/features/i18n/ui/LocaleFlag/LocaleFlag";
 import { selectOverlayKind } from "@/features/lists/model/selectors";
@@ -133,7 +132,7 @@ const SettingsContent = () => {
               />
               <LocaleFlag locale={code} />
               <span className={styles.languageName} lang={code}>
-                {LOCALE_NAMES[code]}
+                {LOCALE_INFO[code].name}
               </span>
               <Icon name="check" className={styles.languageCheck} />
             </label>

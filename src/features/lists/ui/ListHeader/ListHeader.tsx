@@ -20,7 +20,7 @@ export const LIST_TITLE_ID = "list-title";
 const ListHeader = () => {
   const dispatch = useAppDispatch();
   const today = useToday();
-  const { t, locale } = useI18n();
+  const { t, intlLocale } = useI18n();
   const view = useViewInfo();
   const { done, total } = useAppSelector((state) => selectListProgress(state, today));
   const results = useAppSelector((state) => {
@@ -51,7 +51,7 @@ const ListHeader = () => {
             {view.kind === "search" ? (
               <span aria-hidden="true">{t("search.results", { count: results, query: view.query })}</span>
             ) : (
-              <time dateTime={today}>{formatHeadline(today, locale)}</time>
+              <time dateTime={today}>{formatHeadline(today, intlLocale)}</time>
             )}
             {showProgress ? <span className={styles.progress}>{t("listHeader.progress", { done, total })}</span> : null}
           </p>

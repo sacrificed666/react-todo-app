@@ -6,15 +6,17 @@ import type { Plugin } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vitest/config";
 
+import packageJson from "./package.json" with { type: "json" };
+
 const base = "/react-todo-app/";
 const description =
-  "A free, private to-do list with projects, smart lists, repeating tasks and a calendar. Works offline in eight languages and keeps your tasks on your device.";
+  "A free, private to-do list with projects, smart lists, repeating tasks and a calendar. Works offline in ten languages and keeps your tasks on your device.";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
   "script-src 'self'",
   "style-src 'self'",
-  "img-src 'self' data: blob: https://flagcdn.com",
+  "img-src 'self' data: blob:",
   "font-src 'self'",
   "connect-src 'self'",
   "manifest-src 'self'",
@@ -45,6 +47,9 @@ const securityHeaders = (): Plugin => ({
 
 export default defineConfig({
   base,
+  define: {
+    "import.meta.env.APP_VERSION": JSON.stringify(packageJson.version),
+  },
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
@@ -113,15 +118,6 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,avif,woff2}"],
         cleanupOutdatedCaches: true,
         runtimeCaching: [
-          {
-            urlPattern: ({ url }) => url.origin === "https://flagcdn.com",
-            handler: "CacheFirst",
-            options: {
-              cacheName: "flags",
-              cacheableResponse: { statuses: [0, 200] },
-              expiration: { maxEntries: 16, maxAgeSeconds: 60 * 60 * 24 * 365 },
-            },
-          },
           {
             urlPattern: ({ request }) => request.destination === "image",
             handler: "CacheFirst",

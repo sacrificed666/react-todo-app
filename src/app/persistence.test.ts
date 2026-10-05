@@ -73,8 +73,9 @@ describe("loadPersistedState", () => {
   it("detects the language on the first launch and keeps the saved one afterwards", () => {
     expect(loadPersistedState(localStorage, ["uk-UA", "en"])?.settings?.locale).toBe("uk");
     expect(loadPersistedState(localStorage, ["de-DE"])?.settings?.locale).toBe("de");
-    expect(loadPersistedState(localStorage, ["pt-BR", "fr-CA"])?.settings?.locale).toBe("fr");
-    expect(loadPersistedState(localStorage, ["pt-BR"])?.settings?.locale).toBe("en");
+    expect(loadPersistedState(localStorage, ["ja-JP", "fr-CA"])?.settings?.locale).toBe("fr");
+    expect(loadPersistedState(localStorage, ["pt-BR"])?.settings?.locale).toBe("pt");
+    expect(loadPersistedState(localStorage, ["ja-JP"])?.settings?.locale).toBe("en");
 
     localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ locale: "en" }));
     expect(loadPersistedState(localStorage, ["uk-UA"])?.settings?.locale).toBe("en");

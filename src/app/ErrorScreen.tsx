@@ -1,5 +1,6 @@
 import { exportFileName } from "@/features/data/model/transfer";
-import { createTranslator, detectLocale, isLocale } from "@/features/i18n/model/translate";
+import { detectLocale, isLocale } from "@/features/i18n/model/locales";
+import { createTranslator } from "@/features/i18n/model/translate";
 import { downloadJson } from "@/shared/lib/download";
 import { getStorage, readJson, removeKey } from "@/shared/lib/storage";
 import Icon from "@/shared/ui/Icon/Icon";

@@ -133,6 +133,50 @@ describe("parseQuickAdd in other languages", () => {
   });
 });
 
+describe("parseQuickAdd in Czech and Portuguese", () => {
+  it("understands relative days and days counted from today", () => {
+    expect(parseQuickAdd("Zavolat mámě zítra", today)).toMatchObject({ title: "Zavolat mámě", dueDate: "2026-10-02" });
+    expect(parseQuickAdd("Úklid pozítří", today).dueDate).toBe("2026-10-03");
+    expect(parseQuickAdd("Zpráva za 3 dny", today).dueDate).toBe("2026-10-04");
+    expect(parseQuickAdd("Ligar à mãe amanhã", today)).toMatchObject({ title: "Ligar à mãe", dueDate: "2026-10-02" });
+    expect(parseQuickAdd("Relatório depois de amanhã", today).dueDate).toBe("2026-10-03");
+    expect(parseQuickAdd("Relatório daqui a 5 dias", today).dueDate).toBe("2026-10-06");
+    expect(parseQuickAdd("Exame na próxima semana", today).dueDate).toBe("2026-10-08");
+  });
+
+  it("understands weekdays and keeps Portuguese ordinals as words", () => {
+    expect(parseQuickAdd("Schůzka v pátek", today)).toMatchObject({ title: "Schůzka", dueDate: "2026-10-02" });
+    expect(parseQuickAdd("Porada příští pondělí", today)).toMatchObject({ title: "Porada", dueDate: "2026-10-05" });
+    expect(parseQuickAdd("Jóga ve středu", today).dueDate).toBe("2026-10-07");
+    expect(parseQuickAdd("Reunião na sexta", today)).toMatchObject({ title: "Reunião", dueDate: "2026-10-02" });
+    expect(parseQuickAdd("Dentista segunda-feira", today).dueDate).toBe("2026-10-05");
+    expect(parseQuickAdd("Ler a quinta", today)).toMatchObject({ title: "Ler a quinta", dueDate: null });
+    expect(parseQuickAdd("Visitar quintas", today)).toMatchObject({ title: "Visitar quintas", repeat: null });
+  });
+
+  it("understands repeats", () => {
+    expect(parseQuickAdd("Zalít květiny každý týden", today)).toMatchObject({
+      title: "Zalít květiny",
+      repeat: "weekly",
+    });
+    expect(parseQuickAdd("Bazén každou středu", today)).toMatchObject({
+      title: "Bazén",
+      repeat: "weekly",
+      dueDate: "2026-10-07",
+    });
+    expect(parseQuickAdd("Regar as plantas todos os dias", today)).toMatchObject({
+      title: "Regar as plantas",
+      repeat: "daily",
+    });
+    expect(parseQuickAdd("Ginásio às segundas", today)).toMatchObject({
+      title: "Ginásio",
+      repeat: "weekly",
+      dueDate: "2026-10-05",
+    });
+    expect(parseQuickAdd("Renda todos os meses", today).repeat).toBe("monthly");
+  });
+});
+
 describe("parseQuickAdd repeats", () => {
   it("understands intervals in every language", () => {
     expect(parseQuickAdd("Water the plants every day", today)).toMatchObject({

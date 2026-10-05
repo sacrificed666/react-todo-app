@@ -1,10 +1,10 @@
 # ♿ Accessibility
 
-The app aims at **WCAG 2.2 AA** in all eight languages, in both appearances, on phones and with every effects level. Accessibility is part of the definition of done: automated checks run on every pull request, see [How it is checked](#-how-it-is-checked).
+The app aims at **WCAG 2.2 AA** in all ten languages, in both appearances, on phones and with every effects level. Accessibility is part of the definition of done: automated checks run on every pull request, see [How it is checked](#-how-it-is-checked).
 
 ## 🗺️ Structure
 
-- 🧭 Landmarks match the layout: the sidebar is the page's banner with a search landmark and three navigations (lists, projects and tags), the task list is the main region, the inspector is complementary and the credits are the footer.
+- 🧭 Landmarks match the layout: the sidebar is the page's banner with a search landmark and three navigations (lists, projects and tags), the task list is the main region, the inspector is complementary and the credits with the version are the footer.
 - 🏷️ Every dialog, sheet and the task details have a heading, and the page has exactly one `h1`: the name of the open list or project.
 - 🪪 The browser tab is named after what is open (**Today · Tasks**, **Search · Tasks**, a project's name) in the interface language, so tabs, history and screen readers always say where you are.
 - 🌍 `<html lang>` follows the interface language, and every language name in the settings carries its own `lang`.
@@ -14,7 +14,7 @@ The app aims at **WCAG 2.2 AA** in all eight languages, in both appearances, on 
 - ⏭️ A **Skip to tasks** link appears at the top left on the first <kbd>Tab</kbd>.
 - 🎯 Every control is reachable and operable with the keyboard, with a visible 2 px focus ring. Text fields that are the only control of their surface, such as the palette and search inputs, show focus on the surface itself.
 - 🔁 Focus moves to a sensible place after completing, deleting, editing or restoring a task, and dialogs and menus return focus to the place they were opened from.
-- ⌨️ Lists, tasks, the calendar, the context menu and the palette have full keyboard support; the shortcuts are listed in [Features](./features.md#-keyboard-shortcuts).
+- ⌨️ Lists, tasks, the calendar, the context menu and the palette have full keyboard support; the shortcuts are listed in [Features](./features.md#️-keyboard-shortcuts).
 
 ## 🗣️ Screen readers
 

@@ -1,6 +1,6 @@
 import type { AppThunk } from "@/app/store";
 import { loadMessages } from "@/features/i18n/model/catalog";
-import type { Locale } from "@/features/i18n/model/translate";
+import type { Locale } from "@/features/i18n/model/locales";
 import { toastShown } from "@/features/notifications/model/toastSlice";
 
 import { localeChanged } from "./settingsSlice";

@@ -30,6 +30,12 @@ body:
     validations:
       required: true
   - type: input
+    id: version
+    attributes:
+      label: 🏷️ Version
+      description: Shown at the bottom of the sidebar.
+      placeholder: v1.0.0
+  - type: input
     id: environment
     attributes:
       label: 💻 Browser and device

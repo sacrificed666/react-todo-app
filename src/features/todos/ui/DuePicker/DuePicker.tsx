@@ -36,7 +36,7 @@ interface DueOptionsProps {
 
 const DueOptions = ({ value, onChoose }: DueOptionsProps) => {
   const today = useToday();
-  const { t, locale } = useI18n();
+  const { t, intlLocale } = useI18n();
   const weekStart = useWeekStart();
   const marks = useAppSelector(selectDueDateCounts);
 
@@ -52,7 +52,7 @@ const DueOptions = ({ value, onChoose }: DueOptionsProps) => {
               type="button"
               className={styles.quickOption}
               aria-pressed={value === date}
-              aria-label={`${t(option.key)}, ${formatWeekdayShort(date, locale)}`}
+              aria-label={`${t(option.key)}, ${formatWeekdayShort(date, intlLocale)}`}
               onClick={() => onChoose(date)}
             >
               <Icon name={option.icon} className={styles.quickIcon} />
@@ -64,7 +64,7 @@ const DueOptions = ({ value, onChoose }: DueOptionsProps) => {
       <Calendar
         value={value}
         today={today}
-        locale={locale}
+        locale={intlLocale}
         weekStart={weekStart}
         marks={marks}
         labels={{
@@ -95,10 +95,10 @@ interface DuePickerProps {
 
 const DuePicker = ({ value, onChange, variant, label, detected = false, className }: DuePickerProps) => {
   const today = useToday();
-  const { t, locale } = useI18n();
+  const { t, intlLocale } = useI18n();
   const popover = usePopover();
   const [open, setOpen] = useState(false);
-  const due = value ? describeDueDate(value, today, locale) : null;
+  const due = value ? describeDueDate(value, today, intlLocale) : null;
 
   const handleToggle = (next: boolean) => {
     if (next) flushSync(() => setOpen(true));

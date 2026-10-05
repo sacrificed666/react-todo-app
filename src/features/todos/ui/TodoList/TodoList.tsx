@@ -22,7 +22,7 @@ import styles from "./TodoList.module.scss";
 const TodoList = () => {
   const dispatch = useAppDispatch();
   const today = useToday();
-  const { t, locale } = useI18n();
+  const { t, intlLocale } = useI18n();
   const query = useDeferredValue(useAppSelector(selectQuery));
   const { active, completed } = useAppSelector((state) => selectVisibleTodos(state, today, query));
   const list = useAppSelector(selectList);
@@ -38,8 +38,8 @@ const TodoList = () => {
 
   const groupTitle = (group: TodoGroup) => {
     if (group.kind === "overdue") return t("section.overdue");
-    if (group.kind === "month" && group.date) return formatMonth(group.date, today, locale);
-    if (group.kind === "day" && group.date) return describeDueDate(group.date, today, locale).label;
+    if (group.kind === "month" && group.date) return formatMonth(group.date, today, intlLocale);
+    if (group.kind === "day" && group.date) return describeDueDate(group.date, today, intlLocale).label;
     return t("section.todo");
   };
 

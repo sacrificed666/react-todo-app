@@ -34,7 +34,7 @@ interface TaskDetailsProps {
 const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
   const dispatch = useAppDispatch();
   const today = useToday();
-  const { t, locale } = useI18n();
+  const { t, intlLocale } = useI18n();
   const notesId = useId();
   const [title, setTitle] = useState(todo.title);
   const [notes, setNotes] = useState(todo.notes);
@@ -168,7 +168,7 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
 
       <ul className={styles.timestamps}>
         {timestamps.map(({ key, value }) =>
-          value === null ? null : <li key={key}>{t(key, { date: formatDateTime(value, locale) })}</li>,
+          value === null ? null : <li key={key}>{t(key, { date: formatDateTime(value, intlLocale) })}</li>,
         )}
       </ul>
 

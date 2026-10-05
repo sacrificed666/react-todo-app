@@ -4,20 +4,21 @@
 
 ```mermaid
 flowchart LR
-  Branch[🌿 Branch from main] --> Code[✏️ Change + tests + docs]
+  Branch[🌿 Branch from development] --> Code[✏️ Change + tests + docs]
   Code --> Check[✅ npm run check]
   Check --> E2E[🎭 npm run test:e2e]
-  E2E --> PR[📬 Pull request]
+  E2E --> PR[📬 Pull request into development]
   PR --> CI[🔍 CI · 🎭 E2E · 🔬 CodeQL · 🛡️ dependency review]
   CI --> Merge[🔀 Merge]
-  Merge --> Deploy[🚀 Automatic deploy]
+  Merge --> Build[📦 Development build artifact]
 ```
 
-1. 🌿 Create a branch from `main`.
+1. 🌿 Create a branch from `development`, named after the change: `feat/task-colours`, `fix/calendar-focus`.
 2. ✅ Make your changes, add tests and run `npm run check`.
 3. 🎭 For anything people see, run `npm run test:e2e` as well: it covers the production build, offline mode, the Content Security Policy, accessibility and the Lighthouse budget.
-4. 📬 Open a pull request and fill in the checklist from the template.
-5. 🚀 Merge once everything is green. `main` deploys automatically.
+4. 📝 Describe a user-visible change in one line under **Unreleased** in `CHANGELOG.md`.
+5. 📬 Open a pull request into `development` and fill in the checklist from the template.
+6. 🔀 Merge once everything is green. `development` reaches `staging` and `main` through the release flow in [Releases](./releases.md), and `main` deploys to GitHub Pages.
 
 Bugs and ideas go through the issue forms in `.github/ISSUE_TEMPLATE`; security problems are reported privately as described in the [security policy](../.github/SECURITY.md).
 
@@ -57,7 +58,7 @@ Formatting and linting are automated, so reviews can focus on behaviour.
 | 🧩 Components       | One folder per component: `ComponentName/ComponentName.tsx` and `ComponentName.module.scss`, arrow functions, default export                        |
 | 🪝 Hooks            | `useSomething.ts` next to the feature that owns it, or in `src/shared/hooks` when it is generic                                                     |
 | 🗃️ Redux            | Past-tense action names (`todoAdded`), pure reducers, timestamps and ids in `prepare` callbacks, side effects in thunks                             |
-| 🌍 Texts            | Never hard-code UI text. Add a key to all eight catalogs and use `t()`; notifications store `{ key, params }`, see [Localization](./i18n.md)        |
+| 🌍 Texts            | Never hard-code UI text. Add a key to all ten catalogs and use `t()`; notifications store `{ key, params }`, see [Localization](./i18n.md)          |
 | 🎨 Styles           | Tokens from `_tokens.scss`, the `glass()`, `hover`, `pressable` and `visually-hidden` mixins, logical properties (`inline-size`, `margin-block`)    |
 | 📥 Imports          | Use the `@/` alias for anything outside the current feature, relative paths inside it                                                               |
 | 🏷️ State attributes | Use `data-*` attributes (`data-completed`, `data-leaving`, `data-swipe`) for visual states instead of extra class names                             |

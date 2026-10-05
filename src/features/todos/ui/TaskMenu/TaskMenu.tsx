@@ -81,7 +81,7 @@ const Choice = ({ checked, icon, label, onSelect }: ChoiceProps) => (
 
 const TaskMenu = ({ todo, point, touch, actions, onClose }: TaskMenuProps) => {
   const today = useToday();
-  const { t, locale } = useI18n();
+  const { t, intlLocale } = useI18n();
   const weekStart = useWeekStart();
   const projects = useAppSelector(selectProjects);
   const marks = useAppSelector(selectDueDateCounts);
@@ -109,7 +109,7 @@ const TaskMenu = ({ todo, point, touch, actions, onClose }: TaskMenuProps) => {
         <Calendar
           value={todo.dueDate}
           today={today}
-          locale={locale}
+          locale={intlLocale}
           weekStart={weekStart}
           marks={marks}
           labels={{
@@ -147,7 +147,7 @@ const TaskMenu = ({ todo, point, touch, actions, onClose }: TaskMenuProps) => {
       <>
         <p className={styles.caption}>
           {t("due.heading")}
-          {todo.dueDate ? <span>{describeDueDate(todo.dueDate, today, locale).label}</span> : null}
+          {todo.dueDate ? <span>{describeDueDate(todo.dueDate, today, intlLocale).label}</span> : null}
         </p>
         <div className={styles.dates}>
           {QUICK_DATES.map((option) => {
@@ -158,7 +158,7 @@ const TaskMenu = ({ todo, point, touch, actions, onClose }: TaskMenuProps) => {
                 type="button"
                 role="menuitemradio"
                 aria-checked={todo.dueDate === date}
-                aria-label={`${t(option.key)}, ${formatWeekdayShort(date, locale)}`}
+                aria-label={`${t(option.key)}, ${formatWeekdayShort(date, intlLocale)}`}
                 title={t(option.key)}
                 className={styles.date}
                 onClick={run(() => actions.schedule(date))}

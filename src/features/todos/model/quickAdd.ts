@@ -77,6 +77,23 @@ const RELATIVE_DAYS = foldKeys({
   pojutrze: 2,
   "w przyszłym tygodniu": 7,
   "za tydzień": 7,
+  dnes: 0,
+  dneska: 0,
+  "dnes večer": 0,
+  zítra: 1,
+  pozítří: 2,
+  "příští týden": 7,
+  "za týden": 7,
+  hoje: 0,
+  "hoje à noite": 0,
+  "esta noite": 0,
+  amanhã: 1,
+  "depois de amanhã": 2,
+  "na próxima semana": 7,
+  "próxima semana": 7,
+  "para a semana": 7,
+  "daqui a uma semana": 7,
+  "dentro de uma semana": 7,
 });
 
 const WEEKDAYS = foldKeys({
@@ -151,7 +168,30 @@ const WEEKDAYS = foldKeys({
   piątek: 5,
   sobota: 6,
   sobotę: 6,
+  neděle: 0,
+  neděli: 0,
+  pondělí: 1,
+  úterý: 2,
+  středa: 3,
+  středu: 3,
+  čtvrtek: 4,
+  pátek: 5,
+  sobotu: 6,
+  segunda: 1,
+  "segunda-feira": 1,
+  terça: 2,
+  "terça-feira": 2,
+  quarta: 3,
+  "quarta-feira": 3,
+  quinta: 4,
+  "quinta-feira": 4,
+  sexta: 5,
+  "sexta-feira": 5,
 });
+
+const NEEDS_MODIFIER = new Set(
+  ["segunda", "terça", "quarta", "quinta", "sexta", "segundas", "terças", "quartas", "quintas", "sextas"].map(fold),
+);
 
 const WEEKDAY_MODIFIERS = new Set(
   [
@@ -198,6 +238,17 @@ const WEEKDAY_MODIFIERS = new Set(
     "najbliższą",
     "przyszły",
     "przyszłą",
+    "v",
+    "ve",
+    "příští",
+    "tento",
+    "tuto",
+    "toto",
+    "tuhle",
+    "na",
+    "no",
+    "nesta",
+    "neste",
   ].map(fold),
 );
 
@@ -299,6 +350,26 @@ const REPEAT_PHRASES = foldKeys<Repeat>({
   "każdego miesiąca": "monthly",
   "co roku": "yearly",
   "każdego roku": "yearly",
+  "každý den": "daily",
+  denně: "daily",
+  "každý všední den": "weekdays",
+  "každý pracovní den": "weekdays",
+  "ve všední dny": "weekdays",
+  "v pracovní dny": "weekdays",
+  "každý týden": "weekly",
+  týdně: "weekly",
+  "každý měsíc": "monthly",
+  měsíčně: "monthly",
+  "každý rok": "yearly",
+  ročně: "yearly",
+  "todos os dias": "daily",
+  "todos os dias úteis": "weekdays",
+  "nos dias úteis": "weekdays",
+  "dias úteis": "weekdays",
+  "todas as semanas": "weekly",
+  "todos os meses": "monthly",
+  mensalmente: "monthly",
+  "todos os anos": "yearly",
 });
 
 const HABITUAL_WEEKDAYS = foldKeys({
@@ -348,6 +419,16 @@ const HABITUAL_WEEKDAYS = foldKeys({
   czwartki: 4,
   piątki: 5,
   soboty: 6,
+  segundas: 1,
+  "segundas-feiras": 1,
+  terças: 2,
+  "terças-feiras": 2,
+  quartas: 3,
+  "quartas-feiras": 3,
+  quintas: 4,
+  "quintas-feiras": 4,
+  sextas: 5,
+  "sextas-feiras": 5,
 });
 
 const EVERY_WORDS = new Set(
@@ -376,17 +457,22 @@ const EVERY_WORDS = new Set(
     "każdą",
     "każdego",
     "co",
+    "každý",
+    "každé",
+    "každou",
   ].map(fold),
 );
 
 const REPEAT_FILLERS = new Set(
-  ["on", "the", "по", "у", "в", "los", "las", "les", "i", "le", "la", "w", "op", "am", "de"].map(fold),
+  ["on", "the", "по", "у", "в", "los", "las", "les", "i", "le", "la", "w", "op", "am", "de", "os", "as", "aos"].map(
+    fold,
+  ),
 );
 
 const UKRAINIAN_EVERY = fold("що");
 
 const IN_DAYS = new RegExp(
-  `^(?:${["in", "через", "en", "dentro de", "dans", "tra", "fra", "over", "za"].join("|")}) (\\d{1,3}) (?:${[
+  `^(?:${["in", "через", "en", "dentro de", "dans", "tra", "fra", "over", "za", "em", "daqui a"].join("|")}) (\\d{1,3}) (?:${[
     "days?",
     "день",
     "дні",
@@ -400,6 +486,8 @@ const IN_DAYS = new RegExp(
     "dag",
     "dni",
     "dzien",
+    "den",
+    "dny",
   ].join("|")})$`,
   "u",
 );
@@ -433,6 +521,7 @@ const parseWeekday = (words: readonly string[]): number | null => {
   });
   const [weekday] = days;
   if (days.length !== 1 || weekday === undefined) return null;
+  if (words.length === 1 && NEEDS_MODIFIER.has(words[0] ?? "")) return null;
   return words.every((word) => WEEKDAYS.has(word) || WEEKDAY_MODIFIERS.has(word)) ? weekday : null;
 };
 
@@ -479,6 +568,7 @@ export const parseRepeatPhrase = (phrase: string, today: string): { repeat: Repe
   if (
     habitual.length === 1 &&
     habitualDay !== undefined &&
+    !(words.length === 1 && NEEDS_MODIFIER.has(single ?? "")) &&
     words.every((word) => HABITUAL_WEEKDAYS.has(word) || isRepeatFiller(word))
   ) {
     return { repeat: "weekly", start: weekdayOnOrAfter(today, habitualDay) };

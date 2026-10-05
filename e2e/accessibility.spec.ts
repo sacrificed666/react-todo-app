@@ -39,7 +39,7 @@ for (const scheme of ["light", "dark"] as const) {
 
 test("keeps the empty state accessible", async ({ page, context }) => {
   await context.clearCookies();
-  await page.addInitScript(() => localStorage.removeItem("react-todo-app/todos"));
+  await page.addInitScript(() => localStorage.removeItem("tasks/todos"));
   await page.goto("./?list=upcoming");
   expect(await violations(page)).toEqual([]);
 });
@@ -84,7 +84,7 @@ test.describe("in forced colours mode", () => {
     await page.goto("./");
     await runCommand(page, "Open settings");
     const settings = page.getByRole("dialog", { name: "Settings" });
-    const group = settings.getByRole("radiogroup", { name: "Colour scheme" });
+    const group = settings.getByRole("radiogroup", { name: "Appearance" });
     const chosen = group.locator("label:has(:checked)").first();
     const other = group.locator("label:not(:has(:checked))").first();
     expect(await emphasis(chosen)).not.toBe(await emphasis(other));

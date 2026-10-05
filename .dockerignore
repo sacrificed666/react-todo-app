@@ -1,0 +1,19 @@
+# Keep the build context small and free of secrets
+.git
+.github
+dist
+dev-dist
+node_modules
+coverage
+playwright-report
+test-results
+blob-report
+docs
+docker
+!docker/nginx.conf
+compose.yaml
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store

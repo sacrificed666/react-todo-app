@@ -172,7 +172,7 @@ const PaletteContent = () => {
     ...APPEARANCES.map((appearance): Command => ({
       id: `appearance-${appearance}`,
       group: "appearance",
-      label: t("palette.scheme", { mode: t(`appearance.${appearance}`) }),
+      label: t("palette.scheme", { mode: t(`settings.theme.${appearance}`) }),
       keywords: "theme",
       icon: APPEARANCE_ICONS[appearance],
       current: appearance === settings.appearance,
@@ -216,7 +216,7 @@ const PaletteContent = () => {
     ...EFFECTS.map((effects): Command => ({
       id: `effects-${effects}`,
       group: "appearance",
-      label: t("palette.effects", { mode: t(`effects.${effects}`) }),
+      label: t("palette.effects", { mode: t(`settings.effects.${effects}`) }),
       keywords: `performance ${resolveEffects(effects)}`,
       icon: "bolt",
       current: effects === settings.effects,

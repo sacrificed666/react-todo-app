@@ -1,4 +1,4 @@
-name: 🚀 Todo App | CI/CD
+name: 🚀 Tasks | CI/CD
 
 on:
   push:
@@ -155,6 +155,29 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 7
+
+  docker:
+    name: 🐳 Docker | Build and start the runtime image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: 📥 Git | Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: 🐳 Docker | Build the staging image without secrets
+        run: docker build --file docker/Dockerfile --target runtime --build-arg APP_ENV=staging --tag app:ci .
+
+      - name: 🩺 Docker | Check that the container answers
+        run: |
+          docker run --detach --name app --env APP_ENV=staging --publish 8080:8080 app:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --output /dev/null http://localhost:8080/healthz; then exit 0; fi
+            sleep 1
+          done
+          docker logs app
+          exit 1
 
   dependency-review:
     name: 🛡️ Security | Review dependency changes

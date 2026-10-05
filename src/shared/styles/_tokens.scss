@@ -32,13 +32,13 @@
   --color-surface: #f4f7fc;
   --color-text: rgb(12 18 34 / 94%);
   --color-text-secondary: rgb(30 41 66 / 76%);
-  --color-text-tertiary: rgb(30 41 66 / 64%);
+  --color-text-tertiary: rgb(30 41 66 / 68%);
   --color-fill: rgb(20 32 64 / 6%);
   --color-fill-strong: rgb(20 32 64 / 11%);
   --color-shade: rgb(20 32 64 / 12%);
   --color-separator: rgb(20 32 64 / 10%);
   --color-danger: #c4281f;
-  --color-warning: #c26a00;
+  --color-warning: #954d00;
   --color-success: #17924f;
   --color-star: #f08c00;
   --color-on-accent: #ffffff;
@@ -297,6 +297,32 @@
   --glass-tint-bar: rgb(12 16 30 / 72%);
 }
 
+@mixin reduced-dark {
+  --glass-tint: rgb(26 30 50 / 78%);
+  --glass-tint-hover: rgb(34 38 62 / 84%);
+  --glass-tint-pressed: rgb(42 46 72 / 90%);
+  --glass-tint-strong: rgb(18 22 38 / 94%);
+  --glass-tint-content: rgb(20 24 42 / 90%);
+  --glass-tint-bar: rgb(12 16 30 / 92%);
+  --glass-edge: inset 0 1px 0 rgb(255 255 255 / 8%), inset 0 0 0 1px rgb(255 255 255 / 9%);
+  --glass-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+  --glass-shadow-lifted: 0 8px 20px -8px rgb(0 0 0 / 60%);
+  --bar-shadow: 0 1px 0 rgb(255 255 255 / 6%);
+}
+
+@mixin reduced-light {
+  --glass-tint: rgb(255 255 255 / 78%);
+  --glass-tint-hover: rgb(255 255 255 / 86%);
+  --glass-tint-pressed: rgb(255 255 255 / 94%);
+  --glass-tint-strong: rgb(250 251 255 / 95%);
+  --glass-tint-content: rgb(252 253 255 / 92%);
+  --glass-tint-bar: rgb(248 250 255 / 92%);
+  --glass-edge: inset 0 1px 0 rgb(255 255 255 / 80%), inset 0 0 0 1px rgb(20 32 64 / 8%);
+  --glass-shadow: 0 1px 3px rgb(20 32 64 / 10%);
+  --glass-shadow-lifted: 0 8px 20px -8px rgb(20 32 64 / 28%);
+  --bar-shadow: 0 1px 0 rgb(20 32 64 / 8%);
+}
+
 @mixin tinted-light {
   --glass-tint: rgb(255 255 255 / 66%);
   --glass-tint-hover: rgb(255 255 255 / 76%);
@@ -332,6 +358,21 @@
   }
 }
 
+// Reduced effects trade blur for denser tints and short shadows
+:root[data-effects="reduced"] {
+  @include reduced-dark;
+}
+
+:root[data-effects="reduced"][data-appearance="light"] {
+  @include reduced-light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-effects="reduced"]:not([data-appearance="dark"]) {
+    @include reduced-light;
+  }
+}
+
 @media (min-width: 1240px) {
   :root {
     --layout-width: 92rem;
@@ -348,12 +389,6 @@
   :root {
     --titlebar-height: env(titlebar-area-height, 32px);
   }
-}
-
-:root[data-effects="lite"] {
-  --glass-blur: 12px;
-  --glass-blur-control: 8px;
-  --glass-blur-thick: 18px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -394,5 +429,6 @@
     --glass-tint-content: color-mix(in srgb, var(--color-backdrop) 90%, transparent);
     --glass-tint-bar: color-mix(in srgb, var(--color-backdrop) 92%, transparent);
     --glass-rim: linear-gradient(var(--color-separator), var(--color-separator));
+    --glass-edge: inset 0 0 0 1px var(--color-separator);
   }
 }

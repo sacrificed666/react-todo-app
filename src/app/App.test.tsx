@@ -36,19 +36,19 @@ describe("App shell", () => {
     expect(within(banner).getByRole("searchbox", { name: "Search tasks" })).toHaveAttribute("aria-keyshortcuts", "/");
     expect(within(banner).getByRole("navigation", { name: "Projects" })).toBeInTheDocument();
     const footer = screen.getByRole("contentinfo");
-    expect(within(footer).getByRole("link", { name: "Source code" })).toBeInTheDocument();
-    expect(within(footer).getByRole("link", { name: "v1.0.0" })).toHaveAttribute(
+    expect(within(footer).getByRole("link", { name: /^Source code/ })).toBeInTheDocument();
+    expect(within(footer).getByRole("link", { name: /^v1\.0\.0/ })).toHaveAttribute(
       "href",
-      "https://github.com/sacrificed666/react-todo-app/blob/main/CHANGELOG.md",
+      "https://github.com/sacrificed666/tasks/blob/main/CHANGELOG.md",
     );
     expect(within(footer).queryByRole("link", { name: "Illia Movchko" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "All tasks" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Lists" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Today (2)" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Important (1)" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Source code" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^Source code/ })).toHaveAttribute(
       "href",
-      "https://github.com/sacrificed666/react-todo-app",
+      "https://github.com/sacrificed666/tasks",
     );
   });
 
@@ -104,7 +104,7 @@ describe("App shell", () => {
       glass: "tinted",
     });
 
-    await user.click(panel.getByRole("button", { name: "Done" }));
+    await user.click(panel.getByRole("button", { name: "Close" }));
     expect(screen.queryByRole("dialog", { name: "Settings" })).not.toBeInTheDocument();
   });
 
@@ -118,7 +118,7 @@ describe("App shell", () => {
     expect(document.documentElement.lang).toBe("uk");
     expect(screen.getByRole("heading", { level: 1, name: "Усі завдання" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Сьогодні (2)" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Вихідний код" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^Вихідний код/ })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Нове завдання" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Завдання, головна сторінка" })).toHaveTextContent("Завдання");
     expect(document.title).toBe("Завдання");
@@ -200,13 +200,15 @@ describe("Layout", () => {
     expect(screen.getByRole("checkbox", { name: "Buy milk" })).toHaveFocus();
   });
 
-  it("switches to any of the eight languages", async () => {
+  it("switches to any of the ten languages", async () => {
     const { user, store } = renderApp(plannedTodos);
 
     const panel = await openSettings(user);
     expect(
-      panel.getAllByRole("radio", { name: /English|Українська|Deutsch|Español|Français|Italiano|Nederlands|Polski/ }),
-    ).toHaveLength(8);
+      panel.getAllByRole("radio", {
+        name: /English|Українська|Čeština|Deutsch|Español|Français|Italiano|Nederlands|Polski|Português/,
+      }),
+    ).toHaveLength(10);
     await user.click(panel.getByRole("radio", { name: "Deutsch" }));
 
     expect(await screen.findByRole("heading", { level: 1, name: "Alle Aufgaben" })).toBeInTheDocument();
@@ -226,7 +228,7 @@ describe("Layout", () => {
     expect(document.documentElement.dataset.effects).toBe("full");
 
     await user.click(panel.getByRole("radio", { name: "Reduced" }));
-    expect(document.documentElement.dataset.effects).toBe("lite");
+    expect(document.documentElement.dataset.effects).toBe("reduced");
   });
 });
 
@@ -579,7 +581,7 @@ describe("More actions menu", () => {
     await chooseMenuItem(user, "Export tasks");
 
     expect(click).toHaveBeenCalledOnce();
-    expect(click.mock.contexts[0]).toHaveProperty("download", expect.stringMatching(/^todos-\d{4}-\d{2}-\d{2}\.json$/));
+    expect(click.mock.contexts[0]).toHaveProperty("download", expect.stringMatching(/^tasks-\d{4}-\d{2}-\d{2}\.json$/));
 
     const blob = createObjectURL.mock.calls[0]?.[0];
     expect(parseTodos(JSON.parse((await blob?.text()) ?? "null"))).toHaveLength(3);
@@ -736,7 +738,7 @@ describe("Back button", () => {
     const opened = historyMarker();
     expect(opened).toEqual(expect.any(String));
 
-    await user.click(screen.getByRole("button", { name: "Done" }));
+    await user.click(screen.getByRole("button", { name: "Close" }));
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 30));
     });

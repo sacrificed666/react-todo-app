@@ -1,0 +1,19 @@
+# Production build on nginx that search engines must not index
+name: tasks-staging
+
+services:
+  app:
+    image: tasks:staging
+    build:
+      target: runtime
+      args:
+        APP_ENV: staging
+    environment:
+      APP_ENV: staging
+    ports:
+      - "${APP_PORT:-8081}:8080"
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"

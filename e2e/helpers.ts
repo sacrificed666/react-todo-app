@@ -54,7 +54,7 @@ export const seed = async (page: Page, todos: SeedTodo[] = SAMPLE_TODOS, project
         })),
         projects: groups.map((group) => ({ ...group, createdAt: now, updatedAt: now })),
       };
-      localStorage.setItem("react-todo-app/todos", JSON.stringify(data));
+      localStorage.setItem("tasks/todos", JSON.stringify(data));
     },
     { todos, projects },
   );
@@ -64,7 +64,7 @@ export const preferences = async (page: Page, values: Record<string, string>) =>
   await page.addInitScript((settings) => {
     if (sessionStorage.getItem("e2e-preferences")) return;
     sessionStorage.setItem("e2e-preferences", "1");
-    localStorage.setItem("react-todo-app/preferences", JSON.stringify(settings));
+    localStorage.setItem("tasks/preferences", JSON.stringify(settings));
   }, values);
 };
 

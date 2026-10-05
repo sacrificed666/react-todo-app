@@ -12,34 +12,11 @@ import Overview from "@/features/stats/ui/Overview/Overview";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useRefraction } from "@/shared/hooks/useRefraction";
 import { useShortcut } from "@/shared/hooks/useShortcut";
-import { useToday } from "@/shared/hooks/useToday";
 import { isPlainKey } from "@/shared/lib/keyboard";
 import { COMPACT_LAYOUT, WIDE_LAYOUT } from "@/shared/lib/media";
-import { SITE } from "@/shared/lib/site";
 import Brand from "@/shared/ui/Brand/Brand";
 
 import styles from "./Sidebar.module.scss";
-
-const Credits = () => {
-  const { t } = useI18n();
-  const today = useToday();
-
-  return (
-    <footer className={styles.credits}>
-      <span>
-        © {today.slice(0, 4)} {SITE.author.name}
-      </span>
-      <span aria-hidden="true">·</span>
-      <a className={styles.link} href={SITE.changelog} target="_blank" rel="noreferrer">
-        v{SITE.version}
-      </a>
-      <span aria-hidden="true">·</span>
-      <a className={styles.link} href={SITE.repository} target="_blank" rel="noreferrer">
-        {t("credits.source")}
-      </a>
-    </footer>
-  );
-};
 
 const Navigator = () => {
   const { t } = useI18n();
@@ -79,7 +56,6 @@ const Sidebar = () => {
     <div className={styles.sidebar}>
       {compact ? null : <Navigator />}
       {wide ? null : <Overview />}
-      <Credits />
     </div>
   );
 };

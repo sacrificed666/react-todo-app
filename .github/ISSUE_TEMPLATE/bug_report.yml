@@ -33,7 +33,7 @@ body:
     id: version
     attributes:
       label: 🏷️ Version
-      description: Shown at the bottom of the sidebar.
+      description: Shown in the footer of the app.
       placeholder: v1.0.0
   - type: input
     id: environment

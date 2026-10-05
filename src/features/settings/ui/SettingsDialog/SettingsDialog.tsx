@@ -9,6 +9,7 @@ import { overlayClosed } from "@/features/lists/model/viewSlice";
 import Dialog from "@/shared/ui/Dialog/Dialog";
 import Icon from "@/shared/ui/Icon/Icon";
 import type { IconName } from "@/shared/ui/Icon/icons";
+import IconButton from "@/shared/ui/IconButton/IconButton";
 import SegmentedControl from "@/shared/ui/SegmentedControl/SegmentedControl";
 import SwatchPicker from "@/shared/ui/SwatchPicker/SwatchPicker";
 
@@ -67,10 +68,10 @@ const SettingsContent = () => {
     <div className={styles.content}>
       <Section icon="palette" title={t("settings.theme")}>
         <SegmentedControl
-          label={t("settings.scheme")}
+          label={t("settings.theme")}
           name="appearance"
           value={appearance}
-          options={APPEARANCES.map((value) => ({ value, label: t(`appearance.${value}`) }))}
+          options={APPEARANCES.map((value) => ({ value, label: t(`settings.theme.${value}`) }))}
           onChange={(next) => dispatch(appearanceChanged(next))}
         />
 
@@ -118,6 +119,21 @@ const SettingsContent = () => {
         <p className={styles.caption}>{t("settings.glassHint")}</p>
       </Section>
 
+      <Section icon="bolt" title={t("settings.effects")}>
+        <SegmentedControl
+          label={t("settings.effects")}
+          name="effects"
+          value={effects}
+          options={EFFECTS.map((value) => ({ value, label: t(`settings.effects.${value}`) }))}
+          onChange={(next) => dispatch(effectsChanged(next))}
+        />
+        {effects === "auto" ? (
+          <p className={styles.caption}>
+            {t("settings.effects.device", { mode: t(`settings.effects.${resolveEffects(effects)}`) })}
+          </p>
+        ) : null}
+      </Section>
+
       <Section icon="globe" title={t("settings.language")}>
         <div role="radiogroup" aria-label={t("settings.language")} className={styles.languages}>
           {LOCALES.map((code) => (
@@ -139,19 +155,6 @@ const SettingsContent = () => {
           ))}
         </div>
       </Section>
-
-      <Section icon="bolt" title={t("settings.performance")}>
-        <SegmentedControl
-          label={t("settings.effects")}
-          name="effects"
-          value={effects}
-          options={EFFECTS.map((value) => ({ value, label: t(`effects.${value}`) }))}
-          onChange={(next) => dispatch(effectsChanged(next))}
-        />
-        {effects === "auto" ? (
-          <p className={styles.caption}>{t("effects.autoHint", { mode: t(`effects.${resolveEffects(effects)}`) })}</p>
-        ) : null}
-      </Section>
     </div>
   );
 };
@@ -171,9 +174,7 @@ const SettingsDialog = () => {
       header={
         <div className={styles.head}>
           <h2 className={styles.title}>{t("settings.title")}</h2>
-          <button type="button" className={styles.done} onClick={close}>
-            {t("settings.done")}
-          </button>
+          <IconButton icon="xmark" label={t("settings.close")} variant="ghost" size="small" onClick={close} />
         </div>
       }
     >

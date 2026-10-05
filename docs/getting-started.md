@@ -21,7 +21,15 @@ npm run dev
 The dev server prints a local URL.
 
 > [!IMPORTANT]
-> The app is served under the `/react-todo-app/` base path, the same one used on GitHub Pages, so open `http://localhost:5173/react-todo-app/`, not the root of the server.
+> The app is served under the `/tasks/` base path, the same one used on GitHub Pages, so open `http://localhost:5173/tasks/`, not the root of the server.
+
+### 🐳 In Docker
+
+```bash
+docker compose -f compose.yaml -f docker/development.yaml up --watch
+```
+
+The same Vite dev server runs in a container at `http://localhost:5173/tasks/`, and Compose Watch copies every change into it. Staging and production images with nginx are described in [Deployment](./deployment.md#-docker).
 
 ## 📜 npm scripts
 
@@ -50,23 +58,24 @@ After `npm run build`, `node scripts/build-report.mjs` prints the bundle sizes a
 ## 🗂️ Project layout
 
 ```text
-react-todo-app/
+tasks/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/              Bug report and feature request forms
-│   ├── workflows/ci.yml             CI/CD: verify, build, end-to-end tests, dependency review, deploy
+│   ├── workflows/ci.yml             CI/CD: verify, build, end-to-end tests, Docker image, dependency review, deploy
 │   ├── workflows/codeql.yml         CodeQL code scanning
 │   ├── workflows/release.yml        GitHub release for every version tag
-│   ├── dependabot.yml               Weekly dependency and GitHub Actions updates
+│   ├── dependabot.yml               Weekly npm, GitHub Actions and Docker updates
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   └── SECURITY.md                  How to report vulnerabilities
+├── docker/                          Multi-stage Dockerfile, nginx configuration and the three environment overlays
 ├── docs/                            This documentation and its screenshots
 ├── e2e/                             Playwright specs and their helpers
-├── lint/no-comments.js              Custom Oxlint rule that forbids comments
+├── lint/comments.js                 Custom Oxlint rule that keeps comments to one short line
 ├── public/                          Favicons, PWA icons, language flags, the social preview and the install screenshots
 ├── scripts/                         Flag sync, release notes, the coverage summary and the build report
 ├── src/
 │   ├── app/                         Entry point, App shell, store, persistence, launch intents, PWA, back button, error screen
-│   ├── widgets/                     Sidebar, Toolbar (phones), Workspace, Inspector, Backdrop
+│   ├── widgets/                     Sidebar, Toolbar (phones), Workspace, Inspector, Backdrop, Footer
 │   ├── features/
 │   │   ├── todos/                   Task model, repeats, quick add, checklists; composer, list, rows, context menu, drag and drop, details
 │   │   ├── projects/                Project model, colours and emoji icons; sidebar list, picker, dialog
@@ -87,9 +96,11 @@ react-todo-app/
 │   ├── test/                        Test setup, polyfills, factories and render helpers
 │   └── types/                       Global type declarations
 ├── CHANGELOG.md                     Every release, newest first
+├── compose.yaml                     The Docker Compose service shared by every environment
 ├── index.html
 ├── vite.config.ts                   Vite, React Compiler, PWA, CSP and Vitest configuration
 ├── playwright.config.ts             Browsers and the preview server for end-to-end tests
+├── .dockerignore                    Keeps dependencies, build output and secrets out of the image
 ├── .oxlintrc.json                   Lint rules and layer boundaries
 └── .oxfmtrc.json                    Formatting rules
 ```

@@ -7,9 +7,9 @@ import { applySettings, DEFAULT_SETTINGS, readSettings, resolveEffects } from ".
 describe("effects", () => {
   it("resolves the automatic level from the device", () => {
     expect(resolveEffects("auto", true)).toBe("full");
-    expect(resolveEffects("auto", false)).toBe("lite");
+    expect(resolveEffects("auto", false)).toBe("reduced");
     expect(resolveEffects("full", false)).toBe("full");
-    expect(resolveEffects("lite", true)).toBe("lite");
+    expect(resolveEffects("reduced", true)).toBe("reduced");
   });
 
   it("prefers rich effects only on capable Apple devices", () => {
@@ -24,9 +24,9 @@ describe("effects", () => {
     expect(root.dataset.effects).toBe("full");
     expect(getEffectsLevel()).toBe("full");
 
-    applySettings({ ...DEFAULT_SETTINGS, effects: "lite" }, root);
-    expect(root.dataset.effects).toBe("lite");
-    expect(getEffectsLevel()).toBe("lite");
+    applySettings({ ...DEFAULT_SETTINGS, effects: "reduced" }, root);
+    expect(root.dataset.effects).toBe("reduced");
+    expect(getEffectsLevel()).toBe("reduced");
   });
 });
 
@@ -53,5 +53,9 @@ describe("readSettings", () => {
       effects: "auto",
       locale: "nl",
     });
+  });
+
+  it("keeps the reduced level saved under its old name", () => {
+    expect(readSettings({ effects: "lite" }, []).effects).toBe("reduced");
   });
 });

@@ -30,11 +30,19 @@ Formatting and linting are automated, so reviews can focus on behaviour.
 - 🧹 **Oxlint** enables the `correctness`, `suspicious` and `perf` categories together with type-aware TypeScript rules, React hooks and React Compiler rules, `jsx-a11y`, `import`, `unicorn` and `vitest` plugins, plus the layer rules described below. Run `npm run lint`.
 - 🔷 **TypeScript** runs in strict mode with `noUncheckedIndexedAccess`, `verbatimModuleSyntax` and `erasableSyntaxOnly`.
 
-### 🚫 No comments
+### 💬 Comments
+
+Names, small functions and types carry the intent; a comment only names what a block or a function does, in one short line above it:
+
+```ts
+// Moves a value saved under an earlier key unless the new key is already taken
+export const moveKey = (storage: Storage, from: string, to: string) => {
+```
 
 > [!IMPORTANT]
-> The codebase contains no comments: names, small functions and types carry the intent instead. A custom Oxlint plugin in `lint/no-comments.js` (`local/no-comments`) reports every comment in JavaScript and TypeScript files, including `eslint-disable`-style directives.
-> Styles, configuration, workflow files and templates follow the same convention. If something needs explanation, prefer a better name, an extracted function or documentation in `docs/`.
+> A custom Oxlint plugin in `lint/comments.js` (`local/short-comments`) reports comments longer than one line or 80 characters, comments at the end of a line of code and every lint, type or coverage directive (`eslint-disable`, `@ts-expect-error`, `istanbul ignore` and the like).
+
+Styles, configuration, Dockerfiles and workflows follow the same convention. Anything that needs more than a line belongs in `docs/`.
 
 ### 🧭 Where code goes
 

@@ -17,7 +17,7 @@ test("adds a task with quick add and keeps it after a reload", async ({ page }) 
   await page.goto("./?list=important");
   await expect(page.getByRole("heading", { level: 1, name: "Important" })).toBeVisible();
   await expect(page.getByRole("checkbox", { name: "Call mom" })).toBeVisible();
-  await expect(page).toHaveURL(/\/react-todo-app\/$/);
+  await expect(page).toHaveURL(/\/tasks\/$/);
 });
 
 test("completes a task, undoes it with the keyboard and keeps it after a reload", async ({ page }) => {
@@ -56,5 +56,5 @@ test("keeps open tabs in sync", async ({ page, context }) => {
 test("opens a list from an app shortcut and adds shared text", async ({ page }) => {
   await page.goto("./?title=Read%20the%20article&url=https%3A%2F%2Fexample.com");
   await expect(page.getByRole("checkbox", { name: "Read the article" })).toBeVisible();
-  await expect(page).toHaveURL(/\/react-todo-app\/$/);
+  await expect(page).toHaveURL(/\/tasks\/$/);
 });

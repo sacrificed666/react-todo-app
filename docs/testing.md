@@ -42,19 +42,20 @@ Most behaviour is pinned down by fast unit tests of pure functions and reducers;
 
 ## 📁 Where tests live
 
-Tests sit next to the code they cover as `*.test.ts(x)`:
+Tests sit next to the code they cover as `*.test.ts(x)`, and every component has its own file in its folder, for example `widgets/Footer/Footer.test.tsx`:
 
-| Area                                     | Files                                                                                    | Covers                                                                                                                                                              |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🚀 App                                   | `app/App.test.tsx`                                                                       | Shell without a header, smart lists, projects, the phone toolbar, tab bar and Lists sheet, settings, global search, back button, planning, menus, import, export    |
-|                                          | `app/persistence.test.ts`, `app/launch.test.ts`, `app/ErrorBoundary.test.tsx`            | Loading, migrations, missing projects, language detection, cross-tab sync, URL shortcuts, share target, recovery screen                                             |
-| ✅ Todos model                           | `todo`, `todosSlice`, `repeat`, `selectors`, `thunks`, `quickAdd`, `checklist`           | Parsing and validation, every reducer, anchored repeats, counters and tags, drops on the sidebar, quick add grammar with repeats and `@project` mentions            |
-| ✅ Todos UI                              | `TodoItem`, `TaskDetailsDialog`, `TodoComposer`, `TaskDnd/dnd`                           | Keyboard commands, completions saved when the page closes mid-animation, the context menu with long press, swipes, chips, the details dialog, quick add, drop rules |
-| 📁 Projects                              | `project.test.ts`, `projects/thunks.test.ts`                                             | Names and emoji icons, colours, parsing, creating and deleting with undo                                                                                            |
-| 💾 Data                                  | `document`, `history`, `transfer`, `data/thunks`                                         | The stored document and its links, undo and redo of tasks and projects, import limits, export, merging imports                                                      |
-| ⌘ Commands                               | `rank.test.ts`, `CommandPalette.test.tsx`                                                | Ranking and grouping, shortcut, arrow keys, running commands, projects, finding tasks                                                                               |
-| 📚 Lists, 📊 stats, 🎨 settings, 🌍 i18n | `lists`, `groups`, `sort`, `stats/selectors`, `theme`, `settings`, `thunks`, `translate` | Smart lists and project views, date groups, sort orders, activity, streaks and project progress, backgrounds and glass, language switching, plurals                 |
-| 🧰 Shared                                | `date`, `keyboard`, `motion`, `refraction`, `text`, `trustedTypes`, `Calendar`           | Date keys, labels and week starts, shortcut matchers, transitions, displacement maths, fuzzy search, the URL policy, calendar keyboard navigation                   |
+| Area                                     | Files                                                                                    | Covers                                                                                                                                                                                  |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🚀 App                                   | `app/App.test.tsx`                                                                       | Shell without a header, smart lists, projects, the phone toolbar, tab bar and Lists sheet, settings, global search, back button, planning, menus, import, export                        |
+|                                          | `app/persistence.test.ts`, `app/launch.test.ts`, `app/ErrorBoundary.test.tsx`            | Loading, migrations including the keys from before the rename, missing projects, language detection, cross-tab sync, URL shortcuts, share target, recovery screen                       |
+| ✅ Todos model                           | `todo`, `todosSlice`, `repeat`, `selectors`, `thunks`, `quickAdd`, `checklist`           | Parsing and validation, every reducer, anchored repeats, counters and tags, drops on the sidebar, quick add grammar with repeats and `@project` mentions                                |
+| ✅ Todos UI                              | `TodoItem`, `TaskDetailsDialog`, `TodoComposer`, `TaskDnd/dnd`                           | Keyboard commands, completions saved when the page closes mid-animation, the context menu with long press, swipes, chips, the details dialog, quick add, drop rules                     |
+| 📁 Projects                              | `project.test.ts`, `projects/thunks.test.ts`                                             | Names and emoji icons, colours, parsing, creating and deleting with undo                                                                                                                |
+| 💾 Data                                  | `document`, `history`, `transfer`, `data/thunks`                                         | The stored document and its links, undo and redo of tasks and projects, import limits, export, merging imports                                                                          |
+| ⌘ Commands                               | `rank.test.ts`, `CommandPalette.test.tsx`                                                | Ranking and grouping, shortcut, arrow keys, running commands, projects, finding tasks                                                                                                   |
+| 📚 Lists, 📊 stats, 🎨 settings, 🌍 i18n | `lists`, `groups`, `sort`, `stats/selectors`, `theme`, `settings`, `thunks`, `translate` | Smart lists and project views, date groups, sort orders, activity, streaks and project progress, backgrounds and glass, the effects level and its old name, language switching, plurals |
+| 🧰 Shared                                | `date`, `keyboard`, `motion`, `refraction`, `text`, `trustedTypes`, `Calendar`           | Date keys, labels and week starts, shortcut matchers, transitions, displacement maths, fuzzy search, the URL policy, calendar keyboard navigation                                       |
+| 🧩 Widgets                               | `widgets/Footer/Footer.test.tsx`                                                         | The author, the version and the source code, links that announce a new tab                                                                                                              |
 
 ## 🌐 Test environment
 
@@ -94,7 +95,7 @@ Tests sit next to the code they cover as `*.test.ts(x)`:
 
 ```mermaid
 flowchart LR
-  PW[🎭 Playwright] -->|"npm run build && npm run preview"| App["🖥️ Vite preview<br/>localhost:4173/react-todo-app/"]
+  PW[🎭 Playwright] -->|"npm run build && npm run preview"| App["🖥️ Vite preview<br/>localhost:4173/tasks/"]
   PW -->|desktop and Pixel 7| App
 ```
 

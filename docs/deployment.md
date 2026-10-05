@@ -1,6 +1,6 @@
 # 🚀 Deployment
 
-The app is deployed to **GitHub Pages** at <https://sacrificed666.github.io/react-todo-app/> by `.github/workflows/ci.yml`. A second workflow, `.github/workflows/codeql.yml`, scans the code for vulnerabilities.
+Tasks is a static site: the production build in `dist/` is deployed to **GitHub Pages** at <https://sacrificed666.github.io/tasks/> by `.github/workflows/ci.yml`, and the same build runs in Docker behind nginx. There is no server, no database and no configuration.
 
 ## 🔁 Pipeline
 
@@ -9,6 +9,7 @@ flowchart LR
   Trigger{{"push · pull request · manual run<br/>main, staging, development"}} --> Verify
   Trigger --> Build
   Trigger --> E2E
+  Trigger --> Docker[🐳 docker<br/>build and start the image]
   Trigger -. pull requests only .-> Review[🛡️ Dependency review]
   Trigger --> CodeQL[🔬 CodeQL]
   Weekly{{"every Monday"}} --> CodeQL
@@ -38,6 +39,7 @@ flowchart LR
 | 🔍 `verify`            | every trigger                 | `npm ci`, `npm audit signatures`, a changelog section for the current version, Oxlint with GitHub annotations, Oxfmt check, TypeScript, Vitest with coverage, coverage summary and report                                     |
 | 🛠️ `build`             | every trigger                 | Production build and `scripts/build-report.mjs`; on `main` it also uploads `dist/` as the Pages artifact, on `staging` and `development` as the `site-<branch>` artifact                                                      |
 | 🎭 `e2e`               | every trigger                 | Chromium from a cache keyed by the Playwright version, the production build in `vite preview`, Playwright on desktop and phone, axe, offline, CSP, forced colours, reflow and the Lighthouse budget, with the report uploaded |
+| 🐳 `docker`            | every trigger                 | Builds the staging image with nginx from `docker/Dockerfile`, starts it and waits until `/healthz` answers                                                                                                                    |
 | 🛡️ `dependency-review` | pull requests                 | Fails the pull request if it introduces dependencies with high-severity vulnerabilities                                                                                                                                       |
 | 🔬 `analyze` (CodeQL)  | pushes, pull requests, weekly | Scans TypeScript and the workflow files with the `security-extended` query suite                                                                                                                                              |
 | 🚀 `deploy`            | `main` pushes and manual runs | Waits for `verify`, `build` and `e2e`, then publishes the artifact to the `github-pages` environment                                                                                                                          |
@@ -45,7 +47,7 @@ flowchart LR
 
 Details:
 
-- ⚡ `verify`, `build` and `e2e` run in parallel, so feedback arrives quickly while deployment still requires all three to pass.
+- ⚡ `verify`, `build`, `e2e` and `docker` run in parallel, so feedback arrives quickly; deployment requires `verify`, `build` and `e2e` to pass.
 - 📏 The build report lists every file with its gzip size on the run's summary page and **fails** the job if the CSP, Trusted Types, the service worker, the manifest shortcuts or the share target are missing, or if an inline script appears.
 
 > [!IMPORTANT]
@@ -65,15 +67,53 @@ Details:
 > [!NOTE]
 > The workflow creates the `github-pages` environment on its first run.
 
-## 🧭 Base path
+## ☁️ Hosting
+
+### 📄 GitHub Pages
+
+`main` deploys to GitHub Pages after every successful run; the `staging` and `development` builds are kept as `site-staging` and `site-development` artifacts, see [Environments](./releases.md#️-environments).
 
 The site is served from a sub-path, configured once in `vite.config.ts`:
 
 ```ts
-const base = "/react-todo-app/";
+const base = "/tasks/";
 ```
 
-The same constant feeds the manifest `id`, `scope`, `start_url`, shortcuts and share target. If the repository is renamed or the app is hosted at a domain root, change it in this one place.
+The same constant feeds the manifest `id`, `scope`, `start_url`, shortcuts and share target. To host the app at another path or at a domain root, change it there and in `docker/nginx.conf`.
+
+To deploy by hand, open **Actions → 🚀 Tasks | CI/CD → Run workflow** and choose `main`.
+
+> [!WARNING]
+> Runs started on other branches verify, build and test but never deploy.
+
+### 🐳 Docker
+
+The shared service lives in `compose.yaml` at the root, and everything else in `docker/`: one multi-stage `Dockerfile`, an overlay per environment and the nginx configuration. `.dockerignore` keeps `node_modules`, build output, docs and every `.env*` file out of the build context.
+
+| File                      | What it adds                                                                                    |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| `compose.yaml`            | The `app` service: build context, `docker/Dockerfile` and an init process                       |
+| `docker/Dockerfile`       | Stages `base`, `deps`, `development`, `build` and `runtime`, an unprivileged nginx with `dist/` |
+| `docker/nginx.conf`       | Security headers, caching, compression, the `/tasks/` base path and a `/healthz` check          |
+| `docker/development.yaml` | The Vite dev server with hot reload through Compose Watch, port 5173                            |
+| `docker/staging.yaml`     | The production build with `APP_ENV=staging`, port 8081                                          |
+| `docker/production.yaml`  | The production build with `APP_ENV=production`, port 8080                                       |
+
+```bash
+docker compose -f compose.yaml -f docker/development.yaml up --watch
+docker compose -f compose.yaml -f docker/staging.yaml up --build -d
+docker compose -f compose.yaml -f docker/production.yaml up --build -d
+```
+
+- 🌐 **The same addresses as on GitHub Pages.** The app lives under `/tasks/`, the root redirects there, and unknown paths fall back to `index.html`.
+- 🧭 **`APP_ENV` decides indexing.** nginx sends `X-Robots-Tag: noindex, nofollow` for every value except `production`.
+- 🗃️ **Caching.** Hashed files in `assets/` are cached for a year as `immutable`; `index.html`, the service worker and the manifest are revalidated on every visit, so an update reaches everyone through the usual update prompt.
+- 🛡️ **Headers.** `nosniff`, `DENY` framing, the referrer policy, `Cross-Origin-Opener-Policy` and the permissions policy join the Content Security Policy that ships in `index.html`; text files are compressed with gzip.
+- 📦 **The runtime stage is small.** It is `nginxinc/nginx-unprivileged` with the build only (about 85 MB), runs without root on port 8080 and reports its health through `/healthz`.
+- 🔢 **Ports** default to 8080 and 8081, so staging and production fit on one host; `APP_PORT` overrides them. Staging and production restart on failure and rotate their logs.
+
+> [!TIP]
+> `docker compose -f compose.yaml -f docker/staging.yaml config` prints the merged configuration of an environment before anything is built.
 
 ## 📱 Progressive Web App
 
@@ -111,21 +151,6 @@ sequenceDiagram
   Note over Page: First install only:<br/>"Ready to work offline"
 ```
 
-## 🔎 Search engines and sharing
-
-`index.html` carries everything a crawler or a chat app needs before any JavaScript runs:
-
-| Metadata                       | Purpose                                                                                   |
-| ------------------------------ | ----------------------------------------------------------------------------------------- |
-| 📰 `<title>` and `description` | A descriptive title and a 150-character summary for search results                        |
-| 🔗 `canonical`                 | One address for the app, whatever query parameters a shortcut or share adds               |
-| 🖼️ Open Graph and Twitter      | Title, description and a 1200 × 630 preview (`public/og-image.jpg`) with alternative text |
-| 🌍 `og:locale`                 | English plus the seven other interface languages as alternates                            |
-| 🧾 JSON-LD                     | A `WebApplication` description: category, price, languages, features, author and licence  |
-| 🙈 `<noscript>`                | A heading and a summary for visitors and crawlers without JavaScript                      |
-
-Inside the app, `useDocumentTitle()` names the tab after the open list in the interface language, and the main list keeps the descriptive title. The build report fails when the canonical link, the preview image, valid structured data or the manifest screenshots go missing.
-
 ## 🤖 Dependency updates
 
 `.github/dependabot.yml` checks for updates every Monday:
@@ -133,13 +158,19 @@ Inside the app, `useDocumentTitle()` names the tab after the open list in the in
 - 🌱 pull requests target `development`, so updates reach GitHub Pages with the next release;
 - 📦 npm minor and patch updates are grouped into one pull request for production and one for development dependencies; major updates arrive separately;
 - ⚙️ GitHub Actions updates are grouped into a single pull request;
-- 📝 commit messages follow the project convention (`chore(deps): …`, `ci(deps): …`).
+- 🐳 the base images in `docker/Dockerfile` are updated one by one;
+- 📝 commit messages follow the project convention (`chore(deps): …`, `ci(deps): …`, `build(deps): …`).
 
 Every Dependabot pull request goes through the same pipeline, including the dependency review and CodeQL.
 
-## 🖐️ Manual deployment
+## 🖐️ Checking a build locally
 
-Open **Actions → 🚀 Todo App | CI/CD → Run workflow** and choose `main`.
+```bash
+npm run check
+npm run build
+npm run preview
+```
 
-> [!WARNING]
-> Runs started on other branches verify, build and test but never deploy.
+Open `http://localhost:4173/tasks/`, add a few tasks, switch the language and the theme, go offline in the developer tools and reload: the app keeps working from the service worker.
+
+`npm run test:e2e` does the same automatically, including offline mode, the Content Security Policy, accessibility and the Lighthouse budget.

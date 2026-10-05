@@ -29,17 +29,6 @@
   letter-spacing: -0.015em;
 }
 
-.done {
-  block-size: 36px;
-  padding-inline: 16px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-accent);
-  color: var(--color-on-accent);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  @include pressable(0.95);
-}
-
 .section {
   display: flex;
   flex-direction: column;
@@ -185,6 +174,12 @@
   box-shadow: 0 2px 6px -2px rgb(0 0 0 / 25%);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
+
+  :root[data-effects="reduced"] & {
+    background-color: rgb(255 255 255 / 40%);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 .previewSidebar {

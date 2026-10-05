@@ -1,14 +1,14 @@
 {
-  "name": "react-todo-app",
+  "name": "tasks",
   "version": "1.0.0",
   "private": true,
   "description": "A private, offline-first to-do list built with React, Redux Toolkit and Vite.",
-  "homepage": "https://sacrificed666.github.io/react-todo-app/",
+  "homepage": "https://sacrificed666.github.io/tasks/",
   "license": "MIT",
   "author": "Illia Movchko (https://github.com/sacrificed666)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sacrificed666/react-todo-app.git"
+    "url": "git+https://github.com/sacrificed666/tasks.git"
   },
   "type": "module",
   "scripts": {

@@ -80,8 +80,8 @@ describe("exportData", () => {
     store.dispatch(exportData());
 
     expect(downloadJson).toHaveBeenCalledWith(
-      expect.stringMatching(/^todos-\d{4}-\d{2}-\d{2}\.json$/),
-      expect.objectContaining({ app: "react-todo-app", todos: sampleTodos, projects: [work] }),
+      expect.stringMatching(/^tasks-\d{4}-\d{2}-\d{2}\.json$/),
+      expect.objectContaining({ app: "tasks", todos: sampleTodos, projects: [work] }),
     );
   });
 });

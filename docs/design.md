@@ -37,7 +37,7 @@ flowchart LR
 | 📱 Tab bar   | Below 900 px a floating capsule at the bottom with four lists and a **Lists** tab that opens a bottom sheet with every list, project and tag                                                              |
 | 🗔 Overlays   | Menus, pickers and the context menu are glass popovers; the palette, settings, project dialog and (below 1240 px) the details are modal glass dialogs that become bottom sheets on phones                 |
 
-The container is 76 rem wide, and 92 rem on wide screens to make room for the inspector. A small credits line closes the sidebar, and on phones `--tabbar-offset` keeps notifications and the last rows clear of the tab bar. In an installed app with Window Controls Overlay, `--titlebar-height` pushes the islands below the window buttons and a transparent strip keeps the top edge draggable.
+The container is 76 rem wide, and 92 rem on wide screens to make room for the inspector. A glass footer with the author, the version and the source code closes the page, and on phones `--tabbar-offset` keeps notifications, the footer and the last rows clear of the tab bar. In an installed app with Window Controls Overlay, `--titlebar-height` pushes the islands below the window buttons and a transparent strip keeps the top edge draggable.
 
 Within a list, **date groups** get small uppercase headings, each with its own grouped panel: _Overdue_ in red with a **Move to today** capsule, then _Today_, _Tomorrow_, weekdays and months.
 
@@ -133,23 +133,23 @@ Tinted glass only swaps the `--glass-tint*` tokens, so blur, refraction and ligh
 
 Every glass surface uses `backdrop-filter`, and a browser has to recompute it whenever the pixels behind it change. An animated backdrop changes them on every frame, so all the glass on screen is re-blurred sixty times a second even when nothing moves in the interface. That is fast on Apple GPUs, but a common source of stutter on Windows and integrated graphics. The **Effects** setting chooses how much of that work the app asks for:
 
-| Level      | Orbs     | Blend modes and grain | Refraction (Chromium) | Pointer light | Blur radius    |
-| ---------- | -------- | --------------------- | --------------------- | ------------- | -------------- |
-| ✨ Full    | Drifting | Yes                   | Yes                   | Yes           | 8 / 14 / 26 px |
-| 🍃 Reduced | Still    | No                    | No                    | No            | 8 / 12 / 18 px |
+| Level      | Orbs     | Blend modes and grain | Refraction (Chromium) | Pointer light | Glass                                                       |
+| ---------- | -------- | --------------------- | --------------------- | ------------- | ----------------------------------------------------------- |
+| ✨ Full    | Drifting | Yes                   | Yes                   | Yes           | Blur of 8, 14 and 26 px, a masked rim and a sheen           |
+| 🍃 Reduced | Still    | No                    | No                    | No            | A denser tint without blur, a one-pixel ring, short shadows |
 
 **Auto** resolves to Full on Apple devices with at least eight cores and to Reduced everywhere else. The resolved level is written to `<html data-effects>` for the styles and to a tiny external store in `shared/lib/effects.ts` that `useRefraction()` and `usePointerLight()` subscribe to.
 
 Other changes that keep the frame budget:
 
 - 🧱 **One blur per section**: rows are plain content on a grouped panel, so a list of 60 tasks costs two backdrop filters instead of sixty.
-- 🪟 **No blur on content in Reduced**: task groups, the overview and empty states use a denser tint (`--glass-tint-content`) instead of `backdrop-filter` when the backdrop is still anyway. Bars and controls keep their blur.
+- 🪟 **No blur in Reduced**: every glass surface, bar, popover and dialog backdrop uses a denser tint instead of `backdrop-filter`, the masked rim becomes a one-pixel ring inside `--glass-edge`, and shadows get short. The `reduced-dark` and `reduced-light` token sets in `shared/styles/_tokens.scss` and the `glass` mixin do all of it, so components need no rules of their own.
 - 🪞 **Off-screen rows are skipped**: rows use `content-visibility: auto`, so the browser lays out and paints only the ones near the viewport.
 - 🖱️ **One pointer update per frame**: the pointer light is batched with `requestAnimationFrame` instead of running on every mouse event.
 - 💤 **Lazy content**: menus and pickers render their content only while open, and translations other than English load on demand.
 - ⏱️ **One timer**: every component that needs the current day shares a single minute timer.
 
-Measured in headless Chrome without a GPU, with the CPU slowed down four times. With 60 tasks the app scrolls at 58-60 fps in Reduced, with 300 tasks at 59 fps. With 2000 tasks, before and after the rendering optimizations:
+Measured in headless Chrome without a GPU, with the CPU slowed down four times and a Windows user agent. With 150 tasks, dropping the blur and the masks from Reduced cut rasterizing while scrolling from about 890 to 70 ms per second and the layers from 16 to 12; Full needs 990 ms of compositor work per second where Reduced needs 140. With 2000 tasks, before and after the rendering optimizations:
 
 | Scenario (2000 tasks)        | Before     | After     |
 | ---------------------------- | ---------- | --------- |

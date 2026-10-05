@@ -7,13 +7,13 @@ export const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
 export const MAX_IMPORT_TODOS = 5000;
 
 export const createExport = ({ todos, projects }: DataSnapshot, exportedAt: Date) => ({
-  app: "react-todo-app",
+  app: "tasks",
   exportedAt: exportedAt.toISOString(),
   todos,
   projects,
 });
 
-export const exportFileName = (date: Date) => `todos-${toDateKey(date)}.json`;
+export const exportFileName = (date: Date) => `tasks-${toDateKey(date)}.json`;
 
 export const readImport = (text: string): DataSnapshot | null => {
   if (text.length > MAX_IMPORT_BYTES) return null;

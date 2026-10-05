@@ -86,6 +86,21 @@ describe("loadPersistedState", () => {
     expect(setupStore(loadPersistedState()).getState().view.list).toBe("completed");
   });
 
+  it("moves data saved under the keys of the app before its rename", () => {
+    localStorage.setItem(
+      STORAGE_KEYS.legacyData,
+      JSON.stringify({ todos: [makeTodo({ id: "kept", title: "Kept" })], projects: [] }),
+    );
+    localStorage.setItem(STORAGE_KEYS.legacyPreferences, JSON.stringify({ accent: "forest" }));
+
+    const store = setupStore(loadPersistedState());
+
+    expect(selectTodos(store.getState()).map((todo) => todo.title)).toEqual(["Kept"]);
+    expect(store.getState().settings.accent).toBe("forest");
+    expect(localStorage.getItem(STORAGE_KEYS.legacyData)).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEYS.legacyPreferences)).toBeNull();
+  });
+
   it("migrates todos saved in the legacy format", () => {
     localStorage.setItem(STORAGE_KEYS.legacyTodos, JSON.stringify([{ id: "1", text: "Old task", isCompleted: false }]));
 

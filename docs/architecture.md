@@ -95,7 +95,7 @@ interface RootState {
     backdrop: Backdrop;
     glass: "clear" | "tinted";
     locale: Locale;
-    effects: "auto" | "full" | "lite";
+    effects: "auto" | "full" | "reduced";
   };
   toast: { current: Toast | null };
   history: { past: HistoryEntry[]; future: HistoryEntry[] };
@@ -272,7 +272,7 @@ Thunks coordinate several slices:
 | 📁 `createProject(draft)`        | projects | Adds a project and opens it                                                                                                                                     |
 | 🗑️ `deleteProject(id)`           | projects | Removes a project with its tasks, closes their details and offers **Undo**                                                                                      |
 | 📥 `importData(text)`            | data     | Validates a file, merges new todos and projects and reports the result                                                                                          |
-| 📤 `exportData()`                | data     | Downloads every todo and project as `todos-YYYY-MM-DD.json`                                                                                                     |
+| 📤 `exportData()`                | data     | Downloads every todo and project as `tasks-YYYY-MM-DD.json`                                                                                                     |
 | ⏪ `undo()` / `redo()`           | data     | Steps through the history and describes the step in a notification                                                                                              |
 | 🌍 `changeLocale(locale)`        | settings | Loads the language's messages, then switches; reports a failure in a notification                                                                               |
 
@@ -321,11 +321,12 @@ flowchart LR
 
 `app/persistence.ts` is wired up once in `main.tsx`, which keeps the store itself free of browser APIs and easy to test.
 
-| Key                          | Content                                                                                                 |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `react-todo-app/todos`       | `{ "todos": Todo[], "projects": Project[] }`                                                            |
-| `react-todo-app/preferences` | `{ "list", "sort", "showCompleted", "appearance", "accent", "backdrop", "glass", "locale", "effects" }` |
-| `toDoList`                   | Legacy data in the original format, migrated and removed on first launch                                |
+| Key                 | Content                                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| `tasks/todos`       | `{ "todos": Todo[], "projects": Project[] }`                                                            |
+| `tasks/preferences` | `{ "list", "sort", "showCompleted", "appearance", "accent", "backdrop", "glass", "locale", "effects" }` |
+| `react-todo-app/*`  | Keys of the app before it was renamed to Tasks, moved to the keys above on first launch                 |
+| `toDoList`          | Legacy data in the original format, migrated and removed on first launch                                |
 
 - 📂 **Loading**: `loadPersistedState()` reads both keys and falls back to safe defaults when data is missing or corrupted. A saved project view whose project is gone opens **All tasks**, an old `filter` preference is mapped to the matching list, and the language is detected from `navigator.languages` on the first launch.
 - 🛡️ **Validation**: everything read from storage, other tabs or imported files goes through `parseData()`, which runs `parseTodos()` and `parseProjects()`. They accept every earlier format, drop invalid entries, dates, colours and links, replace unsafe or duplicate ids and normalize timestamps.
@@ -344,7 +345,7 @@ sequenceDiagram
   participant LS as localStorage
   participant B as Tab B
   A->>A: projectAdded
-  A->>LS: write react-todo-app/todos
+  A->>LS: write tasks/todos
   LS-->>B: storage event
   B->>B: parseData(newValue)
   B->>B: dataReplaced, history cleared
@@ -410,7 +411,7 @@ sequenceDiagram
 
 ## ⚡ Effects level
 
-`applySettings()` resolves the **Effects** setting (`auto` becomes `full` on capable Apple devices and `lite` elsewhere), writes it to `<html data-effects>` and hands it to a tiny external store in `shared/lib/effects.ts`. Styles key the aurora animation, blend modes, grain and pointer light off the attribute; `useRefraction()` and `usePointerLight()` read the store with `useSyncExternalStore`, so switching levels attaches or removes refraction without a reload. The trade-offs are described in [Design system](./design.md#-effects-and-performance).
+`applySettings()` resolves the **Effects** setting (`auto` becomes `full` on capable Apple devices and `reduced` elsewhere), writes it to `<html data-effects>` and hands it to a tiny external store in `shared/lib/effects.ts`. Styles key the aurora animation, blend modes, grain and pointer light off the attribute; `useRefraction()` and `usePointerLight()` read the store with `useSyncExternalStore`, so switching levels attaches or removes refraction without a reload. The trade-offs are described in [Design system](./design.md#-effects-and-performance).
 
 ## 🏎️ Rendering performance
 
@@ -441,7 +442,7 @@ App
 ├── titlebar                 Draggable strip in Window Controls Overlay mode
 ├── TaskDnd                  One DndContext for the list and the sidebar, with a drag overlay
 │   ├── Toolbar              Phones: brand, condensed title, 🔍, settings and ⋯ in a glass capsule
-│   ├── Sidebar              Desktop: a <header> banner panel; overview and a <footer> with the author, version and source below it
+│   ├── Sidebar              Desktop: a <header> banner panel with the overview below it
 │   │   ├── Brand, SettingsButton, ActionsMenu, OfflineBadge
 │   │   ├── TodoSearch       Search field with the ⌘K palette button, / shortcut
 │   │   ├── ListNav          Smart lists with counters, drop targets
@@ -456,6 +457,7 @@ App
 │   │           └── TodoItem Checkbox, title, chips, actions, swipes, long press, keyboard, TaskMenu
 │   ├── Inspector            Wide screens: an <aside> with the Overview, or TaskDetailsPanel with TaskDetails
 │   └── ListsSheet           Phones: smart lists, projects and tags in a bottom sheet
+├── Footer                   A <footer> with the author, the version and the source code
 ├── TabBar                   Bottom glass tab bar on phones with a Lists tab
 ├── TaskDetailsDialog        Dialog with TaskDetails below 1240 px
 ├── CommandPalette           ⌘K palette with fuzzy search over commands, projects and tasks

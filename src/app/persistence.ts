@@ -9,13 +9,15 @@ import { readSettings, type Settings } from "@/features/settings/model/settings"
 import { selectTodos } from "@/features/todos/model/selectors";
 import { todosAdapter } from "@/features/todos/model/todosSlice";
 import { isRecord } from "@/shared/lib/guards";
-import { getStorage, readJson, removeKey, writeText } from "@/shared/lib/storage";
+import { getStorage, moveKey, readJson, removeKey, writeText } from "@/shared/lib/storage";
 
 import type { AppStore, RootState } from "./store";
 
 export const STORAGE_KEYS = {
-  data: "react-todo-app/todos",
-  preferences: "react-todo-app/preferences",
+  data: "tasks/todos",
+  preferences: "tasks/preferences",
+  legacyData: "react-todo-app/todos",
+  legacyPreferences: "react-todo-app/preferences",
   legacyTodos: "toDoList",
 } as const;
 
@@ -70,6 +72,8 @@ export const loadPersistedState = (
 ): Partial<RootState> | undefined => {
   if (!storage) return undefined;
 
+  moveKey(storage, STORAGE_KEYS.legacyData, STORAGE_KEYS.data);
+  moveKey(storage, STORAGE_KEYS.legacyPreferences, STORAGE_KEYS.preferences);
   const data = loadData(storage);
   const { list, sort, showCompleted, ...settings } = loadPreferences(storage, languages, data);
 

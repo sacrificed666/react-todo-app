@@ -22,6 +22,7 @@ import { useToday } from "@/shared/hooks/useToday";
 import { isRedoKey, isUndoKey } from "@/shared/lib/keyboard";
 import { COMPACT_LAYOUT, WIDE_LAYOUT } from "@/shared/lib/media";
 import Backdrop from "@/widgets/Backdrop/Backdrop";
+import Footer from "@/widgets/Footer/Footer";
 import Inspector from "@/widgets/Inspector/Inspector";
 import Sidebar from "@/widgets/Sidebar/Sidebar";
 import Toolbar from "@/widgets/Toolbar/Toolbar";
@@ -79,6 +80,7 @@ const App = () => {
         </div>
         {compact ? <ListsSheet /> : null}
       </TaskDnd>
+      <Footer />
       {compact ? <TabBar /> : null}
       {wide ? null : <TaskDetailsDialog />}
       <CommandPalette />

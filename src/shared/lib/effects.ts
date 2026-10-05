@@ -1,7 +1,7 @@
-export type EffectsLevel = "full" | "lite";
+export type EffectsLevel = "full" | "reduced";
 
 const listeners = new Set<() => void>();
-let current: EffectsLevel = "lite";
+let current: EffectsLevel = "reduced";
 
 export const getEffectsLevel = () => current;
 

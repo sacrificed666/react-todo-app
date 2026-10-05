@@ -10,7 +10,7 @@ There is no header bar. Controls float as glass islands over the backdrop.
 | 📝 Main column | List or project title with today's date and progress, sort and edit buttons, composer and the grouped task list       | Same                              | A transparent toolbar with 🔍, settings and **⋯**; the title shrinks into it on scroll |
 | 🧾 Inspector   | A third column with the **overview**, replaced by the **task details** when one is open                               | Details open as a dialog          | Details open as a bottom sheet                                                         |
 
-The sidebar ends with a small credits line with the author, the version (a link to the changelog) and the source code. The sidebar and the inspector stay in place while the list scrolls.
+A footer at the bottom of the page shows the author, the version (a link to the changelog) and the source code. The sidebar and the inspector stay in place while the list scrolls.
 
 ![Wide screen, dark appearance](./images/desktop-dark.jpg)
 
@@ -225,7 +225,7 @@ Every change to your tasks and projects can be undone: completing, renaming, sta
 
 ## 🎨 Appearance, 🌍 language and ⚡ effects
 
-The sliders button opens the **Settings** dialog, a bottom sheet on phones.
+The sliders button opens the **Settings** dialog, a bottom sheet on phones, with three sections: **Appearance**, **Effects** and **Language**. The ✕ button, <kbd>Esc</kbd> or the Back button on a phone closes it.
 
 ![Settings with accents, backgrounds and glass](./images/settings.jpg)
 
@@ -245,11 +245,11 @@ The sliders button opens the **Settings** dialog, a bottom sheet on phones.
   | ⬜ Plain    | A calm tint of the accent colour without moving parts, the lightest  |
 
 - 🫧 **Glass**: **Clear** keeps the panels see-through; **Tinted** makes them denser and easier to read on bright backgrounds.
-- 🌍 Ten languages with flags: 🇬🇧 English, 🇺🇦 Українська, 🇨🇿 Čeština, 🇩🇪 Deutsch, 🇪🇸 Español, 🇫🇷 Français, 🇮🇹 Italiano, 🇳🇱 Nederlands, 🇵🇱 Polski and 🇵🇹 Português. The whole interface, dates, plurals, notifications and quick add switch instantly; on the first visit the language follows your browser. See [Localization](./i18n.md).
-- ⚡ **Performance**: **Auto**, **Full** or **Reduced** effects:
-  - **Full** adds the drifting aurora, edge refraction, the pointer light and grain;
-  - **Reduced** keeps the glass but makes the backdrop still and lightens the blur, for smooth scrolling on any computer;
+- ⚡ **Effects**: **Auto**, **Full** or **Reduced**:
+  - **Full** adds the drifting aurora, blurred glass, edge refraction, the pointer light and grain;
+  - **Reduced** keeps the look but swaps the blur for a denser tint and makes the backdrop still, for smooth scrolling on any computer;
   - **Auto** picks Full on recent Macs and iPads and Reduced everywhere else; the settings show which one is in use.
+- 🌍 Ten languages with flags: 🇬🇧 English, 🇺🇦 Українська, 🇨🇿 Čeština, 🇩🇪 Deutsch, 🇪🇸 Español, 🇫🇷 Français, 🇮🇹 Italiano, 🇳🇱 Nederlands, 🇵🇱 Polski and 🇵🇹 Português. The whole interface, dates, plurals, notifications and quick add switch instantly; on the first visit the language follows your browser. See [Localization](./i18n.md).
 - 💾 All choices are saved and applied before the first paint, so the app never flashes the wrong theme.
 
 ## 🧰 More actions menu
@@ -259,7 +259,7 @@ The **⋯** button opens a menu with:
 - ↩️ **Undo** and ↪️ **Redo** with the name of the step
 - ✅ **Complete all** or **Mark all as active**, depending on the current state
 - 🧹 **Clear completed**
-- 📤 **Export tasks**: downloads `todos-YYYY-MM-DD.json` with your tasks and projects
+- 📤 **Export tasks**: downloads `tasks-YYYY-MM-DD.json` with your tasks and projects
 - 📥 **Import tasks**: merges tasks and projects from a JSON file (up to 2 MB and 5000 tasks)
 - ⌨️ A cheat sheet of keyboard shortcuts (hidden on touch-only devices)
 
@@ -269,7 +269,7 @@ Exported files look like this:
 
 ```json
 {
-  "app": "react-todo-app",
+  "app": "tasks",
   "exportedAt": "2026-10-02T10:00:00.000Z",
   "todos": [
     {

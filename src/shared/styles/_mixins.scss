@@ -42,11 +42,18 @@
     transition: --light-strength var(--duration-slow) var(--ease-out);
   }
 
-  @if $content {
-    :root[data-effects="lite"] & {
+  // Reduced effects: flat glass without blur, masked rims or sheen
+  :root[data-effects="reduced"] & {
+    @if $content {
       background-color: var(--glass-tint-content);
-      -webkit-backdrop-filter: none;
-      backdrop-filter: none;
+    }
+
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+
+    &::before,
+    &::after {
+      display: none;
     }
   }
 
@@ -72,6 +79,15 @@
     z-index: -1;
     background: var(--glass-sheen);
     pointer-events: none;
+  }
+
+  :root[data-effects="reduced"] & {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+
+    &::before {
+      display: none;
+    }
   }
 
   @media (forced-colors: active) {

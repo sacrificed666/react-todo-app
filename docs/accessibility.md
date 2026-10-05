@@ -4,7 +4,7 @@ The app aims at **WCAG 2.2 AA** in all ten languages, in both appearances, on ph
 
 ## 🗺️ Structure
 
-- 🧭 Landmarks match the layout: the sidebar is the page's banner with a search landmark and three navigations (lists, projects and tags), the task list is the main region, the inspector is complementary and the credits with the version are the footer.
+- 🧭 Landmarks match the layout: the sidebar is the page's banner with a search landmark and three navigations (lists, projects and tags), the task list is the main region, the inspector is complementary and the footer with the version and the source code closes the page.
 - 🏷️ Every dialog, sheet and the task details have a heading, and the page has exactly one `h1`: the name of the open list or project.
 - 🪪 The browser tab is named after what is open (**Today · Tasks**, **Search · Tasks**, a project's name) in the interface language, so tabs, history and screen readers always say where you are.
 - 🌍 `<html lang>` follows the interface language, and every language name in the settings carries its own `lang`.

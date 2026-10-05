@@ -24,11 +24,11 @@ They are deleted with it, and the dialog tells you how many before you confirm. 
 
 ### 🧯 The app shows “Something went wrong”. Are my tasks gone?
 
-No. The error screen sits on top of your data: **Download a backup** saves the stored tasks and projects as a JSON file, **Reset view settings** clears only your preferences (the selected list, sort order, theme and language) and **Reload the app** starts over. If the problem persists, please [open an issue](https://github.com/sacrificed666/react-todo-app/issues/new/choose).
+No. The error screen sits on top of your data: **Download a backup** saves the stored tasks and projects as a JSON file, **Reset view settings** clears only your preferences (the selected list, sort order, theme and language) and **Reload the app** starts over. If the problem persists, please [open an issue](https://github.com/sacrificed666/tasks/issues/new/choose).
 
 ### 🐢 The app feels slow on my computer. What can I do?
 
-Open **Settings → Performance** and choose **Reduced**. It keeps the glass look but stops the moving background, the refraction and the pointer light, which are what slows down computers without a strong graphics chip. **Auto** already does this everywhere except recent Macs and iPads. The **Plain** background is the lightest of all. Long lists are not a problem: the app stays responsive with thousands of tasks. See [Design system](./design.md#-effects-and-performance).
+Open **Settings → Effects** and choose **Reduced**. It keeps the look but swaps the blurred glass for a denser tint and stops the moving background, the refraction and the pointer light, which are what slows down computers without a strong graphics chip. **Auto** already does this everywhere except recent Macs and iPads. The **Plain** background is the lightest of all. Long lists are not a problem: the app stays responsive with thousands of tasks. See [Design system](./design.md#-effects-and-performance).
 
 ### 🖼️ How do I change the colours or the background?
 
@@ -76,3 +76,7 @@ Clear the site data in your browser settings. Inside the app, deleting a project
 
 > [!CAUTION]
 > This cannot be undone once the page is closed. Export a backup first if you might need the tasks again.
+
+### 🐳 Can I run it in Docker?
+
+Yes. `docker compose -f compose.yaml -f docker/development.yaml up --watch` starts the dev server in a container, and `docker/staging.yaml` and `docker/production.yaml` serve the production build with nginx at `/tasks/`, just like GitHub Pages. See [Deployment](./deployment.md#-docker).

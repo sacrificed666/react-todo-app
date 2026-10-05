@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "react", "jsx-a11y", "import", "unicorn", "oxc", "vitest"],
-  "jsPlugins": ["./lint/no-comments.js"],
+  "jsPlugins": ["./lint/comments.js"],
   "categories": {
     "correctness": "error",
     "suspicious": "error",
@@ -16,7 +16,7 @@
   },
   "ignorePatterns": ["dist", "dev-dist", "coverage", "playwright-report", "test-results"],
   "rules": {
-    "local/no-comments": "error",
+    "local/short-comments": "error",
     "eqeqeq": "error",
     "no-console": "error",
     "prefer-const": "error",

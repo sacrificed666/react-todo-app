@@ -1,6 +1,6 @@
 # 🛡️ Security
 
-Todo App is a static, local-first web app: no backend, no accounts, no cookies, no analytics and no requests to other origins, not even for the language flags. That removes whole classes of problems, but the browser still handles untrusted data (imported files, shared content, URL parameters and data written by other tabs), so the app treats all of it as hostile until validated.
+Tasks is a static, local-first web app: no backend, no accounts, no cookies, no analytics and no requests to other origins, not even for the language flags. That removes whole classes of problems, but the browser still handles untrusted data (imported files, shared content, URL parameters and data written by other tabs), so the app treats all of it as hostile until validated.
 
 To report a vulnerability, follow the [security policy](../.github/SECURITY.md).
 
@@ -120,7 +120,8 @@ flowchart LR
 - 🛡️ The dependency review action blocks pull requests that add dependencies with high-severity advisories.
 - 🔬 CodeQL scans the TypeScript code and the workflow files with the `security-extended` queries on every push, pull request and weekly.
 - 🔐 Workflows run with a read-only token, checkouts do not persist credentials, and only the deploy job may write to Pages.
-- 🤖 Dependabot proposes npm and GitHub Actions updates every week.
+- 🤖 Dependabot proposes npm, GitHub Actions and Docker updates every week.
+- 🐳 The Docker image serves the build with an unprivileged nginx and the same security headers, see [Deployment](./deployment.md#-docker).
 - 🧾 npm runs dependency install scripts only for packages approved in `allowScripts` in `package.json`; the two that exist (`@parcel/watcher` and `fsevents`, both shipping prebuilt binaries) are denied.
 
 ## ☑️ Checklist for contributors

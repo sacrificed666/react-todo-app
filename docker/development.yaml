@@ -1,0 +1,22 @@
+# Dev server with hot reload, run with: up --watch
+name: tasks-development
+
+services:
+  app:
+    image: tasks:development
+    build:
+      target: development
+    environment:
+      APP_ENV: development
+    ports:
+      - "${APP_PORT:-5173}:5173"
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - node_modules/
+            - dist/
+        - action: rebuild
+          path: package-lock.json

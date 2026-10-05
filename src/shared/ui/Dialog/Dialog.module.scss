@@ -55,6 +55,11 @@
       background var(--duration-base) var(--ease-out),
       overlay var(--duration-base) allow-discrete,
       display var(--duration-base) allow-discrete;
+
+    :root[data-effects="reduced"] & {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
   }
 
   @starting-style {

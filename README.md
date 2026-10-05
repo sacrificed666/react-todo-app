@@ -1,11 +1,11 @@
-# 📝 Todo App
+# 📝 Tasks
 
-[![CI/CD](https://github.com/sacrificed666/react-todo-app/actions/workflows/ci.yml/badge.svg)](https://github.com/sacrificed666/react-todo-app/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/sacrificed666/react-todo-app/actions/workflows/codeql.yml/badge.svg)](https://github.com/sacrificed666/react-todo-app/actions/workflows/codeql.yml)
+[![CI/CD](https://github.com/sacrificed666/tasks/actions/workflows/ci.yml/badge.svg)](https://github.com/sacrificed666/tasks/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/sacrificed666/tasks/actions/workflows/codeql.yml/badge.svg)](https://github.com/sacrificed666/tasks/actions/workflows/codeql.yml)
 
 A private to-do list that lives in your browser: plan the day with smart lists, group tasks into projects, repeat them on a schedule and find anything with one search, on a computer or a phone, online or offline. Built with React 19, Redux Toolkit, TypeScript 7 and Vite 8 as a static, local-first web app, in ten languages, accessible, light or dark. Your tasks stay on your device: no account, no server and no analytics.
 
-**[🌐 Live demo](https://sacrificed666.github.io/react-todo-app/)**
+**[🌐 Live demo](https://sacrificed666.github.io/tasks/)**
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/images/desktop-dark.jpg" />
@@ -51,6 +51,7 @@ A private to-do list that lives in your browser: plan the day with smart lists, 
 ![Node.js](https://skillicons.dev/icons?i=nodejs)
 ![Vitest](https://skillicons.dev/icons?i=vitest)
 ![GitHub Actions](https://skillicons.dev/icons?i=githubactions)
+![Docker](https://skillicons.dev/icons?i=docker)
 
 TypeScript 7 · Oxlint · Oxfmt · Vitest 5 · Testing Library · Playwright · axe · Lighthouse · React Compiler · dnd-kit · Workbox · CodeQL
 
@@ -60,13 +61,19 @@ Requires **Node.js 24.15** or newer.
 
 ```bash
 npm ci
-npm run dev          # http://localhost:5173/react-todo-app/
+npm run dev          # http://localhost:5173/tasks/
 ```
 
 ```bash
 npm run check        # lint, format check, type check and unit tests in one go
 npm run test:e2e     # browsers, offline mode, accessibility and Lighthouse on the production build
 npm run build        # production build in dist/
+```
+
+🐳 The same app runs in Docker, with an overlay for every environment, see [Deployment](./docs/deployment.md#-docker):
+
+```bash
+docker compose -f compose.yaml -f docker/development.yaml up --watch
 ```
 
 ## 📚 Documentation
@@ -79,9 +86,10 @@ npm run build        # production build in dist/
 | 🎨 [Design system](./docs/design.md)            | Glass surfaces, refraction, backgrounds and motion    |
 | 🌍 [Localization](./docs/i18n.md)               | Messages, plurals, dates and adding a language        |
 | ♿ [Accessibility](./docs/accessibility.md)     | Keyboard, screen readers, contrast modes and checks   |
+| 🔎 [SEO](./docs/seo.md)                         | Metadata, share card and structured data              |
 | 🛡️ [Security](./docs/security.md)               | CSP, Trusted Types, validation and supply chain       |
 | 🧪 [Testing](./docs/testing.md)                 | Unit and browser tests, axe, Lighthouse and coverage  |
-| 🚀 [Deployment](./docs/deployment.md)           | CI/CD, CodeQL, GitHub Pages and PWA updates           |
+| 🚀 [Deployment](./docs/deployment.md)           | CI/CD, GitHub Pages, Docker and PWA updates           |
 | 🏷️ [Releases](./docs/releases.md)               | Versions, branches, the changelog and environments    |
 | 🤝 [Contributing](./docs/contributing.md)       | Workflow, code style and commit conventions           |
 | ❓ [FAQ](./docs/faq.md)                         | Common questions                                      |
@@ -89,7 +97,7 @@ npm run build        # production build in dist/
 ## 📌 Good to know
 
 - 💾 **Tabs sync, devices do not.** Changes appear in every open tab of the same browser right away.
-- 🐢 **Slow computer?** Pick **Reduced** effects or the **Plain** background in the settings.
+- 🐢 **Effects follow the device.** Windows and Android get flat glass without blur by default; **Settings → Effects → Full** turns on blur, refraction and the moving aurora.
 - 🔍 **Edge refraction is Chromium only.** Other browsers get the same glass without the lens effect.
 
 > [!WARNING]

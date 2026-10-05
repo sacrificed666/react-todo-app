@@ -50,28 +50,3 @@
   align-items: center;
   gap: 2px;
 }
-
-.credits {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 0.4em;
-  padding-inline: 12px;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-
-  @media (max-width: 899px) {
-    justify-content: center;
-  }
-}
-
-.link {
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  text-underline-offset: 3px;
-
-  @include hover {
-    color: var(--color-text);
-    text-decoration: underline;
-  }
-}

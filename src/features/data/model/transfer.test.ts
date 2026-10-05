@@ -10,7 +10,7 @@ const todos = [makeTodo({ id: "deck", title: "Slides", projectId: "work" }), ...
 describe("createExport", () => {
   it("wraps todos and projects with metadata", () => {
     expect(createExport({ todos, projects }, new Date("2026-09-30T10:00:00.000Z"))).toEqual({
-      app: "react-todo-app",
+      app: "tasks",
       exportedAt: "2026-09-30T10:00:00.000Z",
       todos,
       projects,
@@ -18,7 +18,7 @@ describe("createExport", () => {
   });
 
   it("names files after the local date", () => {
-    expect(exportFileName(new Date(2026, 9, 1, 23, 30))).toBe("todos-2026-10-01.json");
+    expect(exportFileName(new Date(2026, 9, 1, 23, 30))).toBe("tasks-2026-10-01.json");
   });
 });
 

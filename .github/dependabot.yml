@@ -29,3 +29,12 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+
+  - package-ecosystem: docker
+    directory: /docker
+    target-branch: development
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: build(deps)

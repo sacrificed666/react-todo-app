@@ -8,7 +8,7 @@ import { defineConfig } from "vitest/config";
 
 import packageJson from "./package.json" with { type: "json" };
 
-const base = "/react-todo-app/";
+const base = "/tasks/";
 const description =
   "A free, private to-do list with projects, smart lists, repeating tasks and a calendar. Works offline in ten languages and keeps your tasks on your device.";
 

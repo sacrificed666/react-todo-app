@@ -2,7 +2,7 @@
 
 ## ✅ Supported versions
 
-Only the latest release receives security fixes, currently **1.x**, deployed to [GitHub Pages](https://sacrificed666.github.io/react-todo-app/). A fix ships as a patch version, for example `1.0.1`, as described in [docs/releases.md](../docs/releases.md).
+Only the latest release receives security fixes, currently **1.x**, deployed to [GitHub Pages](https://sacrificed666.github.io/tasks/). A fix ships as a patch version, for example `1.0.1`, as described in [docs/releases.md](../docs/releases.md).
 
 ## 📮 Reporting a vulnerability
 
@@ -16,7 +16,7 @@ You can expect an acknowledgement within **3 working days** and a status update 
 
 ## 🎯 Scope
 
-Todo App is a static, offline-first web app: there is no backend, no account and no network traffic apart from loading the app itself and the language flag images from flagcdn.com. Reports are especially welcome about:
+Tasks is a static, offline-first web app: there is no backend, no account and no network traffic apart from loading the app itself. Reports are especially welcome about:
 
 - 💉 script injection through task titles, notes, imported files, shared content or URL parameters;
 - 🧱 ways to bypass the Content Security Policy or Trusted Types;

@@ -1,4 +1,4 @@
-name: 🛡️ Todo App | CodeQL
+name: 🛡️ Tasks | CodeQL
 
 on:
   push:

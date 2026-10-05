@@ -33,7 +33,7 @@ test("switches the language in the settings and remembers it", async ({ page }) 
   await runCommand(page, "Open settings");
   await option(page, "Polski").click();
   await expect(page.locator("html")).toHaveAttribute("lang", "pl");
-  await page.getByRole("dialog", { name: "Ustawienia" }).getByRole("button", { name: "Gotowe" }).click();
+  await page.getByRole("dialog", { name: "Ustawienia" }).getByRole("button", { name: "Zamknij" }).click();
   await expect(page.getByRole("dialog", { name: "Ustawienia" })).toBeHidden();
   await page.waitForFunction(() => {
     const state: unknown = history.state;

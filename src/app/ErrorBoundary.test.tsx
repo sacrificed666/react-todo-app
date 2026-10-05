@@ -55,7 +55,7 @@ describe("ErrorBoundary", () => {
 
     await user.click(screen.getByRole("button", { name: "Download a backup" }));
 
-    expect(downloadJson).toHaveBeenCalledWith(expect.stringMatching(/^todos-/), { todos: [], projects: [] });
+    expect(downloadJson).toHaveBeenCalledWith(expect.stringMatching(/^tasks-/), { todos: [], projects: [] });
   });
 
   it("resets the view settings and reloads", async () => {

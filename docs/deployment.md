@@ -1,6 +1,6 @@
 # 🚀 Deployment
 
-Tasks is a static site: the production build in `dist/` is deployed to **GitHub Pages** at <https://sacrificed666.github.io/tasks/> by `.github/workflows/ci.yml`, and the same build runs in Docker behind nginx. There is no server, no database and no configuration.
+Tasks is a static site: the production build in `dist/` is deployed to **GitHub Pages** at <https://sacrificed666.github.io/react-todo-app/> by `.github/workflows/ci.yml`, and the same build runs in Docker behind nginx. There is no server, no database and no configuration.
 
 ## 🔁 Pipeline
 
@@ -76,10 +76,13 @@ Details:
 The site is served from a sub-path, configured once in `vite.config.ts`:
 
 ```ts
-const base = "/tasks/";
+const base = "/react-todo-app/";
 ```
 
-The same constant feeds the manifest `id`, `scope`, `start_url`, shortcuts and share target. To host the app at another path or at a domain root, change it there and in `docker/nginx.conf`.
+The same constant feeds the manifest `id`, `scope`, `start_url`, shortcuts and share target. To host the app at another path or at a domain root, change it there, in the absolute addresses of `index.html`, in `docker/nginx.conf` and in `playwright.config.ts`.
+
+> [!NOTE]
+> GitHub Pages serves a project site under the name of its repository. When the project moves to the `tasks` repository, the path becomes `/tasks/` in all of these places.
 
 To deploy by hand, open **Actions → 🚀 Tasks | CI/CD → Run workflow** and choose `main`.
 
@@ -94,7 +97,7 @@ The shared service lives in `compose.yaml` at the root, and everything else in `
 | ------------------------- | ----------------------------------------------------------------------------------------------- |
 | `compose.yaml`            | The `app` service: build context, `docker/Dockerfile` and an init process                       |
 | `docker/Dockerfile`       | Stages `base`, `deps`, `development`, `build` and `runtime`, an unprivileged nginx with `dist/` |
-| `docker/nginx.conf`       | Security headers, caching, compression, the `/tasks/` base path and a `/healthz` check          |
+| `docker/nginx.conf`       | Security headers, caching, compression, the `/react-todo-app/` base path and a `/healthz` check |
 | `docker/development.yaml` | The Vite dev server with hot reload through Compose Watch, port 5173                            |
 | `docker/staging.yaml`     | The production build with `APP_ENV=staging`, port 8081                                          |
 | `docker/production.yaml`  | The production build with `APP_ENV=production`, port 8080                                       |
@@ -105,7 +108,7 @@ docker compose -f compose.yaml -f docker/staging.yaml up --build -d
 docker compose -f compose.yaml -f docker/production.yaml up --build -d
 ```
 
-- 🌐 **The same addresses as on GitHub Pages.** The app lives under `/tasks/`, the root redirects there, and unknown paths fall back to `index.html`.
+- 🌐 **The same addresses as on GitHub Pages.** The app lives under `/react-todo-app/`, the root redirects there, and unknown paths fall back to `index.html`.
 - 🧭 **`APP_ENV` decides indexing.** nginx sends `X-Robots-Tag: noindex, nofollow` for every value except `production`.
 - 🗃️ **Caching.** Hashed files in `assets/` are cached for a year as `immutable`; `index.html`, the service worker and the manifest are revalidated on every visit, so an update reaches everyone through the usual update prompt.
 - 🛡️ **Headers.** `nosniff`, `DENY` framing, the referrer policy, `Cross-Origin-Opener-Policy` and the permissions policy join the Content Security Policy that ships in `index.html`; text files are compressed with gzip.
@@ -171,6 +174,6 @@ npm run build
 npm run preview
 ```
 
-Open `http://localhost:4173/tasks/`, add a few tasks, switch the language and the theme, go offline in the developer tools and reload: the app keeps working from the service worker.
+Open `http://localhost:4173/react-todo-app/`, add a few tasks, switch the language and the theme, go offline in the developer tools and reload: the app keeps working from the service worker.
 
 `npm run test:e2e` does the same automatically, including offline mode, the Content Security Policy, accessibility and the Lighthouse budget.

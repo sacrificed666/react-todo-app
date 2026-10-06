@@ -21,7 +21,7 @@ npm run dev
 The dev server prints a local URL.
 
 > [!IMPORTANT]
-> The app is served under the `/tasks/` base path, the same one used on GitHub Pages, so open `http://localhost:5173/tasks/`, not the root of the server.
+> The app is served under the `/react-todo-app/` base path, the same one used on GitHub Pages, so open `http://localhost:5173/react-todo-app/`, not the root of the server.
 
 ### 🐳 In Docker
 
@@ -29,7 +29,7 @@ The dev server prints a local URL.
 docker compose -f compose.yaml -f docker/development.yaml up --watch
 ```
 
-The same Vite dev server runs in a container at `http://localhost:5173/tasks/`, and Compose Watch copies every change into it. Staging and production images with nginx are described in [Deployment](./deployment.md#-docker).
+The same Vite dev server runs in a container at `http://localhost:5173/react-todo-app/`, and Compose Watch copies every change into it. Staging and production images with nginx are described in [Deployment](./deployment.md#-docker).
 
 ## 📜 npm scripts
 

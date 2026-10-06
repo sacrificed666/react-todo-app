@@ -95,7 +95,7 @@ Tests sit next to the code they cover as `*.test.ts(x)`, and every component has
 
 ```mermaid
 flowchart LR
-  PW[🎭 Playwright] -->|"npm run build && npm run preview"| App["🖥️ Vite preview<br/>localhost:4173/tasks/"]
+  PW[🎭 Playwright] -->|"npm run build && npm run preview"| App["🖥️ Vite preview<br/>localhost:4173/react-todo-app/"]
   PW -->|desktop and Pixel 7| App
 ```
 

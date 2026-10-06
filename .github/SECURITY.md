@@ -2,7 +2,7 @@
 
 ## ✅ Supported versions
 
-Only the latest release receives security fixes, currently **1.x**, deployed to [GitHub Pages](https://sacrificed666.github.io/tasks/). A fix ships as a patch version, for example `1.0.1`, as described in [docs/releases.md](../docs/releases.md).
+Only the latest release receives security fixes, currently **1.x**, deployed to [GitHub Pages](https://sacrificed666.github.io/react-todo-app/). A fix ships as a patch version, for example `1.0.1`, as described in [docs/releases.md](../docs/releases.md).
 
 ## 📮 Reporting a vulnerability
 

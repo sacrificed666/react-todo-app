@@ -4,15 +4,15 @@ Tasks is one static page that also works offline, so everything a search engine 
 
 ## 🏷️ Metadata
 
-| Field                    | Value                                                                                      |
-| ------------------------ | ------------------------------------------------------------------------------------------ |
-| 🏷️ Title                 | `Tasks`, then `Today · Tasks`, `Work · Tasks` and so on while the app is open              |
-| 📝 Description           | A 150-character summary: projects, smart lists, repeats, the calendar, offline, privacy    |
-| 🔗 Canonical             | `https://sacrificed666.github.io/tasks/`, whatever a shortcut or a share adds to the query |
-| 🖼️ Open Graph and X card | Title, description and a 1200 × 630 preview (`public/og-image.jpg`) with alternative text  |
-| 🌍 `og:locale`           | `en_GB`, with the nine other interface languages as `og:locale:alternate`                  |
-| 🙈 `<noscript>`          | A heading and a summary for visitors and crawlers without JavaScript                       |
-| 🎨 Colours and app name  | `color-scheme`, `theme-color`, `application-name` and `apple-mobile-web-app-title`         |
+| Field                    | Value                                                                                               |
+| ------------------------ | --------------------------------------------------------------------------------------------------- |
+| 🏷️ Title                 | `Tasks`, then `Today · Tasks`, `Work · Tasks` and so on while the app is open                       |
+| 📝 Description           | A 150-character summary: projects, smart lists, repeats, the calendar, offline, privacy             |
+| 🔗 Canonical             | `https://sacrificed666.github.io/react-todo-app/`, whatever a shortcut or a share adds to the query |
+| 🖼️ Open Graph and X card | Title, description and a 1200 × 630 preview (`public/og-image.jpg`) with alternative text           |
+| 🌍 `og:locale`           | `en_GB`, with the nine other interface languages as `og:locale:alternate`                           |
+| 🙈 `<noscript>`          | A heading and a summary for visitors and crawlers without JavaScript                                |
+| 🎨 Colours and app name  | `color-scheme`, `theme-color`, `application-name` and `apple-mobile-web-app-title`                  |
 
 `useDocumentTitle()` in `app/useDocumentTitle.ts` names the tab after the open list in the interface language, so history entries, bookmarks and screen readers tell lists apart. **All tasks** keeps the plain app name.
 
@@ -45,7 +45,7 @@ The interface speaks ten languages, but the language is a setting stored in the 
 
 ## 🗺️ Sitemap and robots
 
-GitHub Pages serves the app as a project site under `/tasks/`, while `robots.txt` only counts at the root of a domain, so the app ships neither a robots file nor a sitemap: the canonical link is the one address search engines need.
+GitHub Pages serves the app as a project site under `/react-todo-app/`, while `robots.txt` only counts at the root of a domain, so the app ships neither a robots file nor a sitemap: the canonical link is the one address search engines need.
 
 In Docker, nginx sends `X-Robots-Tag: noindex, nofollow` in every environment except production, so a staging copy never competes with the real site, see [Deployment](./deployment.md#-docker).
 

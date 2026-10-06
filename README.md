@@ -5,7 +5,7 @@
 
 A private to-do list that lives in your browser: plan the day with smart lists, group tasks into projects, repeat them on a schedule and find anything with one search, on a computer or a phone, online or offline. Built with React 19, Redux Toolkit, TypeScript 7 and Vite 8 as a static, local-first web app, in ten languages, accessible, light or dark. Your tasks stay on your device: no account, no server and no analytics.
 
-**[🌐 Live demo](https://sacrificed666.github.io/tasks/)**
+**[🌐 Live demo](https://sacrificed666.github.io/react-todo-app/)**
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/images/desktop-dark.jpg" />
@@ -61,7 +61,7 @@ Requires **Node.js 24** or newer; 26, the newest line, is recommended (`.nvmrc`)
 
 ```bash
 npm ci
-npm run dev          # http://localhost:5173/tasks/
+npm run dev          # http://localhost:5173/react-todo-app/
 ```
 
 ```bash

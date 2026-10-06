@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const CI = Boolean(process.env.CI);
 const PORT = 4173;
-const BASE_URL = `http://localhost:${PORT}/tasks/`;
+const BASE_URL = `http://localhost:${PORT}/react-todo-app/`;
 
 export default defineConfig({
   testDir: "e2e",

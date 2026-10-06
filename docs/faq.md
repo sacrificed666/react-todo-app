@@ -79,4 +79,4 @@ Clear the site data in your browser settings. Inside the app, deleting a project
 
 ### 🐳 Can I run it in Docker?
 
-Yes. `docker compose -f compose.yaml -f docker/development.yaml up --watch` starts the dev server in a container, and `docker/staging.yaml` and `docker/production.yaml` serve the production build with nginx at `/tasks/`, just like GitHub Pages. See [Deployment](./deployment.md#-docker).
+Yes. `docker compose -f compose.yaml -f docker/development.yaml up --watch` starts the dev server in a container, and `docker/staging.yaml` and `docker/production.yaml` serve the production build with nginx at `/react-todo-app/`, just like GitHub Pages. See [Deployment](./deployment.md#-docker).

@@ -17,9 +17,9 @@ describe("installScriptUrlPolicy", () => {
       },
     });
 
-    expect(installScriptUrlPolicy(["/tasks/sw.js"])).toBe(true);
-    expect(policy.createScriptURL?.("/tasks/sw.js")).toBe(`${location.origin}/tasks/sw.js`);
-    expect(() => policy.createScriptURL?.("/tasks/evil.js")).toThrow(TypeError);
-    expect(() => policy.createScriptURL?.("https://example.com/tasks/sw.js")).toThrow(TypeError);
+    expect(installScriptUrlPolicy(["/react-todo-app/sw.js"])).toBe(true);
+    expect(policy.createScriptURL?.("/react-todo-app/sw.js")).toBe(`${location.origin}/react-todo-app/sw.js`);
+    expect(() => policy.createScriptURL?.("/react-todo-app/evil.js")).toThrow(TypeError);
+    expect(() => policy.createScriptURL?.("https://example.com/react-todo-app/sw.js")).toThrow(TypeError);
   });
 });

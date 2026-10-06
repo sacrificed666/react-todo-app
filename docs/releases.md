@@ -91,15 +91,15 @@ Run `node scripts/release-notes.mjs` locally to see the notes of the current ver
 
 GitHub Pages serves one site per repository, so only `main` is published there. Every push to `staging` or `development` runs the full CI and uploads the built site as the `site-staging` or `site-development` artifact of the run, kept for 14 days.
 
-| Environment    | Branch        | Where                                                  |
-| -------------- | ------------- | ------------------------------------------------------ |
-| 🌍 Production  | `main`        | [GitHub Pages](https://sacrificed666.github.io/tasks/) |
-| 🔍 Staging     | `staging`     | The `site-staging` artifact of the CI run              |
-| 🧪 Development | `development` | The `site-development` artifact of the CI run          |
+| Environment    | Branch        | Where                                                           |
+| -------------- | ------------- | --------------------------------------------------------------- |
+| 🌍 Production  | `main`        | [GitHub Pages](https://sacrificed666.github.io/react-todo-app/) |
+| 🔍 Staging     | `staging`     | The `site-staging` artifact of the CI run                       |
+| 🧪 Development | `development` | The `site-development` artifact of the CI run                   |
 
 To try a staging build, download the artifact, unpack it into `dist/` and run `npm run preview`.
 
 > [!NOTE]
-> A staging build keeps the production base path `/tasks/` and its own service worker. Open it in a private window, so it does not share the service worker or the saved tasks of the production site.
+> A staging build keeps the production base path `/react-todo-app/` and its own service worker. Open it in a private window, so it does not share the service worker or the saved tasks of the production site.
 
 Outside GitHub Pages, the same three environments run in Docker: `docker/development.yaml` starts the dev server, and `docker/staging.yaml` and `docker/production.yaml` serve the production build with nginx, where only production may be indexed, see [Deployment](./deployment.md#-docker).

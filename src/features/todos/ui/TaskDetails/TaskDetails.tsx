@@ -10,7 +10,6 @@ import Checkbox from "@/shared/ui/Checkbox/Checkbox";
 import Icon from "@/shared/ui/Icon/Icon";
 import IconButton from "@/shared/ui/IconButton/IconButton";
 
-import { parseChecklist, toggleChecklistItem } from "../../model/checklist";
 import { duplicateTodo, removeTodos, toggleTodo } from "../../model/thunks";
 import { extractTags, MAX_NOTES_LENGTH, MAX_TITLE_LENGTH, normalizeTitle, type Todo } from "../../model/todo";
 import {
@@ -23,6 +22,7 @@ import {
 } from "../../model/todosSlice";
 import DuePicker from "../DuePicker/DuePicker";
 import RepeatPicker from "../RepeatPicker/RepeatPicker";
+import SubtaskList from "../SubtaskList/SubtaskList";
 
 import styles from "./TaskDetails.module.scss";
 
@@ -31,6 +31,7 @@ interface TaskDetailsProps {
   onClose: () => void;
 }
 
+// Every field of a task: title, date, repeat, project, subtasks, notes
 const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
   const dispatch = useAppDispatch();
   const today = useToday();
@@ -38,36 +39,34 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
   const notesId = useId();
   const [title, setTitle] = useState(todo.title);
   const [notes, setNotes] = useState(todo.notes);
-  const checklist = parseChecklist(notes);
   const tags = extractTags(todo.title);
 
+  // Keeps a valid title, or brings the old one back
   const saveTitle = () => {
     if (normalizeTitle(title)) dispatch(todoRenamed(todo.id, title));
     else setTitle(todo.title);
   };
 
+  // Enter saves the title instead of adding a line
   const handleTitleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key !== "Enter" || event.nativeEvent.isComposing) return;
     event.preventDefault();
     saveTitle();
   };
 
-  const toggleItem = (line: number) => {
-    const next = toggleChecklistItem(notes, line);
-    setNotes(next);
-    dispatch(todoNoted(todo.id, next));
-  };
-
+  // Closes the details and searches for a tag
   const showTag = (tag: string) => {
     onClose();
     dispatch(queryChanged(tag));
   };
 
+  // Closes the details and copies the task
   const duplicate = () => {
     onClose();
     dispatch(duplicateTodo(todo.id));
   };
 
+  // Closes the details and removes the task with undo
   const remove = () => {
     onClose();
     dispatch(removeTodos([todo.id]));
@@ -133,6 +132,8 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
         ))}
       </div>
 
+      <SubtaskList todo={todo} />
+
       <div className={styles.notes}>
         <label className={styles.label} htmlFor={notesId}>
           <Icon name="notes" />
@@ -152,19 +153,6 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
           {t("details.notesCounter", { count: notes.length, max: MAX_NOTES_LENGTH })}
         </p>
       </div>
-
-      {checklist.length > 0 ? (
-        <ul className={styles.checklist}>
-          {checklist.map((item) => (
-            <li key={item.line}>
-              <label className={styles.checkItem} data-done={item.done || undefined}>
-                <Checkbox size="small" checked={item.done} onChange={() => toggleItem(item.line)} />
-                <span>{item.text}</span>
-              </label>
-            </li>
-          ))}
-        </ul>
-      ) : null}
 
       <ul className={styles.timestamps}>
         {timestamps.map(({ key, value }) =>

@@ -19,11 +19,13 @@
   gap: 24px 28px;
   padding-block: calc(var(--titlebar-height) + 16px) 48px;
 
+  // A third column for the task details on wide screens
   @media (min-width: 1240px) {
     grid-template-areas: "sidebar main inspector";
     grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--inspector-width);
   }
 
+  // One column on phones: toolbar, tasks, then the navigation
   @media (max-width: 899px) {
     grid-template-areas:
       "toolbar"
@@ -57,6 +59,7 @@
 .titlebar {
   display: none;
 
+  // A draggable title bar for the installed app on desktop
   @media (display-mode: window-controls-overlay) and (min-width: 900px) {
     display: block;
     position: fixed;

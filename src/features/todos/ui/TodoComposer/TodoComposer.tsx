@@ -26,12 +26,14 @@ interface TodoComposerProps {
   view: ViewId;
 }
 
+// Today in Today, tomorrow in Upcoming, otherwise no date
 const defaultDueDate = (view: ViewId, today: string) => {
   if (view === "today") return today;
   if (view === "upcoming") return addDays(today, 1);
   return null;
 };
 
+// Quick add field that reads dates, repeats, tags and projects
 const TodoComposer = ({ view }: TodoComposerProps) => {
   const dispatch = useAppDispatch();
   const today = useToday();
@@ -48,8 +50,10 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
 
   useRefraction(formRef, { bezel: 20, scale: 44 });
 
+  // Collapses the composer on a click outside it
   useEffect(() => {
     if (!engaged) return;
+    // Ignores clicks inside the composer
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target instanceof Node && formRef.current?.contains(event.target)) return;
       setEngaged(false);
@@ -58,9 +62,11 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [engaged]);
 
+  // Collapses the composer when the focus leaves it
   useEffect(() => {
     const form = formRef.current;
     if (!form) return;
+    // Only a focus outside the form counts
     const handleFocusOut = (event: FocusEvent) => {
       const next = event.relatedTarget;
       if (next instanceof Node && !form.contains(next)) setEngaged(false);
@@ -84,6 +90,7 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
   const effectiveProject = parsed.projectId ?? project;
   const canSubmit = normalizeTitle(parsed.title) !== "";
 
+  // Escape clears the text, a second Escape leaves the field
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Escape" || event.nativeEvent.isComposing) return;
     event.preventDefault();
@@ -95,6 +102,7 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
     setEngaged(false);
   };
 
+  // Adds the parsed task and empties the field
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const draft = {

@@ -18,6 +18,7 @@ import Brand from "@/shared/ui/Brand/Brand";
 
 import styles from "./Sidebar.module.scss";
 
+// Brand, actions, search, lists, projects and tags
 const Navigator = () => {
   const { t } = useI18n();
   const panelRef = useRef<HTMLElement>(null);
@@ -48,6 +49,7 @@ const Navigator = () => {
   );
 };
 
+// The left column with the navigation
 const Sidebar = () => {
   const compact = useMediaQuery(COMPACT_LAYOUT);
   const wide = useMediaQuery(WIDE_LAYOUT);

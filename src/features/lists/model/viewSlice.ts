@@ -31,6 +31,7 @@ export const initialViewState: ViewState = {
   overlay: null,
 };
 
+// What is on screen: list, search, sort, open task and overlay
 export const viewSlice = createSlice({
   name: "view",
   initialState: initialViewState,

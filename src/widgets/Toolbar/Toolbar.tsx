@@ -23,6 +23,7 @@ import styles from "./Toolbar.module.scss";
 
 const TITLE_OFFSET = 64;
 
+// Top bar of the compact layout with search, settings and actions
 const Toolbar = () => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
@@ -38,11 +39,13 @@ const Toolbar = () => {
 
   useRefraction(groupRef, { bezel: 14, scale: 30 });
 
+  // Shows the search field and focuses it
   const openSearch = () => {
     flushSync(() => setSearchView(list));
     inputRef.current?.focus();
   };
 
+  // Clears the search and goes back to the list
   const closeSearch = () => {
     flushSync(() => {
       dispatch(queryChanged(""));

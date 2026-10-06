@@ -11,6 +11,7 @@ export type Translate = (key: MessageKey, params?: TranslationParams) => string;
 
 const pluralRules = new Map<Locale, Intl.PluralRules>();
 
+// The plural form of a count in a language
 export const pluralCategory = (locale: Locale, count: number) => {
   let rules = pluralRules.get(locale);
   if (!rules) {
@@ -20,6 +21,7 @@ export const pluralCategory = (locale: Locale, count: number) => {
   return rules.select(count);
 };
 
+// A message with its plural form picked and placeholders filled
 export const translate = (locale: Locale, key: MessageKey, params: TranslationParams = {}) => {
   const message = getMessages(locale)[key];
   const template =
@@ -31,6 +33,7 @@ export const translate = (locale: Locale, key: MessageKey, params: TranslationPa
   );
 };
 
+// A translate function bound to one language
 export const createTranslator =
   (locale: Locale): Translate =>
   (key, params) =>

@@ -9,6 +9,7 @@ import TaskDetails from "../TaskDetails/TaskDetails";
 
 import styles from "./TaskDetailsDialog.module.scss";
 
+// Task details in a dialog on narrow screens
 const TaskDetailsDialog = () => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();

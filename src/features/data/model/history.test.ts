@@ -7,6 +7,11 @@ import { selectProjects } from "@/features/projects/model/selectors";
 import { selectTodos } from "@/features/todos/model/selectors";
 import {
   allTodosMarked,
+  subtaskAdded,
+  subtaskMoved,
+  subtaskRemoved,
+  subtaskRenamed,
+  subtaskToggled,
   todoAdded,
   todoDuplicated,
   todoImportanceToggled,
@@ -125,6 +130,24 @@ describe("describeChange", () => {
       key: "history.projectChanged",
       params: { title: "Buy milk" },
     });
+  });
+
+  it("names the subtask for subtask actions", () => {
+    const store = setupStore(
+      makeState([makeTodo({ id: "trip", title: "Trip", subtasks: [{ id: "s", title: "Passport", completed: true }] })]),
+    );
+    const state = { todos: store.getState().todos, projects: store.getState().projects };
+    expect(describeChange(subtaskAdded("trip", "Tickets"), state)).toEqual({
+      key: "history.subtaskAdded",
+      params: { title: "Tickets" },
+    });
+    expect(describeChange(subtaskToggled("trip", "s"), state)).toEqual({
+      key: "history.subtaskReopened",
+      params: { title: "Passport" },
+    });
+    expect(describeChange(subtaskRenamed("trip", "s", "x"), state).key).toBe("history.subtaskRenamed");
+    expect(describeChange(subtaskRemoved("trip", "s"), state).key).toBe("history.subtaskRemoved");
+    expect(describeChange(subtaskMoved("trip", "s", 0), state).key).toBe("history.subtasksReordered");
   });
 
   it("describes bulk actions", () => {

@@ -15,12 +15,14 @@ interface TodoSearchProps {
   onClose?: () => void;
 }
 
+// Search field; Escape clears it, then leaves it
 const TodoSearch = ({ inputRef, onClose }: TodoSearchProps) => {
   const dispatch = useAppDispatch();
   const query = useAppSelector(selectQuery);
   const shortcut = isApplePlatform() ? "⌘K" : "Ctrl K";
   const { t } = useI18n();
 
+  // Escape clears the search, a second Escape leaves the field
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Escape") return;
     event.preventDefault();
@@ -32,6 +34,7 @@ const TodoSearch = ({ inputRef, onClose }: TodoSearchProps) => {
     onClose?.();
   };
 
+  // Clears the search and keeps typing in the field
   const clear = () => {
     dispatch(queryChanged(""));
     inputRef.current?.focus();

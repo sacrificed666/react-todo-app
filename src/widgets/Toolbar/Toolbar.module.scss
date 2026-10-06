@@ -31,12 +31,14 @@
     opacity: 1;
   }
 
+  // Full effects blur the content scrolling under the bar
   :root[data-effects="full"] &::before {
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     mask-image: linear-gradient(to bottom, #000 55%, transparent);
   }
 
+  // The bar drags the window of the installed app
   @media (display-mode: window-controls-overlay) {
     -webkit-app-region: drag;
     app-region: drag;

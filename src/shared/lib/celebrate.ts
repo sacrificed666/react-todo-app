@@ -3,6 +3,7 @@ import { prefersReducedMotion } from "./motion";
 const PARTICLES = 36;
 const PALETTE = ["--orb-1", "--orb-2", "--orb-3", "--orb-4", "--orb-5", "--color-accent"];
 
+// Confetti from a point, skipped when motion is reduced
 export const celebrate = (origin: { x: number; y: number } = { x: innerWidth / 2, y: innerHeight / 3 }) => {
   if (prefersReducedMotion() || typeof Element.prototype.animate !== "function") return;
 

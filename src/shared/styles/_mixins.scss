@@ -1,3 +1,4 @@
+// Liquid glass: tint, blur, rim, sheen and the light under the pointer
 @mixin glass($radius: var(--radius-lg), $tint: var(--glass-tint), $blur: var(--glass-blur), $content: false) {
   position: relative;
   isolation: isolate;
@@ -31,6 +32,7 @@
     background: var(--glass-sheen);
   }
 
+  // Full effects add a light that follows the pointer
   :root[data-effects="full"] &::after {
     background:
       radial-gradient(
@@ -57,11 +59,13 @@
     }
   }
 
+  // A plain border in forced colours mode
   @media (forced-colors: active) {
     border: 1px solid CanvasText;
   }
 }
 
+// Glass for bars that span the screen edge to edge
 @mixin glass-bar {
   position: relative;
   isolation: isolate;
@@ -81,6 +85,7 @@
     pointer-events: none;
   }
 
+  // Reduced effects drop the blur
   :root[data-effects="reduced"] & {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -90,11 +95,13 @@
     }
   }
 
+  // Plain borders in forced colours mode
   @media (forced-colors: active) {
     border-block: 1px solid CanvasText;
   }
 }
 
+// Hover styles only for a mouse or a trackpad
 @mixin hover {
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -103,6 +110,7 @@
   }
 }
 
+// A springy press for buttons
 @mixin pressable($scale: 0.96) {
   transition:
     background-color var(--duration-fast) var(--ease-out),
@@ -117,6 +125,7 @@
   }
 }
 
+// Hidden on screen but read by screen readers
 @mixin visually-hidden {
   position: absolute;
   inline-size: 1px;
@@ -129,6 +138,7 @@
   border: 0;
 }
 
+// The centred page width with side margins
 @mixin container {
   inline-size: min(100% - 32px, var(--layout-width));
   margin-inline: auto;

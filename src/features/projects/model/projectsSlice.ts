@@ -11,6 +11,7 @@ export interface ProjectChanges {
 
 export const projectsAdapter = createEntityAdapter<Project>();
 
+// Projects in the order of the sidebar
 export const projectsSlice = createSlice({
   name: "projects",
   initialState: projectsAdapter.getInitialState(),

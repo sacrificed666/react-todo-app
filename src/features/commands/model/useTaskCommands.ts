@@ -21,6 +21,7 @@ export interface TaskCommand {
   run: () => void;
 }
 
+// Task commands shared by the palette and the actions menu
 export const useTaskCommands = (): readonly TaskCommand[] => {
   const dispatch = useAppDispatch();
   const today = useToday();

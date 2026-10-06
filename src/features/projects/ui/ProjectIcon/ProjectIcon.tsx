@@ -11,6 +11,7 @@ interface ProjectIconProps {
   className?: string;
 }
 
+// The project emoji, or a dot in the project colour
 const ProjectIcon = ({ name, color, size = "medium", className }: ProjectIconProps) => {
   const { emoji } = splitProjectName(name);
 

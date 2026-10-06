@@ -1,3 +1,8 @@
+// Collapses whitespace and caps the length in characters, not code units
+export const normalizeLine = (value: string, maxLength: number) =>
+  Array.from(value.replaceAll(/\s+/gu, " ").trim()).slice(0, maxLength).join("").trim();
+
+// Lower case without accents for searching
 export const normalizeForSearch = (value: string) =>
   value
     .normalize("NFD")
@@ -5,8 +10,10 @@ export const normalizeForSearch = (value: string) =>
     .toLocaleLowerCase()
     .trim();
 
+// Whether a position starts a word
 const isWordStart = (text: string, index: number) => index === 0 || /[\s\-_/#«“"(]/u.test(text[index - 1] ?? "");
 
+// How well a query matches text, or null; whole words score higher
 export const fuzzyScore = (query: string, target: string): number | null => {
   const needle = normalizeForSearch(query);
   if (needle === "") return 0;

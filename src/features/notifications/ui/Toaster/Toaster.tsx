@@ -25,6 +25,7 @@ interface ToastCardProps {
   toast: Toast;
 }
 
+// One toast with its action, closing itself unless hovered or focused
 const ToastCard = ({ toast }: ToastCardProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
@@ -36,12 +37,14 @@ const ToastCard = ({ toast }: ToastCardProps) => {
 
   useRefraction(ref, { bezel: 20, scale: 36 });
 
+  // Dismisses the toast after a while unless it is paused
   useEffect(() => {
     if (paused) return;
     const timer = setTimeout(() => dispatch(toastDismissed(toast.id)), TOAST_DURATION);
     return () => clearTimeout(timer);
   }, [dispatch, paused, toast.id]);
 
+  // Runs the toast action: restore, undo, reload or show the task
   const run = (action: ToastAction) => {
     switch (action.type) {
       case "restore": {
@@ -74,6 +77,7 @@ const ToastCard = ({ toast }: ToastCardProps) => {
   const action = toast.action;
   const button = action ? actionButtons[action.type] : null;
 
+  // Resumes the timer once the focus leaves the toast
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
     if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
   };
@@ -109,6 +113,7 @@ const ToastCard = ({ toast }: ToastCardProps) => {
   );
 };
 
+// The toast area and a live region for screen readers
 const Toaster = () => {
   const toast = useAppSelector(selectToast);
   const { t } = useI18n();

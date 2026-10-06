@@ -18,6 +18,7 @@ interface SegmentedControlProps<Value extends string> {
   className?: string;
 }
 
+// A native radio group styled as segments
 const SegmentedControl = <Value extends string>({
   label,
   name,
@@ -32,6 +33,7 @@ const SegmentedControl = <Value extends string>({
     0,
   );
 
+  // Slides the indicator towards the chosen segment
   const select = (index: number, next: Value) => {
     setDirection(index >= selectedIndex ? "forward" : "backward");
     onChange(next);

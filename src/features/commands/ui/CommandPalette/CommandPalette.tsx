@@ -74,8 +74,10 @@ interface Command {
   run: () => void;
 }
 
+// The element id of a command in the list
 const optionId = (listboxId: string, commandId: string) => `${listboxId}-${commandId}`;
 
+// Search field and ranked commands: actions, tasks, lists, projects and settings
 const PaletteContent = () => {
   const dispatch = useAppDispatch();
   const today = useToday();
@@ -91,6 +93,7 @@ const PaletteContent = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const trimmed = query.trim();
 
+  // Opens a list with the quick add field and focuses it
   const focusComposer = () => {
     if (list === "completed") flushSync(() => dispatch(listChanged("all")));
     document.getElementById(COMPOSER_INPUT_ID)?.focus();
@@ -251,21 +254,25 @@ const PaletteContent = () => {
   const active = flat[Math.min(activeIndex, flat.length - 1)];
   const activeId = active ? optionId(listboxId, active.id) : undefined;
 
+  // Keeps the highlighted command in view
   useEffect(() => {
     if (activeId) document.getElementById(activeId)?.scrollIntoView({ block: "nearest" });
   }, [activeId]);
 
+  // Closes the palette first so the command acts on the page
   const run = (command: Command) => {
     flushSync(() => dispatch(overlayClosed("palette")));
     command.run();
   };
 
+  // Moves the highlight and wraps around
   const move = (delta: number) => {
     if (flat.length === 0) return;
     const current = active ? flat.indexOf(active) : 0;
     setActiveIndex((current + delta + flat.length) % flat.length);
   };
 
+  // Arrows move the highlight and Enter runs the command
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.nativeEvent.isComposing) return;
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
@@ -373,6 +380,7 @@ const PaletteContent = () => {
   );
 };
 
+// The palette dialog, opened with Ctrl+K or Cmd+K
 const CommandPalette = () => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();

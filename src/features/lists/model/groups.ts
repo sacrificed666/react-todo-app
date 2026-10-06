@@ -14,6 +14,7 @@ export interface TodoGroup {
 
 const DAYS_SHOWN_ONE_BY_ONE = 7;
 
+// Upcoming tasks by day for a week, then by month
 const groupUpcoming = (todos: readonly Todo[], today: string): TodoGroup[] => {
   const groups = new Map<
     string,
@@ -37,6 +38,7 @@ const groupUpcoming = (todos: readonly Todo[], today: string): TodoGroup[] => {
   return [...groups.values()].toSorted((a, b) => a.sortKey.localeCompare(b.sortKey)).map(({ group }) => group);
 };
 
+// Open tasks in sections: overdue and today, days, months or one
 export const groupActiveTodos = (todos: readonly Todo[], list: ViewId, today: string): TodoGroup[] => {
   if (todos.length === 0) return [];
 

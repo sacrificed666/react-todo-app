@@ -6,6 +6,7 @@ import { installScriptUrlPolicy } from "@/shared/lib/trustedTypes";
 
 import type { AppStore } from "./store";
 
+// Registers the service worker and offers updates in a toast
 export const startPwa = (store: AppStore) => {
   if (!import.meta.env.PROD || !("serviceWorker" in navigator)) return;
 

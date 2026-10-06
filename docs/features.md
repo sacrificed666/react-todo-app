@@ -57,11 +57,11 @@ Projects group tasks by area, such as work, home or a trip, next to the smart li
 | 📅 Schedule | Press the calendar button and choose **Today**, **Tomorrow**, **This weekend**, **Next week**, a day in the [calendar](#-calendar) or **Remove date**                       |
 | 🔁 Repeat   | Open the details and choose **Every day**, **Every weekday**, **Every week**, **Every month** or **Every year**, or type it in [quick add](#-quick-add)                     |
 | 📁 Move     | Choose a project in the details or the context menu, or drag the task onto a project                                                                                        |
-| ℹ️ Details  | Press ⓘ to open the [details](#️-details-notes-and-checklists) with notes, a checklist, dates, **Duplicate** and **Delete**                                                  |
+| ℹ️ Details  | Press ⓘ to open the [details](#️-details-subtasks-and-notes) with subtasks, notes, dates, **Duplicate** and **Delete**                                                       |
 | 🗑️ Delete   | Press the trash button or swipe the row to the left. The task can be restored from the notification                                                                         |
 | ↕️ Reorder  | Drag the handle, or press <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd>. Reordering is available with the **Manual** sort order                                                  |
 
-Due dates are shown as friendly labels (**Today**, **Tomorrow**, **Yesterday**, a weekday for the next few days or a short date) and are coloured: 🔴 overdue, 🟠 today, 🔵 later. Rows also show chips for 📁 the project, 🏷️ tags, ☑️ checklist progress (`2/5`) and 🗒️ notes.
+Due dates are shown as friendly labels (**Today**, **Tomorrow**, **Yesterday**, a weekday for the next few days or a short date) and are coloured: 🔴 overdue, 🟠 today, 🔵 later. Rows also show chips for 📁 the project, 🏷️ tags, ☑️ subtask progress (`2/5`) and 🗒️ notes.
 
 On narrow screens the calendar and trash buttons are hidden from the rows to leave room for the title; scheduling and deleting are then done from the context menu, the details sheet or with swipes. The composer is a single field there until you tap it. The date, project and star chips then appear in a row below it and fold away again when you leave the field empty.
 
@@ -150,7 +150,7 @@ A task can repeat every day, every weekday, every week, every month or every yea
 - 🔁 Rows show a 🔁 chip, and removing the due date also stops the repetition.
 - ✍️ Quick add understands phrases like `every friday`, `щотижня` or `tous les lundis`; weekly phrases with a weekday start on that weekday, today included.
 
-## 🗒️ Details, notes and checklists
+## 🗒️ Details, subtasks and notes
 
 The ⓘ button, the <kbd>I</kbd> key, a tap on the title on phones or a task found in the command palette opens the task's **details**. On wide screens they appear in the inspector column next to the list, with the task highlighted; on smaller screens they open as a centred dialog or, on phones, as a bottom sheet. <kbd>Esc</kbd> closes them and returns focus to the task.
 
@@ -158,8 +158,8 @@ The ⓘ button, the <kbd>I</kbd> key, a tap on the title on phones or a task fou
 
 - ✏️ **Title**: edit it inline; <kbd>Enter</kbd> or leaving the field saves it.
 - ✅ **Completed**, ⭐ **Important**, 📅 **Due date**, 🔁 **Repeat** and 📁 **Project**, the same controls as in the list.
-- 🗒️ **Notes**: up to 2000 characters, saved when you leave the field. Notes are included in the search.
-- ☑️ **Checklist**: lines written as `- [ ] item` or `- [x] item` appear as checkboxes under the notes. Ticking one updates the notes, and the row in the list shows the progress, for example `1/3`.
+- ☑️ **Subtasks**: up to 50 short steps. Type in **Add a subtask** and press <kbd>Enter</kbd> to add the next one right away; tick a step off, edit its text in place, drag it by the ≡ handle or move it with <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd>, and delete it with ✕ or <kbd>Backspace</kbd> in an empty field. The row in the list shows the progress, for example `1/3`, subtasks are included in the search, and a repeating task starts its next occurrence with every subtask open again.
+- 🗒️ **Notes**: up to 2000 characters of free text, saved when you leave the field and included in the search.
 - 🏷️ **Tags**: tap a tag to close the sheet and search for it.
 - 🕒 **Dates**: when the task was created, last updated and completed, in your language's format.
 - 📄 **Duplicate** creates an active copy right after the original; 🗑️ **Delete** removes the task with an undo notification.
@@ -209,7 +209,7 @@ Matching is fuzzy: `gtt` finds **Go to Today** and `srt` finds **Sort by**. Use 
 
 ## ↩️ Undo and redo
 
-Every change to your tasks and projects can be undone: completing, renaming, starring, scheduling, moving, editing notes, reordering, deleting, importing, creating and deleting projects.
+Every change to your tasks and projects can be undone: completing, renaming, starring, scheduling, moving, editing notes and subtasks, reordering, deleting, importing, creating and deleting projects.
 
 - ↩️ <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes and <kbd>⇧</kbd>+<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd> or <kbd>Ctrl</kbd>+<kbd>Y</kbd> redoes the last 50 changes. A notification names the step, for example “Undone: rename “Buy milk””.
 - 🧰 The **⋯** menu and the command palette show the same commands with the step they would undo.
@@ -281,7 +281,11 @@ Exported files look like this:
       "repeat": null,
       "repeatAnchor": null,
       "projectId": "trip",
-      "notes": "- [x] Check the timetable\n- [ ] Pick seats",
+      "notes": "Window seats if possible",
+      "subtasks": [
+        { "id": "a1", "title": "Check the timetable", "completed": true },
+        { "id": "b2", "title": "Pick seats", "completed": false }
+      ],
       "createdAt": 1790841600000,
       "updatedAt": 1790841600000,
       "completedAt": null
@@ -304,7 +308,7 @@ Importing never deletes anything:
 - 🔁 tasks and projects whose `id` already exists are skipped, new ones are appended;
 - 🔗 links to projects that are missing from the file are dropped, so a task never points to nothing;
 - 📄 a plain array of tasks is accepted as well as the full export;
-- 🕰️ older files without projects, repeats, notes, importance or dates, or in the first `{ "id", "text", "isCompleted" }` format, are converted automatically;
+- 🕰️ older files without projects, repeats, notes, subtasks, importance or dates, with `- [ ]` checklists in the notes, or in the first `{ "id", "text", "isCompleted" }` format, are converted automatically;
 - 🚫 invalid entries, dates, colours and ids are ignored or replaced, and broken or oversized files are reported in a notification.
 
 ## 💾 Persistence and sync

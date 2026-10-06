@@ -35,6 +35,7 @@ export const DEFAULT_THEME: ThemeSettings = {
 
 const THEME_COLORS: Record<"light" | "dark", string> = { light: "#e8edf6", dark: "#070a14" };
 
+// A guard for a list of allowed values
 const isOneOf =
   <Value extends string>(values: readonly Value[]) =>
   (value: unknown): value is Value =>
@@ -45,11 +46,13 @@ export const isAccent = isOneOf(ACCENTS);
 export const isBackdrop = isOneOf(BACKDROPS);
 export const isGlassStyle = isOneOf(GLASS_STYLES);
 
+// Light or dark, following the system for the system choice
 export const resolveAppearance = (appearance: Appearance) => {
   if (appearance !== "system") return appearance;
   return globalThis.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
 };
 
+// Theme attributes on the document and the browser colour
 export const applyTheme = (
   { appearance, accent, backdrop, glass }: ThemeSettings,
   root: HTMLElement = document.documentElement,

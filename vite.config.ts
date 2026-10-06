@@ -29,6 +29,7 @@ const contentSecurityPolicy = [
   "upgrade-insecure-requests",
 ].join("; ");
 
+// Adds the CSP and the referrer policy to the built page
 const securityHeaders = (): Plugin => ({
   name: "security-headers",
   apply: "build",

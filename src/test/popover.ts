@@ -1,5 +1,6 @@
 const openPopovers = new WeakSet<HTMLElement>();
 
+// Fires a popover toggle event
 const dispatchToggle = (element: HTMLElement, type: "beforetoggle" | "toggle", newState: "open" | "closed") => {
   const event = Object.assign(new Event(type, { cancelable: type === "beforetoggle" }), {
     newState,
@@ -8,6 +9,7 @@ const dispatchToggle = (element: HTMLElement, type: "beforetoggle" | "toggle", n
   element.dispatchEvent(event);
 };
 
+// Opens a popover with its toggle events
 const show = (element: HTMLElement) => {
   if (openPopovers.has(element)) return;
   dispatchToggle(element, "beforetoggle", "open");
@@ -16,6 +18,7 @@ const show = (element: HTMLElement) => {
   dispatchToggle(element, "toggle", "open");
 };
 
+// Closes a popover with its toggle events
 const hide = (element: HTMLElement) => {
   if (!openPopovers.has(element)) return;
   dispatchToggle(element, "beforetoggle", "closed");
@@ -24,6 +27,7 @@ const hide = (element: HTMLElement) => {
   dispatchToggle(element, "toggle", "closed");
 };
 
+// Adds the popover methods jsdom lacks
 export const installPopoverPolyfill = () => {
   if ("showPopover" in HTMLElement.prototype) return;
 

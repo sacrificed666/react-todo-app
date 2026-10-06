@@ -50,6 +50,7 @@
     }
   }
 
+  // The check mark uses the text colour in forced colours mode
   @media (forced-colors: active) {
     &::before {
       background-color: CanvasText;

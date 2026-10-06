@@ -10,6 +10,7 @@ interface EmptyStateProps {
   compact?: boolean;
 }
 
+// An icon, a title and a hint for an empty list
 const EmptyState = ({ icon, title, description, compact = false }: EmptyStateProps) => (
   <div className={styles.empty} data-compact={compact || undefined}>
     <span className={styles.icon}>

@@ -148,37 +148,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.checklist {
-  display: grid;
-  gap: 2px;
-  margin-block-start: -6px;
-}
-
-.checkItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-block-size: 36px;
-  padding-inline: 8px;
-  border-radius: var(--radius-sm);
-  font-size: 0.9375rem;
-  cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-out);
-
-  @include hover {
-    background-color: var(--color-fill);
-  }
-
-  span {
-    transition: color var(--duration-base) var(--ease-out);
-  }
-
-  &[data-done] span {
-    color: var(--color-text-tertiary);
-    text-decoration: line-through;
-  }
-}
-
 .timestamps {
   display: flex;
   flex-wrap: wrap;

@@ -18,8 +18,10 @@ const loaders: Readonly<Record<LazyLocale, () => Promise<Messages>>> = {
 
 const catalog = new Map<Locale, Messages>([["en", en]]);
 
+// The loaded messages of a language, English until they arrive
 export const getMessages = (locale: Locale): Messages => catalog.get(locale) ?? en;
 
+// Loads the messages of a language once
 export const loadMessages = async (locale: Locale) => {
   if (locale === "en" || catalog.has(locale)) return;
   catalog.set(locale, await loaders[locale]());

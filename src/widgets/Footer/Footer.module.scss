@@ -4,6 +4,7 @@
   @include container;
   padding-block: 0 max(24px, env(safe-area-inset-bottom));
 
+  // Room for the tab bar on phones
   @media (max-width: 899px) {
     padding-block-end: calc(24px + var(--tabbar-offset) + env(safe-area-inset-bottom));
   }

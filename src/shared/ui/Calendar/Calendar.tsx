@@ -35,6 +35,7 @@ const WEEKS = 6;
 
 const KEY_STEPS: Readonly<Record<string, number>> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
 
+// A month grid with arrow key navigation and dots on busy days
 const Calendar = ({ value, today, locale, weekStart, labels, marks, onSelect }: CalendarProps) => {
   const gridRef = useRef<HTMLTableElement>(null);
   const monthId = useId();
@@ -45,12 +46,14 @@ const Calendar = ({ value, today, locale, weekStart, labels, marks, onSelect }: 
   const days = Array.from({ length: WEEKS * 7 }, (_, index) => addDays(first, index));
   const weeks = Array.from({ length: WEEKS }, (_, index) => days.slice(index * 7, index * 7 + 7));
 
+  // Moves the focus after a keyboard step
   useEffect(() => {
     if (!moved.current) return;
     moved.current = false;
     gridRef.current?.querySelector<HTMLButtonElement>(`[data-date="${focused}"]`)?.focus();
   }, [focused]);
 
+  // Focuses another day, changing the month when needed
   const moveTo = (date: string) => {
     moved.current = true;
     setFocused(date);
@@ -58,6 +61,7 @@ const Calendar = ({ value, today, locale, weekStart, labels, marks, onSelect }: 
 
   const shiftMonth = (delta: number) => setFocused(addMonths(focused, delta));
 
+  // Arrows move by day and week, Home and End, Page keys by month
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, date: string) => {
     const step = KEY_STEPS[event.key];
     let next: string | null = null;
@@ -72,6 +76,7 @@ const Calendar = ({ value, today, locale, weekStart, labels, marks, onSelect }: 
     moveTo(next);
   };
 
+  // The full date with the number of tasks on it
   const describe = (date: string) => {
     const count = marks?.get(date) ?? 0;
     const label = formatLongDate(date, locale);

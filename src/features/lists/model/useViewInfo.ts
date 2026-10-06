@@ -10,6 +10,7 @@ export type ViewInfo =
   | { kind: "list"; title: string; list: ListId }
   | { kind: "project"; title: string; project: Project };
 
+// What the main area shows: a search, a list or a project
 export const useViewInfo = (): ViewInfo => {
   const { t } = useI18n();
   const list = useAppSelector(selectList);

@@ -7,6 +7,7 @@ interface IconProps extends Omit<SVGProps<SVGSVGElement>, "children"> {
   filled?: boolean;
 }
 
+// An outline or filled icon from the shared set, hidden from screen readers
 const Icon = ({ name, filled = false, ...props }: IconProps) => (
   <svg
     viewBox="0 0 24 24"

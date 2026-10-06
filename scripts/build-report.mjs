@@ -4,6 +4,7 @@ import { gzipSync } from "node:zlib";
 
 const dist = new URL("../dist/", import.meta.url).pathname;
 
+// Every file below a directory
 const walk = (directory) =>
   readdirSync(directory).flatMap((name) => {
     const path = join(directory, name);
@@ -11,6 +12,7 @@ const walk = (directory) =>
   });
 
 const failures = [];
+// Collects a failed check instead of stopping at the first one
 const expect = (condition, message) => {
   if (!condition) failures.push(message);
 };
@@ -54,6 +56,7 @@ for (const asset of ["og-image.jpg", ...(manifest.screenshots ?? []).map((shot) 
   );
 }
 
+// Bytes as kilobytes for the report
 const formatSize = (bytes) => `${(bytes / 1024).toFixed(1)} kB`;
 
 const assets = files

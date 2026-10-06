@@ -1,3 +1,4 @@
+// Allows only our own service worker script under Trusted Types
 export const installScriptUrlPolicy = (allowedPaths: readonly string[]) => {
   if (typeof trustedTypes === "undefined") return false;
 

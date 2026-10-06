@@ -14,6 +14,7 @@ export interface LaunchIntent {
 
 const LAUNCH_PARAMS = ["list", "action", "title", "text", "url"] as const;
 
+// A list, a new task or shared text from the start address
 export const readLaunchIntent = (search: string): LaunchIntent | null => {
   const params = new URLSearchParams(search);
   if (!LAUNCH_PARAMS.some((name) => params.has(name))) return null;
@@ -33,6 +34,7 @@ export const readLaunchIntent = (search: string): LaunchIntent | null => {
   };
 };
 
+// Opens the list or adds the shared task the app was started with
 export const applyLaunchIntent = (store: AppStore, intent: LaunchIntent) => {
   if (intent.list) store.dispatch(listChanged(intent.list));
   if (intent.compose && store.getState().view.list === "completed") store.dispatch(listChanged("all"));

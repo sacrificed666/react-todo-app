@@ -17,7 +17,9 @@ interface PopoverProps {
 
 const GAP = 10;
 
+// A native popover anchored to its trigger
 const Popover = ({ id, popoverRef, anchorName, label, align = "end", className, onToggle, children }: PopoverProps) => {
+  // Places the popover under its trigger before it opens
   const handleBeforeToggle = (event: ToggleEvent<HTMLDialogElement>) => {
     const open = event.newState === "open";
     onToggle?.(open);

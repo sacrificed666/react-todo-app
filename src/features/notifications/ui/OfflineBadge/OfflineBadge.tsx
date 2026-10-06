@@ -4,6 +4,7 @@ import Icon from "@/shared/ui/Icon/Icon";
 
 import styles from "./OfflineBadge.module.scss";
 
+// Shows that changes stay on this device while offline
 const OfflineBadge = () => {
   const { t } = useI18n();
   const online = useOnlineStatus();

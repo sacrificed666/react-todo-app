@@ -4,6 +4,7 @@
   justify-items: center;
   gap: 4px;
 
+  // Two rows of swatches on small phones
   @media (max-width: 479px) {
     grid-template-columns: repeat(5, minmax(0, 1fr));
     row-gap: 8px;
@@ -11,6 +12,7 @@
 }
 
 .swatch {
+  position: relative;
   display: grid;
   place-items: center;
   inline-size: min(40px, 100%);

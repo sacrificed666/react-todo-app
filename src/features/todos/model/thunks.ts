@@ -29,6 +29,7 @@ import {
   type RemovedTodo,
 } from "./todosSlice";
 
+// Adds a task and offers to show it when it lands in another list
 export const addTodo =
   (draft: TodoDraft): AppThunk<boolean> =>
   (dispatch, getState) => {
@@ -53,17 +54,21 @@ export const addTodo =
     return true;
   };
 
+// The name of a list or project for a toast
 export const viewName = (state: RootState, view: ViewId): ToastMessage | string =>
   isProjectView(view) ? (state.projects.entities[projectIdOf(view) ?? ""]?.name ?? "") : { key: `lists.${view}` };
 
+// The smart list a task belongs to
 export const homeListOf = (todo: Todo, today: string): ListId => {
   if (todo.dueDate !== null) return todo.dueDate <= today ? "today" : "upcoming";
   return todo.important ? "important" : "all";
 };
 
+// The project or smart list a task belongs to
 export const homeViewOf = (todo: Todo, today: string): ViewId =>
   todo.projectId === null ? homeListOf(todo, today) : projectView(todo.projectId);
 
+// Moves every overdue task to today, with undo
 export const rescheduleOverdue =
   (today: string): AppThunk<number> =>
   (dispatch, getState) => {
@@ -82,6 +87,7 @@ export const rescheduleOverdue =
     return ids.length;
   };
 
+// Completes or reopens a task and says when the list is done
 export const toggleTodo =
   (id: string, today: string): AppThunk<boolean> =>
   (dispatch, getState) => {
@@ -98,6 +104,7 @@ export const toggleTodo =
     return true;
   };
 
+// Copies a task right below the original
 export const duplicateTodo =
   (id: string): AppThunk<string | null> =>
   (dispatch, getState) => {
@@ -109,6 +116,7 @@ export const duplicateTodo =
     return payload.copyId;
   };
 
+// Removes tasks and offers to restore them in place
 export const removeTodos =
   (ids: readonly string[], cleared = false): AppThunk =>
   (dispatch, getState) => {
@@ -136,10 +144,12 @@ export const removeTodos =
     dispatch(toastShown({ message, action: { type: "restore", todos: removed } }));
   };
 
+// Removes every completed task
 export const clearCompleted = (): AppThunk => (dispatch, getState) => {
   dispatch(removeTodos(selectCompletedIds(getState()), true));
 };
 
+// Restores the tasks of the last removal toast
 export const undoRemoval = (): AppThunk => (dispatch, getState) => {
   const toast = selectToast(getState());
   if (toast?.action?.type !== "restore") return;
@@ -148,6 +158,7 @@ export const undoRemoval = (): AppThunk => (dispatch, getState) => {
   dispatch(toastDismissed(toast.id));
 };
 
+// A task dropped on a list or project changes to match it
 export const dropTodo =
   (id: string, target: ViewId, today: string): AppThunk<boolean> =>
   (dispatch, getState) => {

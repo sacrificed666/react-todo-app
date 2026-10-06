@@ -130,6 +130,7 @@ describe("createTodo", () => {
       repeatAnchor: null,
       projectId: null,
       notes: "",
+      subtasks: [],
       createdAt: 42,
       updatedAt: 42,
       completedAt: null,
@@ -170,6 +171,7 @@ describe("parseTodos", () => {
       repeatAnchor: "2026-09-17",
       projectId: "books",
       notes: "Chapter 3",
+      subtasks: [{ id: "s1", title: "Take notes", completed: true }],
       createdAt: 1,
       updatedAt: 2,
       completedAt: null,
@@ -190,11 +192,27 @@ describe("parseTodos", () => {
         repeatAnchor: null,
         projectId: null,
         notes: "",
+        subtasks: [],
         createdAt: 500,
         updatedAt: 500,
         completedAt: 500,
       },
     ]);
+  });
+
+  it("moves a checklist from the notes of older versions into subtasks", () => {
+    const [todo] =
+      parseTodos([{ id: "trip", title: "Trip", notes: "Pack\n- [x] Passport\n- [ ] Tickets\n\n\nCall" }]) ?? [];
+    expect(todo?.notes).toBe("Pack\n\nCall");
+    expect(todo?.subtasks.map(({ title, completed }) => ({ title, completed }))).toEqual([
+      { title: "Passport", completed: true },
+      { title: "Tickets", completed: false },
+    ]);
+  });
+
+  it("keeps notes as they are once subtasks are stored", () => {
+    const [todo] = parseTodos([{ id: "trip", title: "Trip", notes: "- [ ] Not a subtask", subtasks: [] }]) ?? [];
+    expect(todo).toMatchObject({ notes: "- [ ] Not a subtask", subtasks: [] });
   });
 
   it("skips invalid entries and repairs identifiers", () => {

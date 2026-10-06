@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 
+// Whether an element has scrolled out above the given offset
 export const useScrolledPast = (targetId: string, offset = 0) => {
   const [past, setPast] = useState(false);
 
+  // Watches the element with an intersection observer
   useEffect(() => {
     const target = document.getElementById(targetId);
     if (!target || !("IntersectionObserver" in globalThis)) return;

@@ -8,6 +8,7 @@ interface BrandProps {
   className?: string;
 }
 
+// Logo and app name
 const Brand = ({ label, name, className }: BrandProps) => (
   <a className={cx(styles.brand, className)} href={import.meta.env.BASE_URL} aria-label={label}>
     <img className={styles.logo} src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width={30} height={30} />

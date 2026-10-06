@@ -6,6 +6,7 @@ export interface Rankable<Group extends string> {
   keywords?: string;
 }
 
+// Matching commands per group, the best matches and groups first
 export const rankCommands = <Group extends string, Item extends Rankable<Group>>(
   items: readonly Item[],
   query: string,

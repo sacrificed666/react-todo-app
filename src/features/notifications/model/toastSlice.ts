@@ -38,6 +38,7 @@ const initialState: ToastState = {
   current: null,
 };
 
+// The one toast on screen, replaced by the next
 export const toastSlice = createSlice({
   name: "toast",
   initialState,

@@ -32,10 +32,12 @@ interface ContextMenuProps {
 const MARGIN = 8;
 const ITEM_SELECTOR = '[role="menuitem"]:not(:disabled), [role="menuitemradio"]:not(:disabled)';
 
+// The menu items of a menu
 const items = (menu: HTMLElement) => Array.from(menu.querySelectorAll<HTMLElement>(ITEM_SELECTOR));
 
 const ARM_DELAY = 120;
 
+// A menu at a point with keyboard navigation, closed outside or on Escape
 const ContextMenu = ({
   menuRef,
   point,
@@ -51,9 +53,11 @@ const ContextMenu = ({
   const armed = useRef(!touch);
   const handleClose = useEffectEvent(onClose);
 
+  // Ignores the release of the press that opened the menu
   useEffect(() => {
     if (armed.current) return;
     let timer = 0;
+    // Accepts clicks a moment after the opening press ends
     const arm = () => {
       timer = window.setTimeout(() => {
         armed.current = true;
@@ -68,6 +72,7 @@ const ContextMenu = ({
     };
   }, []);
 
+  // Opens the menu inside the window and focuses its first item
   useLayoutEffect(() => {
     const menu = menuRef.current;
     if (!menu) return;
@@ -85,9 +90,11 @@ const ContextMenu = ({
     (menu.querySelector<HTMLElement>("[data-autofocus]") ?? items(menu)[0])?.focus({ preventScroll: true });
   }, [menuRef, point, page]);
 
+  // Returns the focus and reports when the menu closes
   useEffect(() => {
     const menu = menuRef.current;
     if (!menu) return;
+    // Only the closing toggle matters
     const handleToggle = (event: Event) => {
       if (!("newState" in event) || event.newState !== "closed") return;
       const target = returnFocus.current;
@@ -101,6 +108,7 @@ const ContextMenu = ({
     return () => menu.removeEventListener("toggle", handleToggle);
   }, [menuRef]);
 
+  // Arrows, Home and End move; Left goes back; Tab closes
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowLeft" && onBack) {
       event.preventDefault();

@@ -8,8 +8,10 @@ import { dataImported } from "./actions";
 import { redone, undone } from "./history";
 import { createExport, exportFileName, readImport } from "./transfer";
 
+// The undo and redo stacks
 export const selectHistory = (state: RootState) => state.history;
 
+// Adds the new tasks and projects of a file and reports the result
 export const importData =
   (text: string): AppThunk =>
   (dispatch, getState) => {
@@ -33,12 +35,14 @@ export const importData =
     dispatch(toastShown({ message }));
   };
 
+// Downloads every task and project as a JSON file
 export const exportData = (): AppThunk => (_dispatch, getState) => {
   const state = getState();
   const now = new Date();
   downloadJson(exportFileName(now), createExport({ todos: selectTodos(state), projects: selectProjects(state) }, now));
 };
 
+// Undoes the last change and says what it was
 export const undo = (): AppThunk => (dispatch, getState) => {
   const entry = getState().history.past.at(-1);
   if (!entry) return;
@@ -46,6 +50,7 @@ export const undo = (): AppThunk => (dispatch, getState) => {
   dispatch(toastShown({ message: { key: "toast.undone", params: { action: entry.description } } }));
 };
 
+// Redoes the last undone change and says what it was
 export const redo = (): AppThunk => (dispatch, getState) => {
   const entry = getState().history.future.at(-1);
   if (!entry) return;

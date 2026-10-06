@@ -25,6 +25,7 @@ type Preferences = Settings & ViewPreferences;
 
 const EMPTY_DATA: DataSnapshot = { todos: [], projects: [] };
 
+// Saved tasks and projects, moved over from the oldest format once
 const loadData = (storage: Storage): DataSnapshot => {
   const current = readJson(storage, STORAGE_KEYS.data);
   if (current !== undefined) return parseData(current) ?? EMPTY_DATA;
@@ -37,6 +38,7 @@ const loadData = (storage: Storage): DataSnapshot => {
   return migrated;
 };
 
+// The saved list, unless its project no longer exists
 const readListPreference = (preferences: Record<string, unknown>, data: DataSnapshot): ViewId => {
   if (isViewId(preferences.list)) {
     const projectId = projectIdOf(preferences.list);
@@ -46,6 +48,7 @@ const readListPreference = (preferences: Record<string, unknown>, data: DataSnap
   return preferences.filter === "completed" ? "completed" : initialViewState.list;
 };
 
+// Saved settings, list, sort and completed toggle with defaults
 const loadPreferences = (storage: Storage, languages: readonly string[], data: DataSnapshot): Preferences => {
   const stored = readJson(storage, STORAGE_KEYS.preferences);
   const preferences = isRecord(stored) ? stored : {};
@@ -59,6 +62,7 @@ const loadPreferences = (storage: Storage, languages: readonly string[], data: D
   };
 };
 
+// The part of the state that is stored as preferences
 const selectPreferences = (state: RootState): Preferences => ({
   list: state.view.list,
   sort: state.view.sort,
@@ -66,6 +70,7 @@ const selectPreferences = (state: RootState): Preferences => ({
   ...state.settings,
 });
 
+// The initial state from local storage
 export const loadPersistedState = (
   storage: Storage | null = getStorage(),
   languages: readonly string[] = globalThis.navigator.languages,
@@ -85,6 +90,7 @@ export const loadPersistedState = (
   };
 };
 
+// Tasks and projects from stored text, empty when it is broken
 const parseStoredData = (value: string | null): DataSnapshot => {
   if (value === null) return EMPTY_DATA;
   try {
@@ -94,6 +100,7 @@ const parseStoredData = (value: string | null): DataSnapshot => {
   }
 };
 
+// Saves every change and follows changes made in other tabs
 export const startPersistence = (store: AppStore, storage: Storage | null = getStorage()): (() => void) => {
   if (!storage) return () => {};
 
@@ -119,6 +126,7 @@ export const startPersistence = (store: AppStore, storage: Storage | null = getS
     }
   });
 
+  // Another tab changed the data, so take over its version
   const handleStorage = (event: StorageEvent) => {
     if (event.storageArea !== storage) return;
     if (event.key !== null && event.key !== STORAGE_KEYS.data) return;

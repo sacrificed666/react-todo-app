@@ -10,12 +10,14 @@ import { sortChanged } from "../../model/viewSlice";
 
 import styles from "./SortMenu.module.scss";
 
+// Menu that changes the sort order of the list
 const SortMenu = () => {
   const dispatch = useAppDispatch();
   const sort = useAppSelector(selectSort);
   const { t } = useI18n();
   const popover = usePopover();
 
+  // Applies a sort order and closes the menu
   const choose = (mode: SortMode) => {
     popover.close();
     dispatch(sortChanged(mode));

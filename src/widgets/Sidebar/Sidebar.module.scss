@@ -19,6 +19,7 @@
     display: none;
   }
 
+  // The navigation flows below the tasks on phones
   @media (max-width: 899px) {
     position: static;
     max-block-size: none;

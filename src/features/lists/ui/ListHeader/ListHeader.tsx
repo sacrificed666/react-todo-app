@@ -17,6 +17,7 @@ import styles from "./ListHeader.module.scss";
 
 export const LIST_TITLE_ID = "list-title";
 
+// Title of the list, project or search with its progress
 const ListHeader = () => {
   const dispatch = useAppDispatch();
   const today = useToday();

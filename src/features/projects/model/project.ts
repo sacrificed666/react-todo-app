@@ -36,15 +36,19 @@ export const MAX_PROJECTS = 200;
 const EMOJI = /^(?:\p{Extended_Pictographic}|\p{Regional_Indicator})/u;
 const graphemes = new Intl.Segmenter(undefined, { granularity: "grapheme" });
 
+// Whether a value is a project colour
 export const isProjectColor = (value: unknown): value is ProjectColor =>
   typeof value === "string" && (PROJECT_COLORS as readonly string[]).includes(value);
 
+// A project name on one line within the length limit
 export const normalizeProjectName = (value: string) =>
   Array.from(value.replaceAll(/\s+/g, " ").trim()).slice(0, MAX_PROJECT_NAME_LENGTH).join("").trim();
 
+// The next colour in turn for a new project
 export const suggestProjectColor = (count: number): ProjectColor =>
   PROJECT_COLORS[count % PROJECT_COLORS.length] ?? "blue";
 
+// A new project
 export const createProject = ({ name, color = "blue" }: ProjectDraft, now: number, id: string = nanoid()): Project => ({
   id,
   name: normalizeProjectName(name),
@@ -53,6 +57,7 @@ export const createProject = ({ name, color = "blue" }: ProjectDraft, now: numbe
   updatedAt: now,
 });
 
+// A leading emoji and the rest of a project name
 export const splitProjectName = (name: string): { emoji: string | null; label: string } => {
   const [first] = graphemes.segment(name);
   if (!first || !EMOJI.test(first.segment)) return { emoji: null, label: name };
@@ -60,6 +65,7 @@ export const splitProjectName = (name: string): { emoji: string | null; label: s
   return label ? { emoji: first.segment, label } : { emoji: null, label: name };
 };
 
+// Valid projects of a document, without duplicates
 export const parseProjects = (input: unknown, now: number = Date.now()): Project[] => {
   const list = isRecord(input) && Array.isArray(input.projects) ? input.projects : [];
   const seen = new Set<string>();

@@ -46,6 +46,7 @@ interface SectionProps {
   children: ReactNode;
 }
 
+// A titled group of settings
 const Section = ({ icon, title, children }: SectionProps) => {
   const headingId = useId();
   return (
@@ -59,6 +60,7 @@ const Section = ({ icon, title, children }: SectionProps) => {
   );
 };
 
+// Theme with accent, background and glass, then effects and language
 const SettingsContent = () => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
@@ -159,6 +161,7 @@ const SettingsContent = () => {
   );
 };
 
+// The settings dialog
 const SettingsDialog = () => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();

@@ -2,7 +2,7 @@
 
 .dialog {
   inline-size: min(40rem, calc(100vw - 24px));
-  overflow: hidden;
+  overflow: clip;
 }
 
 .palette {
@@ -59,6 +59,7 @@
 .escape {
   @extend %key;
 
+  // No Escape hint on touch screens
   @media (hover: none) and (pointer: coarse) {
     display: none;
   }
@@ -158,6 +159,7 @@
     @extend %key;
   }
 
+  // No keyboard hints on touch screens
   @media (hover: none) and (pointer: coarse) {
     display: none;
   }

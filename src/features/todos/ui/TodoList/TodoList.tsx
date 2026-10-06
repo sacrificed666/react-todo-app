@@ -19,6 +19,7 @@ import TodoSection from "../TodoSection/TodoSection";
 
 import styles from "./TodoList.module.scss";
 
+// Sections of the current view: overdue, days, open and completed
 const TodoList = () => {
   const dispatch = useAppDispatch();
   const today = useToday();
@@ -36,6 +37,7 @@ const TodoList = () => {
   const trimmedQuery = query.trim();
   const groups = groupActiveTodos(active, trimmedQuery ? "all" : list, today);
 
+  // The heading of a section: overdue, a day, a month or the list
   const groupTitle = (group: TodoGroup) => {
     if (group.kind === "overdue") return t("section.overdue");
     if (group.kind === "month" && group.date) return formatMonth(group.date, today, intlLocale);

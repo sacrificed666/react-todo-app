@@ -23,9 +23,11 @@ export type DropResult =
   | { type: "reorder"; activeId: string; overId: string }
   | null;
 
+// Whether a droppable is a list or project rather than a task
 export const isDropTarget = (entry: Pick<Entry, "id"> | null) =>
   typeof entry?.id === "string" && entry.id.startsWith(DROP_PREFIX);
 
+// A task or target as spoken text
 const describe = (t: Translate, entry: Entry | null) => {
   const title = entry?.data.current?.title;
   if (typeof title === "string") return t("dnd.task", { title });
@@ -33,6 +35,7 @@ const describe = (t: Translate, entry: Entry | null) => {
   return typeof label === "string" ? label : t("dnd.fallback");
 };
 
+// What screen readers hear while a task is dragged
 export const createAnnouncements = (t: Translate): Announcements => ({
   onDragStart: ({ active }) => t("dnd.pickedUp", { task: describe(t, active) }),
   onDragOver: ({ active, over }) => {
@@ -48,6 +51,7 @@ export const createAnnouncements = (t: Translate): Announcements => ({
   onDragCancel: ({ active }) => t("dnd.cancelled", { task: describe(t, active) }),
 });
 
+// Lists and projects under the pointer win over the nearest task
 export const collisions: CollisionDetection = (args) => {
   const targets = pointerWithin({
     ...args,
@@ -60,6 +64,7 @@ export const collisions: CollisionDetection = (args) => {
   });
 };
 
+// A drop as a move to a list or project, a reorder or nothing
 export const resolveDrop = (dragged: Active, over: Over | null): DropResult => {
   if (!over) return null;
   const target: unknown = over.data.current?.target;

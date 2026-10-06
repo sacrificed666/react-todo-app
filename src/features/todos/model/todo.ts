@@ -2,7 +2,9 @@ import { nanoid } from "@reduxjs/toolkit";
 
 import { isDateKey, toDateKey } from "@/shared/lib/date";
 import { isEntityId, isRecord, readTimestamp } from "@/shared/lib/guards";
-import { normalizeForSearch } from "@/shared/lib/text";
+import { normalizeForSearch, normalizeLine } from "@/shared/lib/text";
+
+import { extractChecklist, parseSubtasks, type Subtask } from "./subtasks";
 
 export const REPEATS = ["daily", "weekdays", "weekly", "monthly", "yearly"] as const;
 
@@ -18,6 +20,7 @@ export interface Todo {
   repeatAnchor: string | null;
   projectId: string | null;
   notes: string;
+  subtasks: Subtask[];
   createdAt: number;
   updatedAt: number;
   completedAt: number | null;
@@ -32,6 +35,7 @@ export interface TodoDraft {
   notes?: string;
 }
 
+// Whether a value is a repeat interval
 export const isRepeat = (value: unknown): value is Repeat =>
   typeof value === "string" && (REPEATS as readonly string[]).includes(value);
 
@@ -40,21 +44,26 @@ export const MAX_NOTES_LENGTH = 2000;
 
 const TAG = /(^|\s)#([\p{L}\p{N}_-]+)/gu;
 
-export const normalizeTitle = (value: string) =>
-  Array.from(value.replaceAll(/\s+/g, " ").trim()).slice(0, MAX_TITLE_LENGTH).join("").trim();
+// A title on one line within the length limit
+export const normalizeTitle = (value: string) => normalizeLine(value, MAX_TITLE_LENGTH);
 
+// Notes with plain line breaks within the length limit
 export const normalizeNotes = (value: string) =>
   Array.from(value.replaceAll("\r\n", "\n").trimEnd()).slice(0, MAX_NOTES_LENGTH).join("");
 
+// The #tags of a title
 export const extractTags = (title: string) => [...title.matchAll(TAG)].map((match) => `#${match[2] ?? ""}`);
 
+// A title without its #tags
 export const stripTags = (title: string) => title.replaceAll(TAG, "$1").replaceAll(/\s+/g, " ").trim();
 
+// A search test that ignores case and accents
 export const createMatcher = (query: string) => {
   const needle = normalizeForSearch(query);
   return (title: string) => needle === "" || normalizeForSearch(title).includes(needle);
 };
 
+// A new open task; a repeat without a date starts today
 export const createTodo = (
   { title, important = false, dueDate = null, repeat = null, projectId = null, notes = "" }: TodoDraft,
   now: number,
@@ -71,18 +80,21 @@ export const createTodo = (
     repeatAnchor: repeat ? date : null,
     projectId: isEntityId(projectId) ? projectId : null,
     notes: normalizeNotes(notes),
+    subtasks: [],
     createdAt: now,
     updatedAt: now,
     completedAt: null,
   };
 };
 
+// Tasks of a document: a plain list or the todos field
 const readList = (input: unknown): unknown[] | null => {
   if (Array.isArray(input)) return input;
   if (isRecord(input) && Array.isArray(input.todos)) return input.todos;
   return null;
 };
 
+// Valid tasks of a document, upgrading older formats
 export const parseTodos = (input: unknown, now: number = Date.now()): Todo[] | null => {
   const list = readList(input);
   if (!list) return null;
@@ -104,6 +116,11 @@ export const parseTodos = (input: unknown, now: number = Date.now()): Todo[] | n
     const createdAt = readTimestamp(entry.createdAt, now);
     const updatedAt = Math.max(readTimestamp(entry.updatedAt, createdAt), createdAt);
 
+    const notes = typeof entry.notes === "string" ? normalizeNotes(entry.notes) : "";
+    const details = Array.isArray(entry.subtasks)
+      ? { notes, subtasks: parseSubtasks(entry.subtasks) }
+      : extractChecklist(notes);
+
     const dueDate = isDateKey(entry.dueDate) ? entry.dueDate : null;
     const repeat = dueDate !== null && isRepeat(entry.repeat) ? entry.repeat : null;
     const anchor =
@@ -119,7 +136,8 @@ export const parseTodos = (input: unknown, now: number = Date.now()): Todo[] | n
         repeat,
         repeatAnchor: repeat ? anchor : null,
         projectId: isEntityId(entry.projectId) ? entry.projectId : null,
-        notes: typeof entry.notes === "string" ? normalizeNotes(entry.notes) : "",
+        notes: details.notes,
+        subtasks: details.subtasks,
         createdAt,
         updatedAt,
         completedAt: completed ? readTimestamp(entry.completedAt, updatedAt) : null,

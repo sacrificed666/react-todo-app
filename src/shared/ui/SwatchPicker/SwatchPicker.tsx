@@ -19,6 +19,7 @@ interface SwatchPickerProps<Value extends string> {
   className?: string;
 }
 
+// A radio group of colour swatches
 const SwatchPicker = <Value extends string>({
   name,
   label,

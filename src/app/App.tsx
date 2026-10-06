@@ -33,6 +33,7 @@ import { useDocumentTitle } from "./useDocumentTitle";
 
 import styles from "./App.module.scss";
 
+// The app: layout, overlays and the global shortcuts
 const App = () => {
   const dispatch = useAppDispatch();
   const today = useToday();

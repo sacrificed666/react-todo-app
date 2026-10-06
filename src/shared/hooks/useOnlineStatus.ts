@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 
+// Listens for the browser going online or offline
 const subscribe = (onChange: () => void) => {
   window.addEventListener("online", onChange);
   window.addEventListener("offline", onChange);
@@ -9,6 +10,7 @@ const subscribe = (onChange: () => void) => {
   };
 };
 
+// Whether the browser is online
 export const useOnlineStatus = () =>
   useSyncExternalStore(
     subscribe,

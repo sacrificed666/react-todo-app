@@ -25,6 +25,7 @@ interface TodoSectionProps {
   action?: ReactNode;
 }
 
+// A titled group of tasks that renders long lists in two passes
 const TodoSection = ({
   id,
   title,
@@ -47,6 +48,7 @@ const TodoSection = ({
   const shown = todos.length > limit ? todos.slice(0, limit) : todos;
   const count = <span className={styles.count}>{todos.length}</span>;
 
+  // Renders the rest of a long list right after the first paint
   useEffect(() => {
     if (todos.length <= limit) return;
     const timer = setTimeout(() => startTransition(() => setLimit(Number.POSITIVE_INFINITY)));

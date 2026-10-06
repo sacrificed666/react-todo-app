@@ -7,6 +7,7 @@ interface SettingsButtonProps {
   variant?: IconButtonVariant;
 }
 
+// Opens the settings
 const SettingsButton = ({ variant = "glass" }: SettingsButtonProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();

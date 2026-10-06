@@ -1,3 +1,4 @@
+// Local storage, or null when the browser blocks it
 export const getStorage = (): Storage | null => {
   try {
     return globalThis.localStorage;
@@ -6,6 +7,7 @@ export const getStorage = (): Storage | null => {
   }
 };
 
+// Parsed JSON under a key, or undefined
 export const readJson = (storage: Storage, key: string): unknown => {
   try {
     const raw = storage.getItem(key);
@@ -15,6 +17,7 @@ export const readJson = (storage: Storage, key: string): unknown => {
   }
 };
 
+// Writes text unless it is unchanged; false when storage is full
 export const writeText = (storage: Storage, key: string, value: string) => {
   try {
     if (storage.getItem(key) !== value) storage.setItem(key, value);
@@ -24,6 +27,7 @@ export const writeText = (storage: Storage, key: string, value: string) => {
   }
 };
 
+// Removes a key, ignoring blocked storage
 export const removeKey = (storage: Storage, key: string) => {
   try {
     storage.removeItem(key);

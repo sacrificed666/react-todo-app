@@ -19,6 +19,7 @@ interface IconButtonProps extends Omit<ComponentPropsWithRef<"button">, "childre
   iconFilled?: boolean;
 }
 
+// A round icon button named by its label
 const IconButton = ({
   icon,
   label,

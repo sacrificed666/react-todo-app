@@ -15,12 +15,14 @@ interface DialogProps {
   children: ReactNode;
 }
 
+// A native modal dialog that closes on the backdrop and reports every close
 const Dialog = ({ open, label, onClose, placement = "center", className, header, children }: DialogProps) => {
   const ref = useRef<HTMLDialogElement>(null);
   const handleClose = useEffectEvent(onClose);
 
   useRefraction(ref, { bezel: 24, scale: 40 });
 
+  // Opens or closes the native dialog with the open prop
   useLayoutEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
@@ -28,9 +30,11 @@ const Dialog = ({ open, label, onClose, placement = "center", className, header,
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
+  // Reports closing by Escape, the backdrop or the close method
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
+    // A click on the dialog itself is a click on its backdrop
     const closeOnBackdrop = (event: MouseEvent) => {
       if (event.target === dialog) handleClose();
     };

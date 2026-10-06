@@ -9,6 +9,7 @@ interface LocaleFlagProps {
   className?: string;
 }
 
+// The flag of a language
 const LocaleFlag = ({ locale, className }: LocaleFlagProps) => (
   <img
     className={cx(styles.flag, className)}

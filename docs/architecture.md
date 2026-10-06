@@ -42,7 +42,7 @@ flowchart TB
 
 | Feature            | Model                                                                                                                                                    | UI                                                                                                                                                                |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ `todos`         | `Todo` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, checklists                                  | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker` |
+| ✅ `todos`         | `Todo` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, subtasks                                    | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker` |
 | 📁 `projects`      | `Project` model with colours and emoji icons, slice, selectors, `createProject()` and `deleteProject()`                                                  | `ProjectNav`, `ProjectDialog`, `ProjectPicker`, `ProjectIcon`                                                                                                     |
 | 📚 `lists`         | Smart lists and project views (`ViewId`), date groups, sort orders, view slice with overlays, `useViewInfo()`, list shortcuts                            | `ListNav`, `TagNav`, `TabBar`, `ListsSheet`, `ListHeader`, `SortMenu`                                                                                             |
 | 💾 `data`          | The stored document (`parseData`, `serializeData`), import and export, `dataReplaced` and `dataImported`, undo history                                   | None                                                                                                                                                              |
@@ -131,6 +131,7 @@ erDiagram
     string repeatAnchor "first date of the series or null"
     string projectId FK "project id or null"
     string notes "up to 2000 characters"
+    Subtask[] subtasks "up to 50"
     number createdAt "epoch milliseconds"
     number updatedAt "epoch milliseconds"
     number completedAt "epoch milliseconds or null"
@@ -138,20 +139,21 @@ erDiagram
   TAG {
     string name "#word in the title"
   }
-  CHECKLIST_ITEM {
-    number line "line index in the notes"
-    string text
-    boolean done "- [x] or - [ ]"
+  SUBTASK {
+    string id "unique within the task"
+    string title "1-200 characters"
+    boolean completed
   }
   PROJECT ||--o{ TODO : "contains"
   TODO ||--o{ TAG : "title mentions"
-  TODO ||--o{ CHECKLIST_ITEM : "notes contain"
+  TODO ||--o{ SUBTASK : "has, in order"
 ```
 
 - 📅 `dueDate` and `repeatAnchor` are local calendar dates. Keeping dates as keys instead of timestamps avoids time zone surprises and lets lists compare dates as plain strings.
 - 🔗 `projectId` is validated twice: `parseTodos()` keeps only well-formed ids, and `parseData()` drops links to projects that are not in the same document.
 - 😀 A project's emoji icon is **derived** by `splitProjectName()` with `Intl.Segmenter`, so flags and emoji built from several code points stay whole.
-- 🏷️ Tags and checklist items are **derived**, not stored: `extractTags()` reads `#words` from the title and `parseChecklist()` reads Markdown task list lines from the notes. Nothing needs migrating when the rules evolve.
+- 🏷️ Tags are **derived**, not stored: `extractTags()` reads `#words` from the title, so nothing needs migrating when the rules evolve.
+- ☑️ Subtasks are stored in order on the task (`model/subtasks.ts`). Data from versions that wrote `- [ ] item` lines into the notes is converted by `extractChecklist()` the first time it is read, and a repeating task starts its next occurrence with every subtask open again.
 
 ## 🔄 Task lifecycle
 

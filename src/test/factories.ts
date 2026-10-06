@@ -7,10 +7,13 @@ import type { Todo } from "@/features/todos/model/todo";
 import { todosAdapter } from "@/features/todos/model/todosSlice";
 import { addDays, toDateKey } from "@/shared/lib/date";
 
+// Today as a date key
 export const todayKey = () => toDateKey(new Date());
 
+// A date key some days from today
 export const dayFromToday = (offset: number) => addDays(todayKey(), offset);
 
+// A task with defaults, with fields to override
 export const makeTodo = (overrides: Partial<Todo> & Pick<Todo, "id" | "title">): Todo => ({
   completed: false,
   important: false,
@@ -19,12 +22,14 @@ export const makeTodo = (overrides: Partial<Todo> & Pick<Todo, "id" | "title">):
   repeatAnchor: null,
   projectId: null,
   notes: "",
+  subtasks: [],
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_000_000,
   completedAt: null,
   ...overrides,
 });
 
+// A project with defaults, with fields to override
 export const makeProject = (overrides: Partial<Project> & Pick<Project, "id" | "name">): Project => ({
   color: "blue",
   createdAt: 1_700_000_000_000,
@@ -32,6 +37,7 @@ export const makeProject = (overrides: Partial<Project> & Pick<Project, "id" | "
   ...overrides,
 });
 
+// A preloaded store state with tasks, view, search and projects
 export const makeState = (
   todos: readonly Todo[],
   list: ViewId = "all",

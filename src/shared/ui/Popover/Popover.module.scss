@@ -51,6 +51,7 @@
     background: transparent;
   }
 
+  // Anchor positioning places the popover and flips it when needed
   @supports (position-area: block-end) {
     margin-block-start: 10px;
     position-try-fallbacks: flip-block;
@@ -66,6 +67,7 @@
     }
   }
 
+  // A plain border in forced colours mode
   @media (forced-colors: active) {
     border: 1px solid CanvasText;
   }

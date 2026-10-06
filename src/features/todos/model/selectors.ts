@@ -13,10 +13,12 @@ const todoSelectors = todosAdapter.getSelectors((state: RootState) => state.todo
 export const selectTodos = todoSelectors.selectAll;
 export const selectTodoById = todoSelectors.selectById;
 
+// Passes today's date through to the selectors
 const selectToday = (_state: RootState, today: string) => today;
 
 export type ListCounts = Record<ListId, number> & { overdue: number; total: number };
 
+// Open tasks per smart list, overdue and totals
 export const selectListCounts = createSelector([selectTodos, selectToday], (todos, today): ListCounts => {
   const active = todos.filter((todo) => !todo.completed);
   const countActive = (list: ListId) => active.filter((todo) => matchesList(todo, list, today)).length;
@@ -32,10 +34,12 @@ export const selectListCounts = createSelector([selectTodos, selectToday], (todo
   };
 });
 
+// Ids of all completed tasks
 export const selectCompletedIds = createSelector([selectTodos], (todos) =>
   todos.filter((todo) => todo.completed).map((todo) => todo.id),
 );
 
+// Open tasks per project
 export const selectProjectCounts = createSelector([selectTodos], (todos): ReadonlyMap<string, number> => {
   const counts = new Map<string, number>();
   for (const todo of todos) {
@@ -45,6 +49,7 @@ export const selectProjectCounts = createSelector([selectTodos], (todos): Readon
   return counts;
 });
 
+// Open tasks per due date, for the calendar dots
 export const selectDueDateCounts = createSelector([selectTodos], (todos): ReadonlyMap<string, number> => {
   const counts = new Map<string, number>();
   for (const todo of todos) {
@@ -54,20 +59,25 @@ export const selectDueDateCounts = createSelector([selectTodos], (todos): Readon
   return counts;
 });
 
+// Done and total tasks of the current view
 export const selectListProgress = createSelector([selectTodos, selectList, selectToday], (todos, list, today) => {
   const inList = todos.filter((todo) => matchesView(todo, list, today));
   return { done: inList.filter((todo) => todo.completed).length, total: inList.length };
 });
 
+// A given query, or the search text
 const selectQueryArgument = (state: RootState, _today: string, query?: string) => query ?? selectQuery(state);
 
+// Open and completed tasks of the view or search, sorted
 export const selectVisibleTodos = createSelector(
   [selectTodos, selectList, selectQueryArgument, selectSort, selectToday],
   (todos, list, query, sort, today) => {
     const searching = query.trim() !== "";
     const matches = createMatcher(query);
     const visible = todos.filter((todo) =>
-      searching ? matches(todo.title) || matches(todo.notes) : matchesView(todo, list, today),
+      searching
+        ? matches(todo.title) || matches(todo.notes) || todo.subtasks.some((subtask) => matches(subtask.title))
+        : matchesView(todo, list, today),
     );
     return {
       active: sortTodos(
@@ -87,6 +97,7 @@ export interface TagCount {
   count: number;
 }
 
+// Tags of open tasks with their counts, the most used first
 export const selectTagCounts = createSelector([selectTodos], (todos): TagCount[] => {
   const counts = new Map<string, TagCount>();
   for (const todo of todos) {

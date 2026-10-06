@@ -4,6 +4,7 @@ import { SITE } from "@/shared/lib/site";
 
 import styles from "./Footer.module.scss";
 
+// Author, version and source code
 const Footer = () => {
   const { t } = useI18n();
   const today = useToday();

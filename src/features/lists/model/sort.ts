@@ -4,9 +4,11 @@ export const SORT_MODES = ["manual", "dueDate", "priority", "newest", "alphabeti
 
 export type SortMode = (typeof SORT_MODES)[number];
 
+// Whether a value is a sort order
 export const isSortMode = (value: unknown): value is SortMode =>
   typeof value === "string" && (SORT_MODES as readonly string[]).includes(value);
 
+// Earlier dates first, tasks without a date last
 const byDueDate = (a: Todo, b: Todo) => {
   if (a.dueDate === b.dueDate) return 0;
   if (a.dueDate === null) return 1;
@@ -16,6 +18,7 @@ const byDueDate = (a: Todo, b: Todo) => {
 
 const collator = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
 
+// Tasks in the chosen order; manual keeps the dragged order
 export const sortTodos = (todos: readonly Todo[], mode: SortMode): readonly Todo[] => {
   switch (mode) {
     case "manual":

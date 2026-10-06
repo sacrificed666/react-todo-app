@@ -8,6 +8,7 @@ import styles from "./Workspace.module.scss";
 
 export const WORKSPACE_ID = "tasks";
 
+// The main column: header, quick add and the tasks
 const Workspace = () => {
   const list = useAppSelector(selectList);
   const searching = useAppSelector(selectSearching);

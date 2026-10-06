@@ -33,7 +33,7 @@ import type { MenuPoint } from "@/shared/ui/ContextMenu/ContextMenu";
 import Icon from "@/shared/ui/Icon/Icon";
 import IconButton from "@/shared/ui/IconButton/IconButton";
 
-import { checklistProgress } from "../../model/checklist";
+import { subtaskProgress } from "../../model/subtasks";
 import { duplicateTodo, removeTodos, toggleTodo } from "../../model/thunks";
 import { extractTags, MAX_TITLE_LENGTH, stripTags, type Todo } from "../../model/todo";
 import {
@@ -64,6 +64,7 @@ interface Swipe {
   armed: boolean;
 }
 
+// Focuses the first of the given elements that exists
 const focusFirst = (...ids: Array<string | null>) => {
   for (const id of ids) {
     const element = id === null ? null : document.getElementById(id);
@@ -74,20 +75,24 @@ const focusFirst = (...ids: Array<string | null>) => {
   }
 };
 
+// Keeps the title editor focused while its buttons are pressed
 const keepEditorFocus = (event: MouseEvent<HTMLButtonElement>) => event.preventDefault();
 
+// A swipe that slows down past its limit, like a rubber band
 const resist = (distance: number) => {
   const magnitude = Math.abs(distance);
   const eased = magnitude <= SWIPE_LIMIT ? magnitude : SWIPE_LIMIT + (magnitude - SWIPE_LIMIT) * 0.25;
   return Math.sign(distance) * eased;
 };
 
+// The middle of an element, for the confetti
 const centerOf = (element: Element | null) => {
   if (!element) return;
   const { left, top, width, height } = element.getBoundingClientRect();
   return { x: left + width / 2, y: top + height / 2 };
 };
 
+// The point under an element where its menu opens
 const anchorOf = (element: Element | null): MenuPoint => {
   if (!element) return { x: 0, y: 0 };
   const { left, bottom } = element.getBoundingClientRect();
@@ -104,6 +109,7 @@ interface TodoItemProps {
   hideDueDate?: boolean;
 }
 
+// One task: check, title, chips, swipe actions, drag and context menu
 const TodoItem = ({
   todo,
   previousId,
@@ -145,11 +151,13 @@ const TodoItem = ({
   const due = todo.dueDate && !hideDueDate ? describeDueDate(todo.dueDate, today, intlLocale) : null;
   const tags = extractTags(todo.title);
   const title = stripTags(todo.title) || todo.title;
-  const checklist = checklistProgress(todo.notes);
+  const checklist = subtaskProgress(todo.subtasks);
   const neighborId = nextId ?? previousId;
   const showProject = project !== undefined && project.id !== viewProjectId;
 
+  // Finishes a pending check when the page or the row goes away
   useEffect(() => {
+    // Runs a pending check right away
     const flushToggle = () => {
       const toggle = pendingCommit.current;
       pendingCommit.current = null;
@@ -164,12 +172,14 @@ const TodoItem = ({
     };
   }, []);
 
+  // Focuses and selects the title when editing starts
   useEffect(() => {
     if (!editing) return;
     editorRef.current?.focus();
     editorRef.current?.select();
   }, [editing]);
 
+  // Animates the row out, applies the change and keeps the focus nearby
   const leave = async (commit: () => void) => {
     const hadFocus = itemRef.current?.contains(document.activeElement) ?? false;
 
@@ -185,12 +195,14 @@ const TodoItem = ({
     if (hadFocus) focusFirst(toggleId(todo.id), neighborId === null ? null : toggleId(neighborId), COMPOSER_INPUT_ID);
   };
 
+  // Animates the row out when a change moves it to another list
   const update = (next: Todo, commit: () => void) => {
     const state = store.getState();
     if (selectSearching(state) || matchesView(next, selectList(state), today)) commit();
     else void leave(commit);
   };
 
+  // Checks the task after the row has left, with confetti
   const commitToggle = () => {
     const origin = centerOf(document.getElementById(toggleId(todo.id)));
     pendingCommit.current = () => dispatch(toggleTodo(todo.id, today));
@@ -201,6 +213,7 @@ const TodoItem = ({
     });
   };
 
+  // Checks after a short delay so a quick second tap can undo it
   const handleToggle = () => {
     if (leaving) return;
     clearTimeout(toggleTimer.current);
@@ -222,6 +235,7 @@ const TodoItem = ({
     toggleTimer.current = window.setTimeout(() => void commitToggle(), TOGGLE_DELAY);
   };
 
+  // Stars or unstars the task
   const toggleImportant = () => {
     if (leaving) return;
     update({ ...todo, important: !todo.important }, () => dispatch(todoImportanceToggled(todo.id)));
@@ -230,26 +244,31 @@ const TodoItem = ({
   const schedule = (dueDate: string | null) =>
     update({ ...todo, dueDate }, () => dispatch(todoScheduled(todo.id, dueDate)));
 
+  // Removes the task after the row has left
   const handleDelete = () => {
     if (leaving) return;
     clearTimeout(toggleTimer.current);
     void leave(() => dispatch(removeTodos([todo.id])));
   };
 
+  // Edits the title in place
   const startEditing = () => {
     if (leaving) return;
     setDraft(todo.title);
     setEditing(true);
   };
 
+  // Saves or drops the new title and returns the focus
   const finishEditing = (save: boolean, restoreFocus: boolean) => {
     if (save) dispatch(todoRenamed(todo.id, draft));
     flushSync(() => setEditing(false));
     if (restoreFocus) titleRef.current?.focus();
   };
 
+  // Opens the task details
   const openDetails = () => dispatch(detailsOpened(todo.id));
 
+  // Opens the context menu at a point
   const openMenu = (point: MenuPoint, touch = false) => {
     if (editing || leaving) return;
     setMenu({ point, touch });
@@ -273,14 +292,17 @@ const TodoItem = ({
     remove: handleDelete,
   };
 
+  // Opens the due date options of the row
   const openDuePicker = () => itemRef.current?.querySelector<HTMLButtonElement>("[data-due-trigger]")?.click();
 
+  // Moves the focus to the next or previous task
   const focusSibling = (direction: 1 | -1) => {
     const toggles = Array.from(document.querySelectorAll<HTMLElement>(TOGGLE_SELECTOR));
     const index = toggles.findIndex((element) => element.id === toggleId(todo.id));
     toggles[index + direction]?.focus();
   };
 
+  // Moves the task next to a neighbour and keeps the focus
   const reorder = (targetId: string | null) => {
     if (!sortable || targetId === null) return;
     const focused = document.activeElement;
@@ -288,18 +310,21 @@ const TodoItem = ({
     if (focused instanceof HTMLElement) focused.focus();
   };
 
+  // Enter saves the title and Escape cancels
   const handleEditorKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter" && event.key !== "Escape") return;
     event.preventDefault();
     finishEditing(event.key === "Enter", true);
   };
 
+  // Saves the title when the focus leaves the row
   const handleEditorBlur = (event: FocusEvent<HTMLInputElement>) => {
     const next = event.relatedTarget;
     if (next instanceof Node && itemRef.current?.contains(next)) return;
     finishEditing(true, false);
   };
 
+  // Row shortcuts: arrows, S, D, E, I, Delete and the menu key
   const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
     const { target } = event;
     if (editing || leaving || isDragging || event.defaultPrevented || event.metaKey || event.ctrlKey) return;
@@ -334,6 +359,7 @@ const TodoItem = ({
     action();
   });
 
+  // Listens for the row shortcuts
   useEffect(() => {
     const item = itemRef.current;
     if (!item) return;
@@ -342,6 +368,7 @@ const TodoItem = ({
     return () => item.removeEventListener("keydown", listener);
   }, []);
 
+  // Puts a swiped row back in place
   const resetSwipe = () => {
     const item = itemRef.current;
     if (!item) return;
@@ -350,8 +377,10 @@ const TodoItem = ({
     item.style.removeProperty("--swipe");
   };
 
+  // Cancels a pending long press
   const cancelPress = () => clearTimeout(pressTimer.current);
 
+  // Starts a swipe or a long press on touch screens
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     suppressClick.current = false;
     if (event.pointerType !== "touch" || !event.isPrimary || editing || leaving) return;
@@ -375,6 +404,7 @@ const TodoItem = ({
     };
   };
 
+  // Follows the finger and arms an action past the threshold
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const swipe = swipeRef.current;
     const item = itemRef.current;
@@ -407,6 +437,7 @@ const TodoItem = ({
     item.style.setProperty("--swipe", `${swipe.offset}px`);
   };
 
+  // Runs the armed swipe action, or snaps back
   const handlePointerUp = () => {
     cancelPress();
     const swipe = swipeRef.current;
@@ -423,12 +454,14 @@ const TodoItem = ({
     }
   };
 
+  // Snaps back when the browser takes over the gesture
   const handlePointerCancel = () => {
     cancelPress();
     swipeRef.current = null;
     resetSwipe();
   };
 
+  // Opens our menu instead of the browser's
   const handleContextMenu = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target instanceof Element && event.target.closest("input, textarea, [popover]")) return;
     event.preventDefault();
@@ -439,6 +472,7 @@ const TodoItem = ({
     openMenu(fromKeyboard ? anchorOf(titleRef.current) : { x: event.clientX, y: event.clientY });
   };
 
+  // Swallows the click that ends a swipe or a long press
   const handleClickCapture = (event: MouseEvent<HTMLDivElement>) => {
     if (!suppressClick.current) return;
     suppressClick.current = false;
@@ -501,7 +535,7 @@ const TodoItem = ({
             </button>
           )}
 
-          {!editing && (due || todo.repeat || tags.length > 0 || todo.notes || showProject) ? (
+          {!editing && (due || todo.repeat || tags.length > 0 || todo.notes || checklist.total > 0 || showProject) ? (
             <div className={styles.meta}>
               {due ? (
                 <span className={styles.chip} data-tone={todo.completed ? undefined : due.tone}>
@@ -528,7 +562,7 @@ const TodoItem = ({
                   <span className="visually-hidden">{t("todo.subtasks", checklist)}</span>
                 </span>
               ) : null}
-              {todo.notes && checklist.total === 0 ? (
+              {todo.notes ? (
                 <span className={styles.chip} title={t("todo.notes")}>
                   <Icon name="notes" className={styles.chipIcon} />
                   <span className="visually-hidden">{t("todo.notes")}</span>

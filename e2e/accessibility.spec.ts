@@ -5,6 +5,7 @@ import { openPalette, preferences, runCommand, seed } from "./helpers";
 
 test.use({ reducedMotion: "reduce" });
 
+// Axe violations of the page, as rule ids and targets
 const violations = async (page: Page) => {
   await expect(page.getByRole("main")).toBeVisible();
   const results = await new AxeBuilder({ page })
@@ -16,6 +17,7 @@ const violations = async (page: Page) => {
   }));
 };
 
+// Background, outline and border of an element, to compare states
 const emphasis = (locator: Locator): Promise<string> =>
   locator.evaluate((element) => {
     const style = getComputedStyle(element);

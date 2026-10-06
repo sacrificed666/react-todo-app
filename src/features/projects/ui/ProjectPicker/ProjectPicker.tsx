@@ -23,6 +23,7 @@ interface ProjectPickerProps {
   className?: string;
 }
 
+// A chip that opens the list of projects for a task
 const ProjectPicker = ({
   value,
   onChange,
@@ -38,16 +39,19 @@ const ProjectPicker = ({
   const project = projects.find((entry) => entry.id === value);
   const label = project ? splitProjectName(project.name).label : t("project.heading");
 
+  // Renders the options before the popover shows
   const handleToggle = (next: boolean) => {
     if (next) flushSync(() => setOpen(true));
     else setOpen(false);
   };
 
+  // Applies a project and closes the list
   const choose = (projectId: string | null) => {
     popover.close();
     onChange(projectId);
   };
 
+  // Opens the dialog for a new project
   const createNew = () => {
     popover.close();
     dispatch(overlayOpened({ kind: "project", projectId: null }));

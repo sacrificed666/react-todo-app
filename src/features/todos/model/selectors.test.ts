@@ -87,10 +87,14 @@ describe("selectors", () => {
     expect(selectVisibleTodos(state, today)).toBe(selectVisibleTodos(state, today));
   });
 
-  it("searches titles and notes", () => {
-    const todos = [makeTodo({ id: "trip", title: "Trip", notes: "Book the hotel" }), ...sampleTodos];
-    const { active } = selectVisibleTodos(stateWith(todos, "all", "HOTEL"), today);
-    expect(active.map((todo) => todo.id)).toEqual(["trip"]);
+  it("searches titles, notes and subtasks", () => {
+    const todos = [
+      makeTodo({ id: "trip", title: "Trip", notes: "Book the hotel" }),
+      makeTodo({ id: "move", title: "Move", subtasks: [{ id: "s", title: "Hire a van", completed: false }] }),
+      ...sampleTodos,
+    ];
+    expect(selectVisibleTodos(stateWith(todos, "all", "HOTEL"), today).active.map((todo) => todo.id)).toEqual(["trip"]);
+    expect(selectVisibleTodos(stateWith(todos, "all", "van"), today).active.map((todo) => todo.id)).toEqual(["move"]);
   });
 });
 

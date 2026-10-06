@@ -159,6 +159,7 @@
   }
 }
 
+// A detected date twinkles once it is found in the title
 @keyframes twinkle {
   50% {
     opacity: 0.55;
@@ -166,6 +167,7 @@
   }
 }
 
+// No twinkle for reduced motion
 @media (prefers-reduced-motion: reduce) {
   .chip[data-detected] .chipIcon {
     animation: none;

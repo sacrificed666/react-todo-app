@@ -5,6 +5,7 @@ import type { Locale } from "@/features/i18n/model/locales";
 import { DEFAULT_SETTINGS, type Effects } from "./settings";
 import type { Accent, Appearance, Backdrop, GlassStyle } from "./theme";
 
+// Appearance, accent, backdrop, glass, language and effects
 export const settingsSlice = createSlice({
   name: "settings",
   initialState: { ...DEFAULT_SETTINGS },

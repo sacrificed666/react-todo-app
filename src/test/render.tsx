@@ -19,6 +19,7 @@ interface RenderWithStoreOptions {
 
 export type User = ReturnType<typeof userEvent.setup>;
 
+// Renders inside a store and returns it with a user
 export const renderWithStore = (
   ui: ReactElement,
   { preloadedState, store = setupStore(preloadedState) }: RenderWithStoreOptions = {},
@@ -27,12 +28,14 @@ export const renderWithStore = (
   return { store, user: userEvent.setup(), ...render(ui, { wrapper: Wrapper }) };
 };
 
+// Renders the whole app with tasks and a list
 export const renderApp = (
   todos: readonly Todo[] = sampleTodos,
   list: ViewId = "all",
   projects: readonly Project[] = [],
 ) => renderWithStore(<App />, { preloadedState: makeState(todos, list, "", projects) });
 
+// Clicks a trigger and returns its popover
 export const openPopover = async (user: User, trigger: HTMLElement) => {
   await user.click(trigger);
   const popover = document.getElementById(trigger.getAttribute("popovertarget") ?? "");
@@ -40,13 +43,16 @@ export const openPopover = async (user: User, trigger: HTMLElement) => {
   return within(popover);
 };
 
+// A region by its name
 export const section = (name: RegExp) => screen.getByRole("region", { name });
 
+// Task titles of a region, read from their checkboxes
 export const itemTitles = (region: HTMLElement) =>
   within(region)
     .queryAllByRole("checkbox")
     .map((checkbox) => checkbox.getAttribute("aria-label"));
 
+// Makes the given media queries match
 export const mockMediaQueries = (matching: readonly string[]) =>
   vi.spyOn(window, "matchMedia").mockImplementation(
     (query) =>

@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 
+// Reads a file from the project root
 const read = (file) => readFileSync(new URL(`../${file}`, import.meta.url), "utf8");
 
+// Prints the reason and stops the release
 const fail = (message) => {
   process.stderr.write(`${message}\n`);
   process.exit(1);

@@ -8,6 +8,7 @@ import { LOCALES } from "@/features/i18n/model/locales";
 import { installDialogPolyfill } from "./dialog";
 import { installPopoverPolyfill } from "./popover";
 
+// A media query stub that only matches reduced motion
 const matchMedia = (query: string): MediaQueryList => ({
   matches: query.includes("prefers-reduced-motion"),
   media: query,

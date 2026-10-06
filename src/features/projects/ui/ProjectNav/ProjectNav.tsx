@@ -17,6 +17,7 @@ import ProjectIcon from "../ProjectIcon/ProjectIcon";
 
 import styles from "./ProjectNav.module.scss";
 
+// The element id of a project in the sidebar
 const projectNavItemId = (projectId: string) => `project-nav-${projectId}`;
 
 interface ProjectNavItemProps {
@@ -27,6 +28,7 @@ interface ProjectNavItemProps {
   onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
 }
 
+// One project with its count, and a drop target for tasks
 const ProjectNavItem = ({ project, count, current, onSelect, onKeyDown }: ProjectNavItemProps) => {
   const { t } = useI18n();
   const { label } = splitProjectName(project.name);
@@ -62,6 +64,7 @@ interface ProjectNavProps {
   onNavigate?: () => void;
 }
 
+// Projects in the sidebar; Alt with an arrow key reorders them
 const ProjectNav = ({ onNavigate }: ProjectNavProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
@@ -71,6 +74,7 @@ const ProjectNav = ({ onNavigate }: ProjectNavProps) => {
   const list = useAppSelector(selectList);
   const searching = useAppSelector(selectSearching);
 
+  // Alt with an arrow key moves a project up or down and keeps the focus
   const reorder = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     if (!event.altKey || (event.key !== "ArrowUp" && event.key !== "ArrowDown")) return;
     const project = projects[index];

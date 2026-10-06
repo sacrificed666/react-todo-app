@@ -48,6 +48,7 @@
     background: transparent;
   }
 
+  // A plain border in forced colours mode
   @media (forced-colors: active) {
     border: 1px solid CanvasText;
   }

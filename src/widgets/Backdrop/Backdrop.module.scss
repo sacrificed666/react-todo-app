@@ -1,3 +1,4 @@
+// The fixed backdrop behind the app
 .backdrop {
   position: fixed;
   inset: 0;
@@ -9,6 +10,7 @@
   transition: background-color var(--duration-slow) var(--ease-out);
 }
 
+// Soft colour orbs
 .aurora {
   position: absolute;
   inset: 0;
@@ -25,6 +27,7 @@
   opacity: var(--orb-opacity);
   transition: opacity var(--duration-slow) var(--ease-out);
 
+  // Full effects let the orbs glow and drift
   :root[data-effects="full"] & {
     opacity: var(--orb-opacity-rich);
     mix-blend-mode: var(--orb-blend);
@@ -88,6 +91,7 @@
   }
 }
 
+// Faint waves over the orbs
 .waves {
   position: absolute;
   inset: -4%;
@@ -96,6 +100,7 @@
   opacity: var(--waves-opacity);
 }
 
+// Stars for the nebula backdrop
 .stars {
   display: none;
   position: absolute;
@@ -113,6 +118,7 @@
   opacity: 0.8;
 }
 
+// Coloured backdrops tint the base gradient
 :root[data-backdrop="spectrum"] .backdrop,
 :root[data-backdrop="sunset"] .backdrop,
 :root[data-backdrop="ocean"] .backdrop,
@@ -125,6 +131,7 @@
   );
 }
 
+// Nebula shows stars instead of waves
 :root[data-backdrop="nebula"] {
   .stars {
     display: block;
@@ -135,6 +142,7 @@
   }
 }
 
+// Plain keeps only a soft accent glow
 :root[data-backdrop="plain"] {
   .backdrop {
     background-image:
@@ -149,6 +157,7 @@
   }
 }
 
+// Film grain over everything in full effects
 .grain {
   display: none;
   position: absolute;
@@ -162,6 +171,7 @@
   }
 }
 
+// Orbs drift and breathe
 @keyframes drift {
   0% {
     translate: 0 0;
@@ -179,6 +189,7 @@
   }
 }
 
+// Orbs stay still for reduced motion
 @media (prefers-reduced-motion: reduce) {
   :root[data-effects="full"] .orb {
     animation: none;

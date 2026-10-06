@@ -2,6 +2,7 @@
 @use "sass:map";
 @use "palettes" as *;
 
+// Typed properties so the glass effects can animate
 @property --glass-refraction {
   syntax: "*";
   inherits: false;
@@ -25,6 +26,7 @@
   initial-value: 0%;
 }
 
+// Colours, glass and backdrop of the light appearance
 @mixin light-tokens {
   color-scheme: light;
 
@@ -80,6 +82,7 @@
   --star-color: rgb(40 48 96 / 45%);
 }
 
+// Dark appearance, fonts, radii, motion and layout by default
 :root {
   color-scheme: dark;
 
@@ -257,6 +260,7 @@
   --duration-slow: 520ms;
 }
 
+// Accent colours and their backdrop orbs, dark appearance
 @each $name, $accent in $accents {
   :root[data-accent="#{$name}"] {
     --color-accent: #{map.get($accent, dark)};
@@ -271,6 +275,7 @@
   }
 }
 
+// Orb colours of every backdrop
 @each $name, $orbs in $backdrops {
   :root[data-backdrop="#{$name}"] {
     @for $index from 1 through 5 {
@@ -279,6 +284,7 @@
   }
 }
 
+// Accent colours for the light appearance
 @mixin light-accents {
   @each $name, $accent in $accents {
     &[data-accent="#{$name}"] {
@@ -288,6 +294,7 @@
   }
 }
 
+// Tinted glass in the dark appearance
 @mixin tinted-dark {
   --glass-tint: rgb(24 28 46 / 52%);
   --glass-tint-hover: rgb(32 36 58 / 58%);
@@ -297,6 +304,7 @@
   --glass-tint-bar: rgb(12 16 30 / 72%);
 }
 
+// Denser glass without blur in the dark appearance
 @mixin reduced-dark {
   --glass-tint: rgb(26 30 50 / 78%);
   --glass-tint-hover: rgb(34 38 62 / 84%);
@@ -310,6 +318,7 @@
   --bar-shadow: 0 1px 0 rgb(255 255 255 / 6%);
 }
 
+// Denser glass without blur in the light appearance
 @mixin reduced-light {
   --glass-tint: rgb(255 255 255 / 78%);
   --glass-tint-hover: rgb(255 255 255 / 86%);
@@ -323,6 +332,7 @@
   --bar-shadow: 0 1px 0 rgb(20 32 64 / 8%);
 }
 
+// Tinted glass in the light appearance
 @mixin tinted-light {
   --glass-tint: rgb(255 255 255 / 66%);
   --glass-tint-hover: rgb(255 255 255 / 76%);
@@ -332,11 +342,13 @@
   --glass-tint-bar: rgb(248 250 255 / 82%);
 }
 
+// Light when picked in the settings
 :root[data-appearance="light"] {
   @include light-tokens;
   @include light-accents;
 }
 
+// Light when the system is light, unless dark was picked
 @media (prefers-color-scheme: light) {
   :root:not([data-appearance="dark"]) {
     @include light-tokens;
@@ -344,14 +356,17 @@
   }
 }
 
+// Tinted glass, dark by default
 :root[data-glass="tinted"] {
   @include tinted-dark;
 }
 
+// Tinted glass in a picked light appearance
 :root[data-glass="tinted"][data-appearance="light"] {
   @include tinted-light;
 }
 
+// Tinted glass in a light system appearance
 @media (prefers-color-scheme: light) {
   :root[data-glass="tinted"]:not([data-appearance="dark"]) {
     @include tinted-light;
@@ -363,34 +378,40 @@
   @include reduced-dark;
 }
 
+// Reduced effects in a picked light appearance
 :root[data-effects="reduced"][data-appearance="light"] {
   @include reduced-light;
 }
 
+// Reduced effects in a light system appearance
 @media (prefers-color-scheme: light) {
   :root[data-effects="reduced"]:not([data-appearance="dark"]) {
     @include reduced-light;
   }
 }
 
+// A wider layout with the details column
 @media (min-width: 1240px) {
   :root {
     --layout-width: 92rem;
   }
 }
 
+// Room for the tab bar on phones
 @media (max-width: 899px) {
   :root {
     --tabbar-offset: 76px;
   }
 }
 
+// Room for the title bar of the installed app
 @media (display-mode: window-controls-overlay) {
   :root {
     --titlebar-height: env(titlebar-area-height, 32px);
   }
 }
 
+// Near instant transitions for reduced motion
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration-fast: 1ms;
@@ -399,6 +420,7 @@
   }
 }
 
+// Solid surfaces for reduced transparency
 @media (prefers-reduced-transparency: reduce) {
   :root,
   :root[data-glass][data-appearance],
@@ -417,6 +439,7 @@
   }
 }
 
+// Stronger text, lines and glass for more contrast
 @media (prefers-contrast: more) {
   :root,
   :root[data-glass][data-appearance],

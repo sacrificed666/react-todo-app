@@ -33,6 +33,7 @@
 }
 
 .value {
+  // Only the icon on small phones
   @media (max-width: 479px) {
     display: none;
   }

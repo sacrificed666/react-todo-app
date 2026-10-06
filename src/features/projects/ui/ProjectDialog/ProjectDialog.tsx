@@ -30,6 +30,7 @@ interface ProjectFormProps {
   onClose: () => void;
 }
 
+// Name and colour of a new or edited project
 const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
@@ -45,10 +46,12 @@ const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
   const [confirming, setConfirming] = useState(false);
   const valid = normalizeProjectName(name) !== "";
 
+  // Focuses the name field when the dialog opens
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
+  // Saves the project, or creates it and opens it
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!valid) return;
@@ -57,6 +60,7 @@ const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
     onClose();
   };
 
+  // Closes the dialog and deletes the project with undo
   const remove = () => {
     if (!project) return;
     onClose();
@@ -148,6 +152,7 @@ const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
   );
 };
 
+// Dialog that creates or edits a project
 const ProjectDialog = () => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();

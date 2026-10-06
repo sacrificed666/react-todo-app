@@ -5,8 +5,10 @@ import type { Repeat } from "./todo";
 const WEEKEND = new Set([0, 6]);
 const MAX_STEPS = 5000;
 
+// Months since year zero, to count whole months between dates
 const monthIndex = (key: string) => Number(key.slice(0, 4)) * 12 + Number(key.slice(5, 7)) - 1;
 
+// The next day, weekday or week of a repeat
 const advanceDays = (key: string, repeat: Repeat) => {
   if (repeat === "weekly") return addDays(key, 7);
   let next = addDays(key, 1);
@@ -15,6 +17,7 @@ const advanceDays = (key: string, repeat: Repeat) => {
   return next;
 };
 
+// The next due date after today; months keep the first day
 export const nextOccurrence = (dueDate: string, repeat: Repeat, today: string, anchor: string = dueDate) => {
   const months = repeat === "monthly" ? 1 : repeat === "yearly" ? 12 : 0;
 

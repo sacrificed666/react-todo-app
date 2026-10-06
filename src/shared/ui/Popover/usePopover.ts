@@ -1,5 +1,6 @@
 import { useId, useRef, type CSSProperties } from "react";
 
+// Ids and trigger props that tie a button to its popover
 export const usePopover = () => {
   const id = `popover${useId().replaceAll(/[^\w-]/g, "")}`;
   const ref = useRef<HTMLDialogElement>(null);

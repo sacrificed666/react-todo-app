@@ -6,8 +6,10 @@ import { selectProjects } from "@/features/projects/model/selectors";
 import { selectTodos } from "@/features/todos/model/selectors";
 import { addDays, toDateKey } from "@/shared/lib/date";
 
+// Passes today's date through to the selectors
 const selectToday = (_state: RootState, today: string) => today;
 
+// Completions of the last seven days and the current streak
 export const selectActivity = createSelector([selectTodos, selectToday], (todos, today) => {
   const completions = new Map<string, number>();
   for (const todo of todos) {
@@ -37,6 +39,7 @@ export interface ProjectProgress {
   total: number;
 }
 
+// Done and total tasks of every project with tasks
 export const selectProjectProgress = createSelector([selectTodos, selectProjects], (todos, projects) => {
   const totals = new Map<string, { done: number; total: number }>();
   for (const todo of todos) {

@@ -8,7 +8,7 @@ import { openPopover, renderApp } from "@/test/render";
 const details = () => screen.getByRole("dialog", { name: "Task details" });
 
 describe("TaskDetailsDialog", () => {
-  it("edits the title and notes and shows checklist progress", async () => {
+  it("edits the title, notes and subtasks and shows their progress", async () => {
     const { user, store } = renderApp();
 
     await user.click(screen.getByRole("button", { name: "Details for “Buy milk”" }));
@@ -20,16 +20,24 @@ describe("TaskDetailsDialog", () => {
     await user.type(title, "Buy oat milk{Enter}");
 
     const notes = dialog.getByRole("textbox", { name: "Notes" });
-    await user.type(notes, "From the market{Enter}- [[ ] Oat milk{Enter}- [[x] Bread");
+    await user.type(notes, "From the market");
     await user.tab();
 
+    const add = dialog.getByRole("textbox", { name: "Add a subtask" });
+    await user.type(add, "Oat milk{Enter}Bread{Enter}");
     expect(selectTodos(store.getState())[0]).toMatchObject({
       title: "Buy oat milk",
-      notes: "From the market\n- [ ] Oat milk\n- [x] Bread",
+      notes: "From the market",
+      subtasks: [
+        { title: "Oat milk", completed: false },
+        { title: "Bread", completed: false },
+      ],
     });
 
     await user.click(dialog.getByRole("checkbox", { name: "Oat milk" }));
-    expect(selectTodos(store.getState())[0]?.notes).toBe("From the market\n- [x] Oat milk\n- [x] Bread");
+    await user.click(dialog.getByRole("checkbox", { name: "Bread" }));
+    expect(selectTodos(store.getState())[0]?.subtasks.every((subtask) => subtask.completed)).toBe(true);
+    expect(dialog.getByText("2 of 2 subtasks")).toBeInTheDocument();
     expect(dialog.getByText(/^Updated /)).toBeInTheDocument();
 
     await user.click(dialog.getByRole("button", { name: "Close" }));

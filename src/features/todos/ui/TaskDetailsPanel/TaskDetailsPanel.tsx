@@ -15,6 +15,7 @@ interface DetailsPanelProps {
   todo: Todo;
 }
 
+// Task details in the side panel on wide screens
 const TaskDetailsPanel = ({ todo }: DetailsPanelProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
@@ -22,6 +23,7 @@ const TaskDetailsPanel = ({ todo }: DetailsPanelProps) => {
 
   useRefraction(ref, { bezel: 22, scale: 40 });
 
+  // Returns the focus to the task's row and closes the panel
   const close = () => {
     const row = document.getElementById(toggleId(todo.id));
     if (row) row.focus();
@@ -29,6 +31,7 @@ const TaskDetailsPanel = ({ todo }: DetailsPanelProps) => {
     dispatch(detailsClosed());
   };
 
+  // Escape closes the panel unless a popover takes it
   const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
     if (event.key !== "Escape" || event.defaultPrevented) return;
     if (event.target instanceof Element && event.target.closest("[popover]")) return;
@@ -36,6 +39,7 @@ const TaskDetailsPanel = ({ todo }: DetailsPanelProps) => {
     close();
   });
 
+  // Focuses the panel and listens for Escape inside it
   useEffect(() => {
     const panel = ref.current;
     if (!panel) return;

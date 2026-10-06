@@ -14,6 +14,7 @@
   block-size: 42px;
   padding: var(--inset);
 
+  // A plain border in forced colours mode
   @media (forced-colors: active) {
     border: 1px solid CanvasText;
   }

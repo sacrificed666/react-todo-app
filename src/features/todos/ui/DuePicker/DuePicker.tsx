@@ -34,6 +34,7 @@ interface DueOptionsProps {
   onChoose: (value: string | null) => void;
 }
 
+// Quick dates and a calendar with dots on busy days
 const DueOptions = ({ value, onChoose }: DueOptionsProps) => {
   const today = useToday();
   const { t, intlLocale } = useI18n();
@@ -93,6 +94,7 @@ interface DuePickerProps {
   className?: string;
 }
 
+// A chip that opens the due date options
 const DuePicker = ({ value, onChange, variant, label, detected = false, className }: DuePickerProps) => {
   const today = useToday();
   const { t, intlLocale } = useI18n();
@@ -100,11 +102,13 @@ const DuePicker = ({ value, onChange, variant, label, detected = false, classNam
   const [open, setOpen] = useState(false);
   const due = value ? describeDueDate(value, today, intlLocale) : null;
 
+  // Renders the options before the popover shows
   const handleToggle = (next: boolean) => {
     if (next) flushSync(() => setOpen(true));
     else setOpen(false);
   };
 
+  // Applies a date and closes the options
   const choose = (next: string | null) => {
     popover.close();
     onChange(next);

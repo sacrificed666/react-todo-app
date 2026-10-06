@@ -16,6 +16,7 @@ export interface QuickAddProject {
   label?: string;
 }
 
+// Lower case without accents, so phrases match however they are typed
 const fold = (value: string) =>
   value
     .normalize("NFD")
@@ -23,6 +24,7 @@ const fold = (value: string) =>
     .replaceAll(/['’]/gu, "’")
     .toLocaleLowerCase();
 
+// A lookup table with folded phrases as keys
 const foldKeys = <Value>(entries: Readonly<Record<string, Value>>) =>
   new Map(Object.entries(entries).map(([phrase, value]) => [fold(phrase), value]));
 
@@ -496,17 +498,20 @@ const IMPORTANT = /^!{1,3}$/;
 const TAG = /^#[\p{L}\p{N}_-]+$/u;
 const MAX_PHRASE = 4;
 
+// The next given weekday after today
 const nextWeekday = (today: string, weekday: number) => {
   const offset = (weekday - fromDateKey(today).getDay() + 7) % 7;
   return addDays(today, offset === 0 ? 7 : offset);
 };
 
+// A date key for a real calendar date, or null
 const calendarDate = (year: number, month: number, day: number) => {
   const date = new Date(year, month - 1, day);
   const valid = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
   return valid ? toDateKey(date) : null;
 };
 
+// A day and month, this year unless it has passed
 const parseDayMonth = ([, day = "", month = "", year]: RegExpExecArray, today: string) => {
   if (year !== undefined) return calendarDate(Number(year), Number(month), Number(day));
   const current = fromDateKey(today).getFullYear();
@@ -514,6 +519,7 @@ const parseDayMonth = ([, day = "", month = "", year]: RegExpExecArray, today: s
   return thisYear !== null && thisYear >= today ? thisYear : calendarDate(current + 1, Number(month), Number(day));
 };
 
+// The weekday named in a phrase such as next friday
 const parseWeekday = (words: readonly string[]): number | null => {
   const days = words.flatMap((word) => {
     const weekday = WEEKDAYS.get(word);
@@ -525,6 +531,7 @@ const parseWeekday = (words: readonly string[]): number | null => {
   return words.every((word) => WEEKDAYS.has(word) || WEEKDAY_MODIFIERS.has(word)) ? weekday : null;
 };
 
+// A due date from words such as tomorrow, in 3 days or 5.10
 export const parseDatePhrase = (phrase: string, today: string): string | null => {
   const normalized = fold(phrase.trim());
 
@@ -543,11 +550,14 @@ export const parseDatePhrase = (phrase: string, today: string): string | null =>
   return dayMonth ? parseDayMonth(dayMonth, today) : null;
 };
 
+// Words such as every that may surround a repeat
 const isRepeatFiller = (word: string) => EVERY_WORDS.has(word) || REPEAT_FILLERS.has(word);
 
+// The given weekday, today included
 const weekdayOnOrAfter = (today: string, weekday: number) =>
   addDays(today, (weekday - fromDateKey(today).getDay() + 7) % 7);
 
+// A repeat and its first day from words such as every monday
 export const parseRepeatPhrase = (phrase: string, today: string): { repeat: Repeat; start: string | null } | null => {
   const normalized = fold(phrase.trim());
   const interval = REPEAT_PHRASES.get(normalized);
@@ -591,13 +601,16 @@ export const parseRepeatPhrase = (phrase: string, today: string): { repeat: Repe
   return null;
 };
 
+// Endings such as am Morgen, where the date word means morning instead
 const endsWithBlockedPhrase = (tokens: readonly string[], end: number) =>
   [2, 3].some((size) => end - size >= 0 && BLOCKED_ENDINGS.has(fold(tokens.slice(end - size, end).join(" "))));
 
 const MENTION = /(^|\s)@/gu;
 
+// Equal text, ignoring case and accents
 const sameText = (a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: "base" }) === 0;
 
+// The longest @project mention in the input
 export const findProjectMention = (input: string, projects: readonly QuickAddProject[]) => {
   const names = projects
     .flatMap((project) => [project.name, project.label ?? project.name].map((name) => ({ id: project.id, name })))
@@ -618,6 +631,7 @@ export const findProjectMention = (input: string, projects: readonly QuickAddPro
   return null;
 };
 
+// Title, date, repeat, priority, tags and project from one line
 export const parseQuickAdd = (
   input: string,
   today: string,

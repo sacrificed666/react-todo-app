@@ -13,6 +13,7 @@ export const rootReducer = withHistory(
 
 export type RootState = ReturnType<typeof rootReducer>;
 
+// The Redux store with undo history, started from an optional saved state
 export const setupStore = (preloadedState?: Partial<RootState>) =>
   configureStore({
     reducer: rootReducer,

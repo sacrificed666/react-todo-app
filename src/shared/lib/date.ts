@@ -4,6 +4,7 @@ const DATE_KEY = /^(\d{4})-(\d{2})-(\d{2})$/;
 const formatters = new Map<string, Intl.DateTimeFormat>();
 const relativeFormatters = new Map<string, Intl.RelativeTimeFormat>();
 
+// A cached date formatter for a locale and options
 const dateFormatter = (locale: string, options: Intl.DateTimeFormatOptions) => {
   const key = `${locale}:${JSON.stringify(options)}`;
   let formatter = formatters.get(key);
@@ -14,6 +15,7 @@ const dateFormatter = (locale: string, options: Intl.DateTimeFormatOptions) => {
   return formatter;
 };
 
+// A cached formatter for yesterday, today and tomorrow
 const relativeFormatter = (locale: string) => {
   let formatter = relativeFormatters.get(locale);
   if (!formatter) {
@@ -25,25 +27,31 @@ const relativeFormatter = (locale: string) => {
 
 export type DueTone = "overdue" | "today" | "upcoming";
 
+// The first letter in upper case for the locale
 export const capitalize = (value: string, locale: string) => value.charAt(0).toLocaleUpperCase(locale) + value.slice(1);
 
+// A local date as YYYY-MM-DD
 export const toDateKey = (date: Date) =>
   [date.getFullYear(), date.getMonth() + 1, date.getDate()].map((part) => String(part).padStart(2, "0")).join("-");
 
+// A date key as a local date at midnight
 export const fromDateKey = (key: string) => {
   const [, year = "0", month = "1", day = "1"] = DATE_KEY.exec(key) ?? [];
   return new Date(Number(year), Number(month) - 1, Number(day));
 };
 
+// Whether a value is a valid date key
 export const isDateKey = (value: unknown): value is string =>
   typeof value === "string" && DATE_KEY.test(value) && toDateKey(fromDateKey(value)) === value;
 
+// A date key moved by a number of days
 export const addDays = (key: string, days: number) => {
   const date = fromDateKey(key);
   date.setDate(date.getDate() + days);
   return toDateKey(date);
 };
 
+// A date key moved by months, kept within the shorter month
 export const addMonths = (key: string, months: number) => {
   const date = fromDateKey(key);
   const target = new Date(date.getFullYear(), date.getMonth() + months, 1);
@@ -52,6 +60,7 @@ export const addMonths = (key: string, months: number) => {
   return toDateKey(target);
 };
 
+// The month name, with the year when it is not this year
 export const formatMonth = (key: string, today: string, locale = "en") => {
   const date = fromDateKey(key);
   const sameYear = date.getFullYear() === fromDateKey(today).getFullYear();
@@ -61,21 +70,26 @@ export const formatMonth = (key: string, today: string, locale = "en") => {
   );
 };
 
+// Whole days from one date key to another
 export const daysBetween = (from: string, to: string) =>
   Math.round((fromDateKey(to).getTime() - fromDateKey(from).getTime()) / DAY);
 
+// Weekday, day and month for section titles
 export const formatHeadline = (key: string, locale = "en") =>
   capitalize(
     dateFormatter(locale, { weekday: "long", month: "long", day: "numeric" }).format(fromDateKey(key)),
     locale,
   );
 
+// A short weekday name
 export const formatWeekdayShort = (key: string, locale = "en") =>
   capitalize(dateFormatter(locale, { weekday: "short" }).format(fromDateKey(key)), locale);
 
+// A date with the time
 export const formatDateTime = (timestamp: number, locale = "en") =>
   dateFormatter(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(timestamp));
 
+// A due date as text and tone: relative, weekday or date
 export const describeDueDate = (dueDate: string, today: string, locale = "en"): { label: string; tone: DueTone } => {
   const offset = daysBetween(today, dueDate);
   const date = fromDateKey(dueDate);
@@ -93,20 +107,26 @@ export const describeDueDate = (dueDate: string, today: string, locale = "en"): 
   return { label: capitalize(dateFormatter(locale, options).format(date), locale), tone };
 };
 
+// Month and year
 export const formatMonthYear = (key: string, locale = "en") =>
   capitalize(dateFormatter(locale, { month: "long", year: "numeric" }).format(fromDateKey(key)), locale);
 
+// A full date with the weekday
 export const formatLongDate = (key: string, locale = "en") =>
   dateFormatter(locale, { weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(fromDateKey(key));
 
+// A weekday name in the given width
 export const formatWeekday = (key: string, locale = "en", width: "narrow" | "short" | "long" = "long") =>
   capitalize(dateFormatter(locale, { weekday: width }).format(fromDateKey(key)), locale);
 
+// The first day of the month
 export const startOfMonth = (key: string) => `${key.slice(0, 7)}-01`;
 
+// The first day of the week for a week start
 export const startOfWeek = (key: string, weekStart: number) =>
   addDays(key, -((fromDateKey(key).getDay() - weekStart + 7) % 7));
 
+// The given weekday on or after a date
 export const nextWeekday = (key: string, weekday: number) =>
   addDays(key, (weekday - fromDateKey(key).getDay() + 7) % 7);
 
@@ -115,6 +135,7 @@ interface WeekInfoLocale {
   weekInfo?: { firstDay: number };
 }
 
+// The first weekday of a locale, Sunday as 0
 export const firstDayOfWeek = (locale: string) => {
   try {
     const info = new Intl.Locale(locale) as Intl.Locale & WeekInfoLocale;

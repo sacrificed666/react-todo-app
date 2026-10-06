@@ -270,9 +270,9 @@ The app icon is a rounded square in the default blue accent with a soft highligh
 | 📅 Calendar       | Inside pickers and menus       | Month grid, task dots, accent-filled selection, today in the accent colour               |
 | ⚙️ Settings       | Overlay glass, refraction      | Sections for theme, language and performance; live background previews                   |
 | 📁 Project dialog | Overlay glass, refraction      | Big icon preview, name, colour swatches, two-step delete                                 |
-| 🗒️ Details sheet  | Overlay glass, refraction      | Title as large display text, chips for date, repeat, project, star and tags, checklist   |
+| 🗒️ Details sheet  | Overlay glass, refraction      | Title as large display text, chips for date, repeat, project, star and tags, subtasks    |
 | 📱 Tab bar        | Overlay glass, refraction      | Four lists and a Lists tab that shows the open project's icon                            |
-| ✅ Task group     | Content glass, one per section | Rows separated by inset hairlines; chips for date, project, checklist, notes and tags    |
+| ✅ Task group     | Content glass, one per section | Rows separated by inset hairlines; chips for date, project, subtasks, notes and tags     |
 | 🧾 Details panel  | Overlay glass, refraction      | Inline in the inspector on wide screens                                                  |
 | 🔔 Notification   | Overlay glass                  | Sparkle for success, warning sign for errors, an accent capsule for Undo, Show or Reload |
 | ☑️ Checkbox       | Filled accent circle           | Shared `Checkbox` component in two sizes; the check is revealed with a clip-path wipe    |

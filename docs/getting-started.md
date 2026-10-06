@@ -4,7 +4,7 @@
 
 | Tool       | Version                                                                                       |
 | ---------- | --------------------------------------------------------------------------------------------- |
-| 🟢 Node.js | **24.15 or newer** (`.nvmrc` pins the active LTS line, `24`)                                  |
+| 🟢 Node.js | **26.10 or newer** (`.nvmrc` pins the `26` line)                                              |
 | 📦 npm     | 11 or newer (ships with Node 24)                                                              |
 | 🌐 Browser | Any evergreen browser. Chromium-based browsers additionally render the glass refraction layer |
 
@@ -77,7 +77,7 @@ tasks/
 │   ├── app/                         Entry point, App shell, store, persistence, launch intents, PWA, back button, error screen
 │   ├── widgets/                     Sidebar, Toolbar (phones), Workspace, Inspector, Backdrop, Footer
 │   ├── features/
-│   │   ├── todos/                   Task model, repeats, quick add, checklists; composer, list, rows, context menu, drag and drop, details
+│   │   ├── todos/                   Task model, repeats, quick add, subtasks; composer, list, rows, context menu, drag and drop, details
 │   │   ├── projects/                Project model, colours and emoji icons; sidebar list, picker, dialog
 │   │   ├── lists/                   Smart lists and project views, date groups, sorting, view state; navigation, tags, tab bar, Lists sheet, list header
 │   │   ├── data/                    The stored document, import and export, undo history

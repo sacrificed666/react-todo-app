@@ -24,6 +24,7 @@
   block-size: 34px;
   font-size: 1.0625rem;
 
+  // Larger targets for fingers
   @media (pointer: coarse) {
     inline-size: 40px;
     block-size: 40px;

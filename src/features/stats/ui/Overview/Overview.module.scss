@@ -194,6 +194,7 @@
   }
 }
 
+// Stats stack in a narrow column
 @container overview (max-width: 260px) {
   .stats {
     grid-template-columns: minmax(0, 1fr);

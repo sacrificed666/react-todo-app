@@ -17,17 +17,20 @@ interface RepeatPickerProps {
 
 const OPTIONS: readonly (Repeat | null)[] = [null, ...REPEATS];
 
+// A chip that opens the repeat options
 const RepeatPicker = ({ value, onChange }: RepeatPickerProps) => {
   const { t } = useI18n();
   const popover = usePopover();
   const [open, setOpen] = useState(false);
   const label = value ? t(`repeat.${value}`) : t("repeat.heading");
 
+  // Renders the options before the popover shows
   const handleToggle = (next: boolean) => {
     if (next) flushSync(() => setOpen(true));
     else setOpen(false);
   };
 
+  // Applies a repeat and closes the options
   const choose = (option: Repeat | null) => {
     popover.close();
     onChange(option);

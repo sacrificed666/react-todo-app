@@ -6,6 +6,11 @@ import { projectAdded, projectMoved, projectRemoved, projectUpdated } from "@/fe
 import type { Todo } from "@/features/todos/model/todo";
 import {
   allTodosMarked,
+  subtaskAdded,
+  subtaskMoved,
+  subtaskRemoved,
+  subtaskRenamed,
+  subtaskToggled,
   todoAdded,
   todoDuplicated,
   todoImportanceToggled,
@@ -45,6 +50,7 @@ export interface HistoryState {
 
 const initialState: HistoryState = { past: [], future: [] };
 
+// Undo and redo stacks, filled by withHistory
 export const historySlice = createSlice({
   name: "history",
   initialState,
@@ -54,16 +60,25 @@ export const historySlice = createSlice({
 export const undone = createAction("history/undone");
 export const redone = createAction("history/redone");
 
+// A history message that names a task
 const titled = (key: ToastMessage["key"], todo: Todo | undefined): ToastMessage => ({
   key,
   params: { title: todo?.title ?? "" },
 });
 
+// A history message that names a subtask
+const subtaskNamed = (key: ToastMessage["key"], todo: Todo | undefined, subtaskId: string): ToastMessage => ({
+  key,
+  params: { title: todo?.subtasks.find((subtask) => subtask.id === subtaskId)?.title ?? "" },
+});
+
+// A history message that names a project
 const named = (key: ToastMessage["key"], project: Project | undefined): ToastMessage => ({
   key,
   params: { name: project?.name ?? "" },
 });
 
+// What an action changed, for the undo and redo toasts
 export const describeChange = (action: UnknownAction, { todos, projects }: Snapshot): ToastMessage => {
   if (todoAdded.match(action)) return titled("history.added", action.payload);
   if (todoDuplicated.match(action)) return titled("history.duplicated", todos.entities[action.payload.id]);
@@ -81,6 +96,20 @@ export const describeChange = (action: UnknownAction, { todos, projects }: Snaps
   if (todoRepeatChanged.match(action)) return titled("history.repeat", todos.entities[action.payload.id]);
   if (todoProjectChanged.match(action)) return titled("history.projectChanged", todos.entities[action.payload.id]);
   if (todoNoted.match(action)) return titled("history.noted", todos.entities[action.payload.id]);
+  if (subtaskAdded.match(action))
+    return { key: "history.subtaskAdded", params: { title: action.payload.subtask.title } };
+  if (subtaskToggled.match(action)) {
+    const todo = todos.entities[action.payload.todoId];
+    const done = todo?.subtasks.find((subtask) => subtask.id === action.payload.subtaskId)?.completed;
+    return subtaskNamed(done ? "history.subtaskReopened" : "history.subtaskCompleted", todo, action.payload.subtaskId);
+  }
+  if (subtaskRenamed.match(action)) {
+    return subtaskNamed("history.subtaskRenamed", todos.entities[action.payload.todoId], action.payload.subtaskId);
+  }
+  if (subtaskRemoved.match(action)) {
+    return subtaskNamed("history.subtaskRemoved", todos.entities[action.payload.todoId], action.payload.subtaskId);
+  }
+  if (subtaskMoved.match(action)) return { key: "history.subtasksReordered" };
   if (todoMoved.match(action)) return { key: "history.moved" };
   if (allTodosMarked.match(action)) return { key: "history.markedAll" };
   if (todosRemoved.match(action)) return { key: "history.removed", params: { count: action.payload.length } };
@@ -97,9 +126,11 @@ interface UndoableState extends Snapshot {
   history: HistoryState;
 }
 
+// Whether a state carries tasks, projects and history
 const isUndoable = (value: unknown): value is UndoableState =>
   isRecord(value) && "todos" in value && "projects" in value && "history" in value;
 
+// Moves one snapshot between the undo and redo stacks
 const step = <State extends UndoableState>(state: State, direction: "back" | "forward"): State => {
   const source = direction === "back" ? state.history.past : state.history.future;
   const entry = source.at(-1);
@@ -117,6 +148,7 @@ const step = <State extends UndoableState>(state: State, direction: "back" | "fo
   };
 };
 
+// Wraps the root reducer so every data change can be undone
 export const withHistory =
   <State extends UndoableState, Preloaded>(
     reducer: Reducer<State, UnknownAction, Preloaded>,

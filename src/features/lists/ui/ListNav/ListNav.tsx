@@ -19,6 +19,7 @@ interface ListNavItemProps {
   onSelect: () => void;
 }
 
+// One smart list with its icon and count, and a drop target for tasks
 const ListNavItem = ({ id, counts, current, onSelect }: ListNavItemProps) => {
   const { t } = useI18n();
   const label = t(`lists.${id}`);
@@ -59,6 +60,7 @@ interface ListNavProps {
   onNavigate?: () => void;
 }
 
+// The smart lists in the sidebar
 const ListNav = ({ onNavigate }: ListNavProps) => {
   const dispatch = useAppDispatch();
   const today = useToday();

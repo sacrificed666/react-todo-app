@@ -5,6 +5,7 @@ import { toastShown } from "@/features/notifications/model/toastSlice";
 
 import { localeChanged } from "./settingsSlice";
 
+// Loads a language first and switches only when it arrived
 export const changeLocale =
   (locale: Locale): AppThunk<Promise<boolean>> =>
   async (dispatch) => {

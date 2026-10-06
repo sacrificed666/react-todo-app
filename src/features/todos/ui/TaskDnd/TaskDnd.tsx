@@ -28,6 +28,7 @@ interface TaskDndProps {
   children: ReactNode;
 }
 
+// Drag and drop for tasks: reordering and dropping on lists or projects
 const TaskDnd = ({ children }: TaskDndProps) => {
   const dispatch = useAppDispatch();
   const today = useToday();
@@ -40,16 +41,19 @@ const TaskDnd = ({ children }: TaskDndProps) => {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
+  // Marks the page while a task is dragged
   const handleDragStart = ({ active: dragged }: DragStartEvent) => {
     document.documentElement.dataset.dragging = "";
     setActiveId(String(dragged.id));
   };
 
+  // Clears the dragging state
   const finishDrag = () => {
     delete document.documentElement.dataset.dragging;
     setActiveId(null);
   };
 
+  // Moves the task to a list or project, or to its new place
   const handleDragEnd = ({ active: dragged, over }: DragEndEvent) => {
     finishDrag();
     const result = resolveDrop(dragged, over);

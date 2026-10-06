@@ -87,12 +87,14 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 
+  // Two backgrounds in a row on small phones
   @media (max-width: 379px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 .backdrop {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -175,6 +177,7 @@
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 
+  // The preview stays flat with reduced effects
   :root[data-effects="reduced"] & {
     background-color: rgb(255 255 255 / 40%);
     -webkit-backdrop-filter: none;
@@ -220,6 +223,7 @@
 }
 
 .language {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;

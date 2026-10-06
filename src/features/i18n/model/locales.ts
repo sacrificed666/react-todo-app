@@ -21,9 +21,11 @@ export const LOCALE_INFO: Readonly<Record<Locale, LocaleInfo>> = {
   pt: { name: "Português", flag: "PT", intl: "pt-PT" },
 };
 
+// Whether a value is a supported language
 export const isLocale = (value: unknown): value is Locale =>
   typeof value === "string" && (LOCALES as readonly string[]).includes(value);
 
+// The first supported language of the browser, or English
 export const detectLocale = (languages: readonly string[]): Locale => {
   for (const language of languages) {
     const primary = language.toLowerCase().split("-")[0];
@@ -32,4 +34,5 @@ export const detectLocale = (languages: readonly string[]): Locale => {
   return "en";
 };
 
+// The flag of a language
 export const flagUrl = (locale: Locale) => `${import.meta.env.BASE_URL}flags/${LOCALE_INFO[locale].flag}.svg`;

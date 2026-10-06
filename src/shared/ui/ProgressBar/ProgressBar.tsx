@@ -6,6 +6,7 @@ interface ProgressBarProps {
   label: string;
 }
 
+// A labelled native progress bar
 const ProgressBar = ({ value, max, label }: ProgressBarProps) => (
   <div className={styles.track} data-complete={max > 0 && value === max ? "" : undefined}>
     <progress className="visually-hidden" value={value} max={Math.max(max, 1)} aria-label={label} />

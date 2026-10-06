@@ -8,6 +8,7 @@ interface CheckboxProps extends Omit<ComponentPropsWithRef<"input">, "type" | "s
   size?: "small" | "medium";
 }
 
+// A round native checkbox
 const Checkbox = ({ size = "medium", className, ...props }: CheckboxProps) => (
   <input type="checkbox" className={cx(styles.checkbox, size === "small" && styles.small, className)} {...props} />
 );

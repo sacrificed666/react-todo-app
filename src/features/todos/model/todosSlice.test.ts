@@ -6,6 +6,11 @@ import { makeTodo } from "@/test/factories";
 
 import {
   allTodosMarked,
+  subtaskAdded,
+  subtaskMoved,
+  subtaskRemoved,
+  subtaskRenamed,
+  subtaskToggled,
   todoAdded,
   todoDuplicated,
   todoMoved,
@@ -189,6 +194,22 @@ describe("todosSlice", () => {
     expect(reopened.ids).toHaveLength(3);
   });
 
+  it("starts the next occurrence with every subtask open again", () => {
+    const at = new Date(2026, 9, 1, 12).getTime();
+    const repeating = todosAdapter.setAll(todosAdapter.getInitialState(), [
+      makeTodo({
+        id: "a",
+        title: "Morning routine",
+        dueDate: "2026-10-01",
+        repeat: "daily",
+        subtasks: [{ id: "s", title: "Stretch", completed: true }],
+      }),
+    ]);
+    const state = reducer(repeating, { type: todoToggled.type, payload: { id: "a", at, nextId: "next" } });
+    expect(state.entities.a?.subtasks).toEqual([{ id: "s", title: "Stretch", completed: true }]);
+    expect(state.entities.next?.subtasks).toEqual([{ id: "s", title: "Stretch", completed: false }]);
+  });
+
   it("keeps monthly repeats on the day the series started", () => {
     const at = new Date(2026, 1, 28, 12).getTime();
     const rent = todosAdapter.setAll(todosAdapter.getInitialState(), [
@@ -231,5 +252,50 @@ describe("todosSlice", () => {
       "2026-10-05",
     ]);
     expect(reducer(state, todosScheduled(["a"], "not a date"))).toBe(state);
+  });
+});
+
+const withSteps = () =>
+  todosAdapter.setAll(todosAdapter.getInitialState(), [
+    makeTodo({
+      id: "trip",
+      title: "Trip",
+      subtasks: [
+        { id: "s1", title: "Passport", completed: false },
+        { id: "s2", title: "Tickets", completed: false },
+        { id: "s3", title: "Charger", completed: false },
+      ],
+    }),
+  ]);
+
+describe("subtasks", () => {
+  it("adds a subtask with a normalized title and ignores empty ones", () => {
+    const state = reducer(withSteps(), subtaskAdded("trip", "  Snacks  "));
+    expect(state.entities.trip?.subtasks.at(-1)).toMatchObject({ title: "Snacks", completed: false });
+    expect(reducer(state, subtaskAdded("trip", "   "))).toBe(state);
+    expect(reducer(state, subtaskAdded("missing", "Snacks"))).toBe(state);
+  });
+
+  it("stops at the subtask limit", () => {
+    let state = withSteps();
+    for (let index = 0; index < 60; index += 1) state = reducer(state, subtaskAdded("trip", `Step ${index}`));
+    expect(state.entities.trip?.subtasks).toHaveLength(50);
+  });
+
+  it("toggles, renames and removes one subtask", () => {
+    let state = reducer(withSteps(), subtaskToggled("trip", "s2"));
+    expect(state.entities.trip?.subtasks[1]?.completed).toBe(true);
+    state = reducer(state, subtaskRenamed("trip", "s1", " Passports "));
+    expect(state.entities.trip?.subtasks[0]?.title).toBe("Passports");
+    expect(reducer(state, subtaskRenamed("trip", "s1", "  "))).toBe(state);
+    state = reducer(state, subtaskRemoved("trip", "s3"));
+    expect(state.entities.trip?.subtasks.map((subtask) => subtask.id)).toEqual(["s1", "s2"]);
+    expect(reducer(state, subtaskRemoved("trip", "missing"))).toBe(state);
+  });
+
+  it("moves a subtask to another position", () => {
+    const state = reducer(withSteps(), subtaskMoved("trip", "s3", 0));
+    expect(state.entities.trip?.subtasks.map((subtask) => subtask.id)).toEqual(["s3", "s1", "s2"]);
+    expect(reducer(state, subtaskMoved("trip", "s3", 5))).toBe(state);
   });
 });

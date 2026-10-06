@@ -49,6 +49,7 @@ interface ItemProps {
   onSelect: () => void;
 }
 
+// A menu action, or an entry that opens a submenu
 const Item = ({ icon, label, tone, submenu = false, onSelect }: ItemProps) => (
   <button
     type="button"
@@ -71,6 +72,7 @@ interface ChoiceProps {
   onSelect: () => void;
 }
 
+// A radio entry of a submenu
 const Choice = ({ checked, icon, label, onSelect }: ChoiceProps) => (
   <button type="button" role="menuitemradio" aria-checked={checked} className={styles.item} onClick={onSelect}>
     {icon}
@@ -79,6 +81,7 @@ const Choice = ({ checked, icon, label, onSelect }: ChoiceProps) => (
   </button>
 );
 
+// Context menu of a task with submenus for date, repeat and project
 const TaskMenu = ({ todo, point, touch, actions, onClose }: TaskMenuProps) => {
   const today = useToday();
   const { t, intlLocale } = useI18n();

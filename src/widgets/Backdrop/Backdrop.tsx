@@ -2,6 +2,7 @@ import styles from "./Backdrop.module.scss";
 
 const ORBS = [1, 2, 3, 4, 5] as const;
 
+// The aurora, stars, waves and grain behind the app
 const Backdrop = () => (
   <div className={styles.backdrop} aria-hidden="true">
     <div className={styles.aurora}>

@@ -7,6 +7,7 @@ import { selectTodos } from "@/features/todos/model/selectors";
 import { normalizeProjectName, type ProjectDraft } from "./project";
 import { projectAdded, projectRemoved } from "./projectsSlice";
 
+// Adds a project and opens it unless told otherwise
 export const createProject =
   (draft: ProjectDraft, open = true): AppThunk<string | null> =>
   (dispatch) => {
@@ -17,6 +18,7 @@ export const createProject =
     return payload.id;
   };
 
+// Removes a project with its tasks and offers to undo
 export const deleteProject =
   (id: string): AppThunk =>
   (dispatch, getState) => {

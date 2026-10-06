@@ -5,6 +5,7 @@ import { projectRemoved } from "@/features/projects/model/projectsSlice";
 import { isDateKey, toDateKey } from "@/shared/lib/date";
 
 import { nextOccurrence } from "./repeat";
+import { createSubtask, MAX_SUBTASKS, normalizeSubtaskTitle, type Subtask } from "./subtasks";
 import { createTodo, normalizeNotes, normalizeTitle, type Repeat, type Todo, type TodoDraft } from "./todo";
 
 export interface RemovedTodo {
@@ -14,6 +15,16 @@ export interface RemovedTodo {
 
 export const todosAdapter = createEntityAdapter<Todo>();
 
+interface SubtaskTarget {
+  todoId: string;
+  subtaskId: string;
+  at: number;
+}
+
+// A subtask of a task by id
+const findSubtask = (todo: Todo | undefined, subtaskId: string) => todo?.subtasks.find((item) => item.id === subtaskId);
+
+// Tasks in their manual order, with subtasks
 export const todosSlice = createSlice({
   name: "todos",
   initialState: todosAdapter.getInitialState(),
@@ -43,6 +54,7 @@ export const todosSlice = createSlice({
           completed: false,
           completedAt: null,
           dueDate: nextOccurrence(todo.dueDate, todo.repeat, toDateKey(new Date(at)), todo.repeatAnchor ?? undefined),
+          subtasks: todo.subtasks.map((subtask) => ({ ...subtask, completed: false })),
           createdAt: at,
         };
         state.ids.splice(state.ids.indexOf(id) + 1, 0, nextId);
@@ -127,6 +139,67 @@ export const todosSlice = createSlice({
       },
       prepare: (id: string, notes: string) => ({ payload: { id, notes, at: Date.now() } }),
     },
+    subtaskAdded: {
+      reducer(state, action: PayloadAction<{ todoId: string; subtask: Subtask; at: number }>) {
+        const { todoId, subtask, at } = action.payload;
+        const todo = state.entities[todoId];
+        if (!todo || !subtask.title || todo.subtasks.length >= MAX_SUBTASKS || findSubtask(todo, subtask.id)) return;
+        todo.subtasks.push(subtask);
+        todo.updatedAt = at;
+      },
+      prepare: (todoId: string, title: string) => ({
+        payload: { todoId, subtask: createSubtask(title), at: Date.now() },
+      }),
+    },
+    subtaskToggled: {
+      reducer(state, action: PayloadAction<SubtaskTarget>) {
+        const { todoId, subtaskId, at } = action.payload;
+        const todo = state.entities[todoId];
+        const subtask = findSubtask(todo, subtaskId);
+        if (!todo || !subtask) return;
+        subtask.completed = !subtask.completed;
+        todo.updatedAt = at;
+      },
+      prepare: (todoId: string, subtaskId: string) => ({ payload: { todoId, subtaskId, at: Date.now() } }),
+    },
+    subtaskRenamed: {
+      reducer(state, action: PayloadAction<SubtaskTarget & { title: string }>) {
+        const { todoId, subtaskId, at } = action.payload;
+        const todo = state.entities[todoId];
+        const subtask = findSubtask(todo, subtaskId);
+        const title = normalizeSubtaskTitle(action.payload.title);
+        if (!todo || !subtask || !title || subtask.title === title) return;
+        subtask.title = title;
+        todo.updatedAt = at;
+      },
+      prepare: (todoId: string, subtaskId: string, title: string) => ({
+        payload: { todoId, subtaskId, title, at: Date.now() },
+      }),
+    },
+    subtaskRemoved: {
+      reducer(state, action: PayloadAction<SubtaskTarget>) {
+        const { todoId, subtaskId, at } = action.payload;
+        const todo = state.entities[todoId];
+        if (!todo || !findSubtask(todo, subtaskId)) return;
+        todo.subtasks = todo.subtasks.filter((item) => item.id !== subtaskId);
+        todo.updatedAt = at;
+      },
+      prepare: (todoId: string, subtaskId: string) => ({ payload: { todoId, subtaskId, at: Date.now() } }),
+    },
+    subtaskMoved: {
+      reducer(state, action: PayloadAction<SubtaskTarget & { index: number }>) {
+        const { todoId, subtaskId, index, at } = action.payload;
+        const todo = state.entities[todoId];
+        const from = todo?.subtasks.findIndex((item) => item.id === subtaskId) ?? -1;
+        if (!todo || from === -1 || index < 0 || index >= todo.subtasks.length || index === from) return;
+        const [subtask] = todo.subtasks.splice(from, 1);
+        if (subtask) todo.subtasks.splice(index, 0, subtask);
+        todo.updatedAt = at;
+      },
+      prepare: (todoId: string, subtaskId: string, index: number) => ({
+        payload: { todoId, subtaskId, index, at: Date.now() },
+      }),
+    },
     todoDuplicated: {
       reducer(state, action: PayloadAction<{ id: string; copyId: string; at: number }>) {
         const { id, copyId, at } = action.payload;
@@ -204,6 +277,11 @@ export const {
   todoRepeatChanged,
   todoProjectChanged,
   todoNoted,
+  subtaskAdded,
+  subtaskToggled,
+  subtaskRenamed,
+  subtaskRemoved,
+  subtaskMoved,
   todoDuplicated,
   todoMoved,
   allTodosMarked,

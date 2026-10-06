@@ -98,6 +98,7 @@
     color: var(--color-text-secondary);
   }
 
+  // No shortcut hints on touch screens
   @media (hover: none) and (pointer: coarse) {
     display: none;
   }

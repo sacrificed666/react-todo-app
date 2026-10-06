@@ -82,7 +82,14 @@ describe("TodoItem content", () => {
   it("shows tags as filters and hints at notes and subtasks", async () => {
     const { user, store } = renderApp([
       makeTodo({ id: "slides", title: "Prepare slides #work #q4", dueDate: dayFromToday(1) }),
-      makeTodo({ id: "trip", title: "Trip", notes: "- [x] Tickets\n- [ ] Hotel" }),
+      makeTodo({
+        id: "trip",
+        title: "Trip",
+        subtasks: [
+          { id: "tickets", title: "Tickets", completed: true },
+          { id: "hotel", title: "Hotel", completed: false },
+        ],
+      }),
       makeTodo({ id: "call", title: "Call the bank", notes: "Ask about fees" }),
     ]);
 

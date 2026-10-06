@@ -24,6 +24,7 @@ interface Stat {
   tone: string;
 }
 
+// Overdue, today and important counts with the overall progress
 const Overview = () => {
   const dispatch = useAppDispatch();
   const today = useToday();

@@ -26,6 +26,7 @@ interface MenuItemProps {
   children: ReactNode;
 }
 
+// One menu action with an icon and an optional shortcut hint
 const MenuItem = ({ icon, disabled = false, hint, onSelect, children }: MenuItemProps) => (
   <button type="button" className={styles.item} disabled={disabled} onClick={onSelect}>
     <Icon name={icon} className={styles.icon} />
@@ -38,6 +39,7 @@ interface ActionsMenuProps {
   variant?: IconButtonVariant;
 }
 
+// Menu with the task commands, undo and redo
 const ActionsMenu = ({ variant = "glass" }: ActionsMenuProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
@@ -62,6 +64,7 @@ const ActionsMenu = ({ variant = "glass" }: ActionsMenuProps) => {
     run();
   };
 
+  // Imports the picked file and lets the same file be picked again
   const handleImport = async (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
     const file = input.files?.[0];

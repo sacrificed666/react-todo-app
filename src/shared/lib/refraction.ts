@@ -12,6 +12,7 @@ const mapCache = new Map<string, string>();
 let definitions: SVGDefsElement | null = null;
 let sequence = 0;
 
+// Chromium with SVG backdrop filters and full transparency
 export const isRefractionSupported = () =>
   typeof navigator !== "undefined" &&
   "userAgentData" in navigator &&
@@ -20,10 +21,12 @@ export const isRefractionSupported = () =>
   CSS.supports("backdrop-filter", "url(#glass)") &&
   !globalThis.matchMedia("(prefers-reduced-transparency: reduce)").matches;
 
+// Sets several SVG attributes at once
 const setAttributes = (element: Element, attributes: Record<string, string | number>) => {
   for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, String(value));
 };
 
+// Direction away from the nearest edge of a rounded rectangle
 const surfaceNormal = (px: number, py: number, qx: number, qy: number, outside: number) => {
   if (qx > 0 && qy > 0 && outside > 0) {
     return [(Math.max(qx, 0) / outside) * Math.sign(px), (Math.max(qy, 0) / outside) * Math.sign(py)] as const;
@@ -31,6 +34,7 @@ const surfaceNormal = (px: number, py: number, qx: number, qy: number, outside: 
   return qx > qy ? ([Math.sign(px), 0] as const) : ([0, Math.sign(py)] as const);
 };
 
+// How far a pixel bends near the edge of the glass
 export const displacementAt = (x: number, y: number, width: number, height: number, radius: number, bezel: number) => {
   const halfWidth = width / 2;
   const halfHeight = height / 2;
@@ -48,6 +52,7 @@ export const displacementAt = (x: number, y: number, width: number, height: numb
   return [Math.round(NEUTRAL - nx * strength * AMPLITUDE), Math.round(NEUTRAL - ny * strength * AMPLITUDE)] as const;
 };
 
+// A displacement map image for a panel size
 export const createDisplacementMap = (width: number, height: number, radius: number, bezel: number) => {
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -72,6 +77,7 @@ export const createDisplacementMap = (width: number, height: number, radius: num
   return canvas.toDataURL();
 };
 
+// A cached displacement map, keeping the most recent sizes
 const getDisplacementMap = (width: number, height: number, radius: number, bezel: number) => {
   const key = `${width}x${height}:${radius}:${bezel}`;
   const cached = mapCache.get(key);
@@ -88,6 +94,7 @@ const getDisplacementMap = (width: number, height: number, radius: number, bezel
   return map;
 };
 
+// The shared hidden SVG that holds the refraction filters
 const getDefinitions = () => {
   if (definitions?.isConnected) return definitions;
 
@@ -102,6 +109,7 @@ const getDefinitions = () => {
   return definitions;
 };
 
+// Gives an element a refraction filter that follows its size
 export const attachRefraction = (element: HTMLElement, { bezel = 18, scale = 36 }: RefractionOptions = {}) => {
   sequence += 1;
   const id = `refraction-${sequence}`;
@@ -125,6 +133,7 @@ export const attachRefraction = (element: HTMLElement, { bezel = 18, scale = 36 
   let frame = 0;
   let appliedKey = "";
 
+  // Builds the map for the current size once the size settles
   const update = () => {
     frame = 0;
     const width = Math.round(element.offsetWidth);

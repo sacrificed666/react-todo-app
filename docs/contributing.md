@@ -32,7 +32,7 @@ Formatting and linting are automated, so reviews can focus on behaviour.
 
 ### 💬 Comments
 
-Names, small functions and types carry the intent; a comment only names what a block or a function does, in one short line above it:
+Names, small functions and types carry the intent, and every function, component, hook and effect, and every block that is not obvious, gets one short line above it that says what it does:
 
 ```ts
 // Moves a value saved under an earlier key unless the new key is already taken
@@ -42,7 +42,7 @@ export const moveKey = (storage: Storage, from: string, to: string) => {
 > [!IMPORTANT]
 > A custom Oxlint plugin in `lint/comments.js` (`local/short-comments`) reports comments longer than one line or 80 characters, comments at the end of a line of code and every lint, type or coverage directive (`eslint-disable`, `@ts-expect-error`, `istanbul ignore` and the like).
 
-Styles, configuration, Dockerfiles and workflows follow the same convention. Anything that needs more than a line belongs in `docs/`.
+Styles, configuration, Dockerfiles and workflows follow the same convention: mixins, keyframes, media and container queries and theme blocks carry a line too. Anything that needs more than a line belongs in `docs/`.
 
 ### 🧭 Where code goes
 

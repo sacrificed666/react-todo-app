@@ -83,6 +83,7 @@
     outline-offset: 0;
   }
 
+  // Today is underlined in forced colours mode
   @media (forced-colors: active) {
     &[aria-current="date"] {
       text-decoration: underline;

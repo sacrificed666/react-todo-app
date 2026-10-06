@@ -83,6 +83,7 @@
   flex: none;
 }
 
+// On a narrow composer the options get their own row while typing
 @container composer (max-width: 480px) {
   .options {
     display: none;
@@ -109,6 +110,7 @@
   }
 }
 
+// The options slide in
 @keyframes reveal {
   from {
     opacity: 0;

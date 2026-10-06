@@ -7,6 +7,7 @@
   contain-intrinsic-size: auto 64px;
   transition: grid-template-rows var(--duration-base) var(--ease-in-out);
 
+  // Rows render fully while a task is dragged
   :root[data-dragging] & {
     content-visibility: visible;
   }
@@ -97,6 +98,7 @@
     grid-template-areas: "check title actions";
   }
 
+  // Chips move under the title in a narrow list
   @container todo-list (max-width: 560px) {
     grid-template-areas: "check title actions";
     padding: 8px 6px 8px 14px;
@@ -148,6 +150,7 @@
     text-decoration-color: var(--color-text-tertiary);
   }
 
+  // Completed titles keep a visible line-through
   @media (forced-colors: active) {
     text-decoration: none;
 
@@ -324,6 +327,7 @@
   opacity: 1;
 }
 
+// Fewer row buttons in a narrow list; the menu has them all
 @container todo-list (max-width: 560px) {
   .schedule,
   .delete {
@@ -331,6 +335,7 @@
   }
 }
 
+// Long press opens our menu instead of selecting text
 @media (pointer: coarse) {
   .row {
     -webkit-touch-callout: none;
@@ -368,12 +373,14 @@
     cursor: grabbing;
   }
 
+  // A larger drag handle for fingers
   @media (pointer: coarse) {
     inline-size: 40px;
     block-size: 40px;
   }
 }
 
+// Row buttons appear on hover and focus with a mouse
 @media (hover: hover) and (pointer: fine) {
   .action {
     opacity: 0;

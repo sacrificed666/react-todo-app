@@ -18,6 +18,7 @@ import styles from "./TabBar.module.scss";
 
 const TABS = ["all", "today", "upcoming", "important"] as const satisfies readonly ListId[];
 
+// Tab bar with the main lists and the lists sheet on phones
 const TabBar = () => {
   const dispatch = useAppDispatch();
   const today = useToday();
@@ -33,11 +34,13 @@ const TabBar = () => {
 
   useRefraction(barRef, { bezel: 22, scale: 44 });
 
+  // Opens a list with a short vibration
   const select = (id: ListId) => {
     tap();
     dispatch(listChanged(id));
   };
 
+  // Opens the sheet with every list, project and tag
   const browse = () => {
     tap();
     dispatch(overlayOpened({ kind: "lists" }));

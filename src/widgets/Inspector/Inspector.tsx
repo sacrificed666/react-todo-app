@@ -6,6 +6,7 @@ import TaskDetailsPanel from "@/features/todos/ui/TaskDetailsPanel/TaskDetailsPa
 
 import styles from "./Inspector.module.scss";
 
+// The right column: task details, or the overview
 const Inspector = () => {
   const id = useAppSelector(selectDetailsId);
   const todo = useAppSelector((state) => (id === null ? undefined : selectTodoById(state, id)));

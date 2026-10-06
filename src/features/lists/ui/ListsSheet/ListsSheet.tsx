@@ -11,6 +11,7 @@ import TagNav from "../TagNav/TagNav";
 
 import styles from "./ListsSheet.module.scss";
 
+// Bottom sheet with lists, projects and tags on phones
 const ListsSheet = () => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();

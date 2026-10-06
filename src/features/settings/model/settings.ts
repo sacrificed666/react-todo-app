@@ -23,9 +23,11 @@ export interface Settings extends ThemeSettings {
 
 export const DEFAULT_SETTINGS: Settings = { ...DEFAULT_THEME, locale: "en", effects: "auto" };
 
+// Whether a value is a valid effects choice
 export const isEffects = (value: unknown): value is Effects =>
   typeof value === "string" && (EFFECTS as readonly string[]).includes(value);
 
+// Auto becomes full on capable Apple devices and reduced elsewhere
 export const resolveEffects = (effects: Effects, rich: boolean = prefersRichEffects()): EffectsLevel => {
   if (effects !== "auto") return effects;
   return rich ? "full" : "reduced";
@@ -34,6 +36,7 @@ export const resolveEffects = (effects: Effects, rich: boolean = prefersRichEffe
 // Older builds stored the reduced level as "lite"
 const migrateEffects = (value: unknown) => (value === "lite" ? "reduced" : value);
 
+// Saved settings with defaults for anything missing or invalid
 export const readSettings = (stored: unknown, languages: readonly string[]): Settings => {
   const value = isRecord(stored) ? stored : {};
   const effects = migrateEffects(value.effects);
@@ -47,6 +50,7 @@ export const readSettings = (stored: unknown, languages: readonly string[]): Set
   };
 };
 
+// Puts theme, language and effects on the document
 export const applySettings = (settings: Settings, root: HTMLElement = document.documentElement) => {
   applyTheme(settings, root);
   root.lang = settings.locale;

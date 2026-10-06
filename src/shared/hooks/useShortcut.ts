@@ -6,6 +6,7 @@ interface ShortcutOptions {
   allowInEditable?: boolean;
 }
 
+// A document keyboard shortcut that leaves text fields alone
 export const useShortcut = (
   matches: KeyMatcher,
   handler: (event: KeyboardEvent) => void,
@@ -17,6 +18,7 @@ export const useShortcut = (
     if (matches(event)) handler(event);
   });
 
+  // One document listener that always calls the latest handler
   useEffect(() => {
     const listener = (event: KeyboardEvent) => handleKeyDown(event);
     document.addEventListener("keydown", listener);

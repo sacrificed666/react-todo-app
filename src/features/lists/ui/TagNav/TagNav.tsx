@@ -14,6 +14,7 @@ interface TagNavProps {
   onNavigate?: () => void;
 }
 
+// Tags found in task titles; a tag searches for it, a second click clears it
 const TagNav = ({ onNavigate }: TagNavProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();

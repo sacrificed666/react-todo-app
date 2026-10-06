@@ -3,10 +3,12 @@ const FOCUSABLE = "[autofocus], input, textarea, select, button, a[href], [tabin
 const modals: HTMLDialogElement[] = [];
 const returnFocus = new WeakMap<HTMLDialogElement, Element | null>();
 
+// Opens a dialog without making it modal
 function show(this: HTMLDialogElement) {
   this.setAttribute("open", "");
 }
 
+// Opens a modal dialog and focuses its first field
 function showModal(this: HTMLDialogElement) {
   if (this.hasAttribute("open")) throw new DOMException("The dialog is already open.", "InvalidStateError");
   returnFocus.set(this, document.activeElement);
@@ -15,6 +17,7 @@ function showModal(this: HTMLDialogElement) {
   this.querySelector<HTMLElement>(FOCUSABLE)?.focus();
 }
 
+// Closes a dialog and returns the focus
 function close(this: HTMLDialogElement) {
   if (!this.hasAttribute("open")) return;
   this.removeAttribute("open");
@@ -24,6 +27,7 @@ function close(this: HTMLDialogElement) {
   this.dispatchEvent(new Event("close"));
 }
 
+// Adds the dialog methods jsdom lacks
 export const installDialogPolyfill = () => {
   const prototype = HTMLDialogElement.prototype;
   if ("showModal" in prototype) return;

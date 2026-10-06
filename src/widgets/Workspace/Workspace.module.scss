@@ -6,6 +6,7 @@
   min-inline-size: 0;
   padding-block-start: 10px;
 
+  // No top padding under the toolbar on phones
   @media (max-width: 899px) {
     padding-block-start: 0;
   }

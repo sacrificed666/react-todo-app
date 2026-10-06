@@ -4,7 +4,7 @@
 
 | Tool       | Version                                                                                       |
 | ---------- | --------------------------------------------------------------------------------------------- |
-| 🟢 Node.js | **26.10 or newer** (`.nvmrc` pins the `26` line)                                              |
+| 🟢 Node.js | **24 or newer**; `.nvmrc` pins `26`, the newest line                                          |
 | 📦 npm     | 11 or newer (ships with Node 24)                                                              |
 | 🌐 Browser | Any evergreen browser. Chromium-based browsers additionally render the glass refraction layer |
 

@@ -57,7 +57,7 @@ TypeScript 7 · Oxlint · Oxfmt · Vitest 5 · Testing Library · Playwright · 
 
 ## 🚀 Quick start
 
-Requires **Node.js 26.10** or newer.
+Requires **Node.js 24** or newer; 26, the newest line, is recommended (`.nvmrc`).
 
 ```bash
 npm ci

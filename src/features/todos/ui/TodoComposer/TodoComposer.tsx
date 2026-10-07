@@ -141,6 +141,16 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
         onKeyDown={handleKeyDown}
       />
       <div className={styles.options}>
+        <IconButton
+          icon="star"
+          iconFilled={effectiveImportant}
+          label={t("composer.important")}
+          variant="ghost"
+          size="small"
+          className={styles.star}
+          aria-pressed={effectiveImportant}
+          onClick={() => setImportant(!important)}
+        />
         <DuePicker
           value={effectiveDueDate}
           onChange={setDueDate}
@@ -162,16 +172,6 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
             <span>{t(`repeat.${parsed.repeat}`)}</span>
           </span>
         ) : null}
-        <IconButton
-          icon="star"
-          iconFilled={effectiveImportant}
-          label={t("composer.important")}
-          variant="ghost"
-          size="small"
-          className={styles.star}
-          aria-pressed={effectiveImportant}
-          onClick={() => setImportant(!important)}
-        />
       </div>
       <IconButton
         type="submit"

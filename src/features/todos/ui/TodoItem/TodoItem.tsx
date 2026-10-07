@@ -481,7 +481,7 @@ const TodoItem = ({
   };
 
   return (
-    <li ref={itemRef} className={styles.item} data-leaving={leaving || undefined}>
+    <li ref={itemRef} className={styles.item} data-leaving={leaving || undefined} data-own-swipe="">
       <div className={styles.collapse}>
         <div className={styles.swipe} aria-hidden="true">
           <Icon name={todo.completed ? "rotate" : "check"} className={styles.swipeIcon} />

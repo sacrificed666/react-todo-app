@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   createProject,
+  joinProjectName,
   MAX_PROJECT_NAME_LENGTH,
   normalizeProjectName,
   parseProjects,
   PROJECT_COLORS,
+  PROJECT_EMOJI,
   splitProjectName,
   suggestProjectColor,
 } from "./project";
@@ -25,6 +27,16 @@ describe("project names", () => {
     expect(splitProjectName("Work")).toEqual({ emoji: null, label: "Work" });
     expect(splitProjectName("1st week")).toEqual({ emoji: null, label: "1st week" });
     expect(splitProjectName("🔥")).toEqual({ emoji: null, label: "🔥" });
+  });
+
+  it("puts a chosen emoji in front of the name", () => {
+    expect(joinProjectName("🏠", " Home ")).toBe("🏠 Home");
+    expect(joinProjectName(null, "Home")).toBe("Home");
+  });
+
+  it("offers only emoji that work as an icon", () => {
+    expect(new Set(PROJECT_EMOJI).size).toBe(PROJECT_EMOJI.length);
+    for (const emoji of PROJECT_EMOJI) expect(splitProjectName(joinProjectName(emoji, "Home")).emoji).toBe(emoji);
   });
 });
 

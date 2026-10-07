@@ -7,6 +7,11 @@
   display: flex;
   flex-direction: column;
   min-block-size: 100svh;
+
+  // Sideways moves stay with the page, which turns its lists with them
+  @media (max-width: 899px) {
+    touch-action: pan-y pinch-zoom;
+  }
 }
 
 .body {

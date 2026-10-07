@@ -12,7 +12,9 @@ The app aims at **WCAG 2.2 AA** in all ten languages, in both appearances, on ph
 ## ⌨️ Keyboard
 
 - ⏭️ A **Skip to tasks** link appears at the top left on the first <kbd>Tab</kbd>.
-- 🎯 Every control is reachable and operable with the keyboard, with a visible 2 px focus ring. Text fields that are the only control of their surface, such as the palette and search inputs, show focus on the surface itself.
+- 🎯 Every control is reachable and operable with the keyboard, with a visible 2 px focus ring. Text fields that are the only control of their surface, such as the palette and search inputs, a subtask or the project name, show one ring on the surface itself instead of a second one around the text.
+- 👆 Every gesture has a button: page swipes on phones repeat the tab bar and the **Lists** sheet, row swipes repeat the checkbox and the context menu (WCAG 2.5.1 Pointer Gestures).
+- 😀 The project emoji grid is a labelled group of toggle buttons: the arrow keys, <kbd>Home</kbd> and <kbd>End</kbd> move through it, and it opens on the current choice.
 - 🔁 Focus moves to a sensible place after completing, deleting, editing or restoring a task, and dialogs and menus return focus to the place they were opened from.
 - ⌨️ Lists, tasks, the calendar, the context menu and the palette have full keyboard support; the shortcuts are listed in [Features](./features.md#️-keyboard-shortcuts).
 

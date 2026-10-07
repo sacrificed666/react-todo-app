@@ -156,10 +156,11 @@
   color: var(--color-text-tertiary);
 }
 
+// Two equal buttons that always share one row, even in the narrow side panel
 .footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 11rem));
+  justify-content: end;
   gap: 8px;
   padding-block-start: 14px;
   border-block-start: 1px solid var(--color-separator);
@@ -168,17 +169,20 @@
 .footerButton {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 6px;
+  min-inline-size: 0;
   block-size: 40px;
-  padding-inline: 14px 16px;
+  padding-inline: 10px 12px;
   border-radius: var(--radius-full);
   background-color: var(--color-fill);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 600;
   @include pressable(1.04);
 
   svg {
-    font-size: 1.125rem;
+    flex: none;
+    font-size: 1.0625rem;
   }
 
   @include hover {
@@ -192,4 +196,12 @@
       background-color: var(--color-danger-soft);
     }
   }
+}
+
+// A label longer than half the panel ends in an ellipsis instead of wrapping
+.footerLabel {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

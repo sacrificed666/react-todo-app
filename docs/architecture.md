@@ -43,8 +43,8 @@ flowchart TB
 | Feature            | Model                                                                                                                                                    | UI                                                                                                                                                                |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ✅ `todos`         | `Todo` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, subtasks                                    | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker` |
-| 📁 `projects`      | `Project` model with colours and emoji icons, slice, selectors, `createProject()` and `deleteProject()`                                                  | `ProjectNav`, `ProjectDialog`, `ProjectPicker`, `ProjectIcon`                                                                                                     |
-| 📚 `lists`         | Smart lists and project views (`ViewId`), date groups, sort orders, view slice with overlays, `useViewInfo()`, list shortcuts                            | `ListNav`, `TagNav`, `TabBar`, `ListsSheet`, `ListHeader`, `SortMenu`                                                                                             |
+| 📁 `projects`      | `Project` model with colours and emoji icons, slice, selectors, `createProject()` and `deleteProject()`                                                  | `ProjectNav`, `ProjectDialog`, `EmojiPicker`, `ProjectPicker`, `ProjectIcon`                                                                                      |
+| 📚 `lists`         | Smart lists and project views (`ViewId`), date groups, sort orders, view slice with overlays, `useViewInfo()`, list shortcuts, page swipes               | `ListNav`, `TagNav`, `TabBar`, `ListsSheet`, `ListHeader`, `SortMenu`                                                                                             |
 | 💾 `data`          | The stored document (`parseData`, `serializeData`), import and export, `dataReplaced` and `dataImported`, undo history                                   | None                                                                                                                                                              |
 | 🔎 `search`        | None                                                                                                                                                     | `TodoSearch`                                                                                                                                                      |
 | 📊 `stats`         | The 7-day activity, streak and project progress selectors                                                                                                | `Overview`                                                                                                                                                        |
@@ -151,7 +151,7 @@ erDiagram
 
 - 📅 `dueDate` and `repeatAnchor` are local calendar dates. Keeping dates as keys instead of timestamps avoids time zone surprises and lets lists compare dates as plain strings.
 - 🔗 `projectId` is validated twice: `parseTodos()` keeps only well-formed ids, and `parseData()` drops links to projects that are not in the same document.
-- 😀 A project's emoji icon is **derived** by `splitProjectName()` with `Intl.Segmenter`, so flags and emoji built from several code points stay whole.
+- 😀 A project's emoji icon is **derived** by `splitProjectName()` with `Intl.Segmenter`, so flags and emoji built from several code points stay whole. The project dialog edits the emoji and the rest of the name separately and joins them with `joinProjectName()`, so the stored name keeps its old format.
 - 🏷️ Tags are **derived**, not stored: `extractTags()` reads `#words` from the title, so nothing needs migrating when the rules evolve.
 - ☑️ Subtasks are stored in order on the task (`model/subtasks.ts`). Data from versions that wrote `- [ ] item` lines into the notes is converted by `extractChecklist()` the first time it is read, and a repeating task starts its next occurrence with every subtask open again.
 
@@ -453,7 +453,7 @@ App
 │   │   └── Overview         Progress, stats, 7-day chart, streak and project progress (below 1240 px)
 │   ├── Workspace
 │   │   ├── ListHeader       Icon, title, date or result count, progress, sort and project edit buttons
-│   │   ├── TodoComposer     Quick add field with DuePicker, ProjectPicker and star, N shortcut
+│   │   ├── TodoComposer     Quick add field with the star, DuePicker and ProjectPicker, N shortcut
 │   │   └── TodoList         Date groups, empty states, deferred search
 │   │       └── TodoSection  SortableContext, chunked rendering, one glass group per section
 │   │           └── TodoItem Checkbox, title, chips, actions, swipes, long press, keyboard, TaskMenu
@@ -478,6 +478,7 @@ Reusable, store-agnostic primitives live in `shared/ui`: `Icon`, `IconButton`, `
 - 🌊 **Leave transitions**: when completing, deleting, starring, rescheduling or moving takes a task out of the current list, `TodoItem` first marks itself as leaving, waits for its CSS transitions with `waitForTransitions()`, and only then dispatches the action inside `flushSync`.
 - ⏳ **Deferred completion**: completing a task waits about 0.4 s so the check mark can be seen. A second click during that window cancels the change.
 - 👆 **Touch**: horizontal moves of more than 12 px become swipes, a press held for about half a second without moving opens the menu, and a tap on the title opens the details. Vertical movement is left to the browser (`touch-action: pan-y`).
+- 📖 **Page swipes**: `useSwipeNavigation()` in `features/lists` listens to touches on the whole document on phones. Rows mark themselves with `data-own-swipe`, so a swipe that starts on a task stays with the task; open popovers, dialogs, a field being edited and anything that scrolls sideways keep their touches too. A move of 24 px engages the gesture, 64 px turns the page, and the click that ends a swipe is swallowed so it cannot press the tab under the finger.
 - ⌨️ **Row commands**: a native `keydown` listener on each row handles <kbd>↑</kbd>/<kbd>↓</kbd>, <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd>, <kbd>S</kbd>, <kbd>D</kbd>, <kbd>E</kbd>, <kbd>I</kbd>, <kbd>Delete</kbd>, <kbd>⇧</kbd>+<kbd>F10</kbd> and the menu key, but ignores text fields, open popovers and active drags.
 - 🎯 **Focus management**: after a task moves, disappears or is restored, focus goes to the same task, a neighbour or the composer, so keyboard users never lose their place.
 - 🧠 **View-aware composer**: the composer is keyed by the open view, so switching lists or projects resets its date, importance and project to that view's defaults.

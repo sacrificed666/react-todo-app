@@ -4,6 +4,7 @@ import { redo, undo } from "@/features/data/model/thunks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { selectDetailsId, selectOverlay } from "@/features/lists/model/selectors";
 import { useListShortcuts } from "@/features/lists/model/useListShortcuts";
+import { useSwipeNavigation } from "@/features/lists/model/useSwipeNavigation";
 import { detailsClosed, overlayClosed } from "@/features/lists/model/viewSlice";
 import ListsSheet from "@/features/lists/ui/ListsSheet/ListsSheet";
 import TabBar from "@/features/lists/ui/TabBar/TabBar";
@@ -47,6 +48,7 @@ const App = () => {
   usePointerLight();
   useDocumentSync();
   useListShortcuts();
+  useSwipeNavigation(compact, WORKSPACE_ID);
   useAppBadge(counts.today);
   useDocumentTitle();
 

@@ -38,7 +38,7 @@ Projects group tasks by area, such as work, home or a trip, next to the smart li
 ![A project with its own colour and emoji](./images/desktop-project.jpg)
 
 - ➕ **Create** a project with **+** next to **Projects** in the sidebar, in the **Lists** sheet on phones or with **New project** in the command palette. Give it a name and one of ten colours.
-- 😀 **Emoji icons**: start the name with an emoji, like `🏠 Home`, and it becomes the project's icon; otherwise a dot in the project's colour is used.
+- 😀 **Emoji icons**: press the large icon in the project dialog and pick one of 39 emoji, or start the name with any emoji, like `🏠 Home`. Without an emoji the icon shows a dot in the project's colour; **No emoji** in the same grid brings the dot back.
 - 🧭 **Open** a project from the sidebar, the palette (`Go to Home`), the overview or the project chip on any of its tasks. Its tasks are shown with the same groups, sorting and completed section as **All tasks**.
 - ✍️ **Assign** tasks with `@name` anywhere in the quick add text, with the 📁 chip in the composer, with **Project** in the details, from the task's context menu or by dragging the task onto the project in the sidebar.
 - 🏷️ Tasks outside their project's view show a small chip with the project's icon and name.
@@ -63,7 +63,7 @@ Projects group tasks by area, such as work, home or a trip, next to the smart li
 
 Due dates are shown as friendly labels (**Today**, **Tomorrow**, **Yesterday**, a weekday for the next few days or a short date) and are coloured: 🔴 overdue, 🟠 today, 🔵 later. Rows also show chips for 📁 the project, 🏷️ tags, ☑️ subtask progress (`2/5`) and 🗒️ notes.
 
-On narrow screens the calendar and trash buttons are hidden from the rows to leave room for the title; scheduling and deleting are then done from the context menu, the details sheet or with swipes. The composer is a single field there until you tap it. The date, project and star chips then appear in a row below it and fold away again when you leave the field empty.
+On narrow screens the calendar and trash buttons are hidden from the rows to leave room for the title; scheduling and deleting are then done from the context menu, the details sheet or with swipes. The composer is a single field there until you tap it. The star, date and project chips then appear in a row below it and fold away again when you leave the field empty. The star comes first in the composer, in the row actions and in the details alike.
 
 ## 🖱️ Context menu
 
@@ -157,12 +157,12 @@ The ⓘ button, the <kbd>I</kbd> key, a tap on the title on phones or a task fou
 ![Task details](./images/details.jpg)
 
 - ✏️ **Title**: edit it inline; <kbd>Enter</kbd> or leaving the field saves it.
-- ✅ **Completed**, ⭐ **Important**, 📅 **Due date**, 🔁 **Repeat** and 📁 **Project**, the same controls as in the list.
+- ✅ **Completed**, ⭐ **Important**, 📅 **Due date**, 🔁 **Repeat** and 📁 **Project**, the same controls as in the list and in the same order: the star first.
 - ☑️ **Subtasks**: up to 50 short steps. Type in **Add a subtask** and press <kbd>Enter</kbd> to add the next one right away; tick a step off, edit its text in place, drag it by the ≡ handle or move it with <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd>, and delete it with ✕ or <kbd>Backspace</kbd> in an empty field. The row in the list shows the progress, for example `1/3`, subtasks are included in the search, and a repeating task starts its next occurrence with every subtask open again.
 - 🗒️ **Notes**: up to 2000 characters of free text, saved when you leave the field and included in the search.
 - 🏷️ **Tags**: tap a tag to close the sheet and search for it.
 - 🕒 **Dates**: when the task was created, last updated and completed, in your language's format.
-- 📄 **Duplicate** creates an active copy right after the original; 🗑️ **Delete** removes the task with an undo notification.
+- 📄 **Duplicate** creates an active copy right after the original; 🗑️ **Delete** removes the task with an undo notification. The two buttons share one row, even in the narrow inspector.
 
 ## 🏷️ Tags
 
@@ -363,9 +363,13 @@ Global shortcuts are ignored while you type in a text field. Task commands work 
 | 👉 Swipe a row right | Complete (or reopen) the task, a green ✓ appears |
 | 👈 Swipe a row left  | Delete the task with undo, a red 🗑️ appears      |
 | ✋ Drag the ≡ handle | Reorder tasks in the Manual sort order           |
+| 👈 Swipe the page    | Open the next list or project                    |
+| 👉 Swipe the page    | Open the previous list or project                |
 | ⬅️ Back              | Close the open sheet or dialog                   |
 
 Swipes and the long press confirm themselves with a short vibration; releasing a swipe early cancels it. Vertical scrolling never triggers a swipe or the menu.
+
+A page swipe works anywhere outside the task rows: on the list title, the composer, empty space, the overview or the tab bar. It follows the order of the sidebar, **All tasks**, **Today**, **Upcoming**, **Important**, **Completed** and then the projects, and stops at both ends. The list follows the finger a little and the next one slides in from the side. A swipe that starts on a task still completes or deletes that task, and page swipes pause while a sheet, a dialog or a search is open.
 
 <p align="center">
   <img src="./images/mobile-swipe-uk.jpg" alt="Swiping a task to complete it, in Ukrainian" width="260" />

@@ -33,6 +33,12 @@ export interface ProjectDraft {
 export const MAX_PROJECT_NAME_LENGTH = 40;
 export const MAX_PROJECTS = 200;
 
+// Emoji offered for the project icon: work, home, health, leisure and the rest
+export const PROJECT_EMOJI: readonly string[] =
+  "💼 💻 📈 📝 📚 🎓 🎨 🧪 🏠 🛒 🍳 🧹 🪴 🐶 👶 🎁 💪 🏃 🧘 🩺 🌱 ☕ ✈️ 🏖️ 🚗 🎮 🎵 🎬 📷 ⚽ 💰 💡 🎯 ⭐ 🔥 ❤️ 🎉 🚀 🔧".split(
+    " ",
+  );
+
 const EMOJI = /^(?:\p{Extended_Pictographic}|\p{Regional_Indicator})/u;
 const graphemes = new Intl.Segmenter(undefined, { granularity: "grapheme" });
 
@@ -64,6 +70,10 @@ export const splitProjectName = (name: string): { emoji: string | null; label: s
   const label = name.slice(first.segment.length).trim();
   return label ? { emoji: first.segment, label } : { emoji: null, label: name };
 };
+
+// A project name from an optional emoji and the rest of the name
+export const joinProjectName = (emoji: string | null, label: string) =>
+  normalizeProjectName(emoji ? `${emoji} ${label}` : label);
 
 // Valid projects of a document, without duplicates
 export const parseProjects = (input: unknown, now: number = Date.now()): Project[] => {

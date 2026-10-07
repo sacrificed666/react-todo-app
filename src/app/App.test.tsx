@@ -1,4 +1,4 @@
-import { act, screen, within } from "@testing-library/react";
+import { act, fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { TOAST_DURATION } from "@/features/notifications/ui/Toaster/Toaster";
@@ -653,6 +653,36 @@ describe("Projects", () => {
     expect(details.getByRole("button", { name: "Project: Work" })).toBeInTheDocument();
   });
 
+  it("puts a chosen emoji on the project icon and takes it off again", async () => {
+    const { user, store } = renderApp([], "all", [makeProject({ id: "home", name: "🏠 Home", color: "orange" })]);
+
+    await user.click(screen.getByRole("button", { name: "New project" }));
+    let dialog = within(screen.getByRole("dialog", { name: "New project" }));
+    let emoji = await openPopover(user, dialog.getByRole("button", { name: "Choose an emoji" }));
+    expect(emoji.getByRole("button", { name: "No emoji" })).toHaveAttribute("aria-pressed", "true");
+    await user.click(emoji.getByRole("button", { name: "🚀" }));
+    await user.type(dialog.getByRole("textbox", { name: "Name" }), "Launch");
+    await user.click(dialog.getByRole("button", { name: "Create" }));
+
+    const launch = Object.values(store.getState().projects.entities).find((project) =>
+      project?.name.endsWith("Launch"),
+    );
+    expect(launch?.name).toBe("🚀 Launch");
+
+    await user.click(
+      within(screen.getByRole("navigation", { name: "Projects" })).getByRole("button", { name: /^Home/ }),
+    );
+    await user.click(screen.getByRole("button", { name: "Edit project" }));
+    dialog = within(screen.getByRole("dialog", { name: "Edit project" }));
+    expect(dialog.getByRole("textbox", { name: "Name" })).toHaveValue("Home");
+    emoji = await openPopover(user, dialog.getByRole("button", { name: "Choose an emoji" }));
+    expect(emoji.getByRole("button", { name: "🏠" })).toHaveAttribute("aria-pressed", "true");
+    await user.click(emoji.getByRole("button", { name: "No emoji" }));
+    await user.click(dialog.getByRole("button", { name: "Save" }));
+
+    expect(store.getState().projects.entities.home?.name).toBe("Home");
+  });
+
   it("edits and deletes a project with undo", async () => {
     const { user, store } = renderApp([makeTodo({ id: "deck", title: "Slides", projectId: "work" })], "project:work", [
       work,
@@ -692,6 +722,61 @@ describe("Projects", () => {
     expect(screen.queryByRole("dialog", { name: "Lists" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "Work" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Lists" })).toHaveAttribute("aria-current", "page");
+  });
+});
+
+// A sideways touch swipe that starts on an element
+const swipeOn = (element: Element, distance: number) => {
+  fireEvent.pointerDown(element, { pointerId: 7, pointerType: "touch", isPrimary: true, clientX: 200, clientY: 300 });
+  fireEvent.pointerMove(element, { pointerId: 7, pointerType: "touch", clientX: 200 + distance / 2, clientY: 302 });
+  fireEvent.pointerMove(element, { pointerId: 7, pointerType: "touch", clientX: 200 + distance, clientY: 304 });
+  fireEvent.pointerUp(element, { pointerId: 7, pointerType: "touch", clientX: 200 + distance, clientY: 304 });
+};
+
+const pageTitle = () => screen.getByRole("heading", { level: 1 }).textContent;
+
+describe("Swipe navigation", () => {
+  it("turns to the next and the previous list on phones, then on to the projects", () => {
+    mockMediaQueries(["(max-width: 899px)"]);
+    renderApp([], "important", [makeProject({ id: "work", name: "Work" })]);
+    const main = screen.getByRole("main");
+
+    swipeOn(main, -120);
+    expect(pageTitle()).toBe("Completed");
+    swipeOn(main, -120);
+    expect(pageTitle()).toBe("Work");
+    swipeOn(main, -120);
+    expect(pageTitle()).toBe("Work");
+    swipeOn(main, 120);
+    swipeOn(main, 120);
+    expect(pageTitle()).toBe("Important");
+  });
+
+  it("ignores short, vertical and mouse swipes and leaves task rows their own swipes", () => {
+    mockMediaQueries(["(max-width: 899px)"]);
+    const { store } = renderApp([makeTodo({ id: "milk", title: "Buy milk" })], "all");
+    const main = screen.getByRole("main");
+
+    swipeOn(main, -40);
+    fireEvent.pointerDown(main, { pointerId: 8, pointerType: "touch", isPrimary: true, clientX: 200, clientY: 100 });
+    fireEvent.pointerMove(main, { pointerId: 8, pointerType: "touch", clientX: 190, clientY: 200 });
+    fireEvent.pointerMove(main, { pointerId: 8, pointerType: "touch", clientX: 60, clientY: 210 });
+    fireEvent.pointerUp(main, { pointerId: 8, pointerType: "touch", clientX: 60, clientY: 210 });
+    fireEvent.pointerDown(main, { pointerId: 9, pointerType: "mouse", isPrimary: true, clientX: 200, clientY: 100 });
+    fireEvent.pointerMove(main, { pointerId: 9, pointerType: "mouse", clientX: 60, clientY: 100 });
+    fireEvent.pointerUp(main, { pointerId: 9, pointerType: "mouse", clientX: 60, clientY: 100 });
+    expect(pageTitle()).toBe("All tasks");
+
+    swipeOn(screen.getByRole("checkbox", { name: "Buy milk" }), 160);
+    expect(pageTitle()).toBe("All tasks");
+    expect(selectTodos(store.getState())[0]?.completed).toBe(true);
+  });
+
+  it("keeps wide screens still", () => {
+    renderApp([], "all");
+
+    swipeOn(screen.getByRole("main"), -120);
+    expect(pageTitle()).toBe("All tasks");
   });
 });
 

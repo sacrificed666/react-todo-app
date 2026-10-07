@@ -50,11 +50,9 @@
     background-color: var(--color-fill);
   }
 
-  &:focus-within {
-    background-color: var(--color-fill);
-  }
-
+  // One ring around the row while its title is edited, like the add field
   &:has(.input:focus-visible) {
+    background-color: var(--color-fill);
     box-shadow: inset 0 0 0 2px var(--color-focus);
   }
 
@@ -76,6 +74,11 @@
   font-size: 0.9375rem;
   outline: none;
   transition: color var(--duration-base) var(--ease-out);
+
+  // The row or the add field draws the ring instead
+  &:focus-visible {
+    outline: none;
+  }
 
   &::placeholder {
     color: var(--color-text-tertiary);

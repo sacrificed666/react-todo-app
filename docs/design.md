@@ -246,6 +246,7 @@ Notable interactions:
 - ✋ **Dragging**: the dragged row fades to a placeholder while a slightly tilted glass copy follows the pointer; sidebar targets light up with an accent ring.
 - 🗔 **Dialogs**: the palette drops in near the top of the screen, sheets rise from the bottom on phones; both fade the page behind a blurred backdrop.
 - 👉 **Swipes**: rows follow the finger with rubber-band resistance past 132 px. A tinted layer underneath reveals ✓ or 🗑️, which grows and fills with colour once the action is armed; releasing springs the row back.
+- 📖 **Page swipes**: the list follows a page swipe at a third of the finger's speed and settles back when it ends; the next list fades in from 32 px on the side the finger moved away from.
 - 🧭 **Tab bar**: the selected tab's glass pill slides on `--ease-spring`, and the Today badge turns red when something is overdue.
 - 🔝 **Condensing title**: on phones the toolbar's small title rises into place while the large one scrolls away.
 - 🎊 **Confetti**: finishing a list releases particles in the accent and aurora colours from the checkbox, animated with the Web Animations API.

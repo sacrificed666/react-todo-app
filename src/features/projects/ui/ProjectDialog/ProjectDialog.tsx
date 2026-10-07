@@ -11,9 +11,11 @@ import IconButton from "@/shared/ui/IconButton/IconButton";
 import SwatchPicker from "@/shared/ui/SwatchPicker/SwatchPicker";
 
 import {
+  joinProjectName,
   MAX_PROJECT_NAME_LENGTH,
   normalizeProjectName,
   PROJECT_COLORS,
+  splitProjectName,
   suggestProjectColor,
   type Project,
   type ProjectColor,
@@ -21,7 +23,7 @@ import {
 import { projectUpdated } from "../../model/projectsSlice";
 import { selectProjectById, selectProjects } from "../../model/selectors";
 import { createProject, deleteProject } from "../../model/thunks";
-import ProjectIcon from "../ProjectIcon/ProjectIcon";
+import EmojiPicker from "../EmojiPicker/EmojiPicker";
 
 import styles from "./ProjectDialog.module.scss";
 
@@ -30,7 +32,7 @@ interface ProjectFormProps {
   onClose: () => void;
 }
 
-// Name and colour of a new or edited project
+// Emoji, name and colour of a new or edited project
 const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
   const dispatch = useAppDispatch();
   const { t } = useI18n();
@@ -41,10 +43,11 @@ const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
   const taskCount = useAppSelector((state) =>
     project ? selectTodos(state).filter((todo) => todo.projectId === project.id).length : 0,
   );
-  const [name, setName] = useState(project?.name ?? "");
+  const [emoji, setEmoji] = useState(() => splitProjectName(project?.name ?? "").emoji);
+  const [label, setLabel] = useState(() => splitProjectName(project?.name ?? "").label);
   const [color, setColor] = useState<ProjectColor>(project?.color ?? suggestProjectColor(projectCount));
   const [confirming, setConfirming] = useState(false);
-  const valid = normalizeProjectName(name) !== "";
+  const valid = normalizeProjectName(label) !== "";
 
   // Focuses the name field when the dialog opens
   useEffect(() => {
@@ -55,6 +58,7 @@ const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!valid) return;
+    const name = joinProjectName(emoji, label);
     if (project) dispatch(projectUpdated(project.id, { name, color }));
     else dispatch(createProject({ name, color }));
     onClose();
@@ -81,7 +85,7 @@ const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
       </div>
 
       <div className={styles.identity}>
-        <ProjectIcon name={normalizeProjectName(name)} color={color} size="large" />
+        <EmojiPicker name={normalizeProjectName(label)} emoji={emoji} color={color} onChange={setEmoji} />
         <div className={styles.field}>
           <label className={styles.label} htmlFor={nameId}>
             {t("project.name")}
@@ -90,13 +94,13 @@ const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
             ref={inputRef}
             id={nameId}
             className={styles.input}
-            value={name}
+            value={label}
             maxLength={MAX_PROJECT_NAME_LENGTH + 10}
             placeholder={t("project.namePlaceholder")}
             autoComplete="off"
             enterKeyHint="done"
             aria-describedby={hintId}
-            onChange={(event) => setName(event.target.value)}
+            onChange={(event) => setLabel(event.target.value)}
           />
         </div>
       </div>

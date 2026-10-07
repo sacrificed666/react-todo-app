@@ -7,13 +7,14 @@ import styles from "./ProjectIcon.module.scss";
 interface ProjectIconProps {
   name: string;
   color: ProjectColor;
+  emoji?: string | null;
   size?: "small" | "medium" | "large";
   className?: string;
 }
 
-// The project emoji, or a dot in the project colour
-const ProjectIcon = ({ name, color, size = "medium", className }: ProjectIconProps) => {
-  const { emoji } = splitProjectName(name);
+// A chosen emoji, the emoji of the name, or a dot in the project colour
+const ProjectIcon = ({ name, color, emoji: chosen, size = "medium", className }: ProjectIconProps) => {
+  const emoji = chosen ?? splitProjectName(name).emoji;
 
   return (
     <span

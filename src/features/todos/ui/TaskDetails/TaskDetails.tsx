@@ -104,6 +104,15 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
       </div>
 
       <div className={styles.toolbar}>
+        <button
+          type="button"
+          className={styles.toggleButton}
+          aria-pressed={todo.important}
+          onClick={() => dispatch(todoImportanceToggled(todo.id))}
+        >
+          <Icon name="star" filled={todo.important} />
+          {t("details.important")}
+        </button>
         <DuePicker
           value={todo.dueDate}
           onChange={(dueDate) => dispatch(todoScheduled(todo.id, dueDate))}
@@ -115,15 +124,6 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
           value={todo.projectId}
           onChange={(projectId) => dispatch(todoProjectChanged(todo.id, projectId))}
         />
-        <button
-          type="button"
-          className={styles.toggleButton}
-          aria-pressed={todo.important}
-          onClick={() => dispatch(todoImportanceToggled(todo.id))}
-        >
-          <Icon name="star" filled={todo.important} />
-          {t("details.important")}
-        </button>
         {tags.map((tag) => (
           <button key={tag} type="button" className={styles.tag} onClick={() => showTag(tag)}>
             <Icon name="hash" />
@@ -163,11 +163,11 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
       <div className={styles.footer}>
         <button type="button" className={styles.footerButton} onClick={duplicate}>
           <Icon name="copy" />
-          {t("details.duplicate")}
+          <span className={styles.footerLabel}>{t("details.duplicate")}</span>
         </button>
         <button type="button" className={styles.footerButton} data-tone="danger" onClick={remove}>
           <Icon name="trash" />
-          {t("details.delete")}
+          <span className={styles.footerLabel}>{t("details.delete")}</span>
         </button>
       </div>
     </div>

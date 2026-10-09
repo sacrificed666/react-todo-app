@@ -6,6 +6,7 @@ import { sortChanged } from "@/features/lists/model/viewSlice";
 import { makeProject, makeState, makeTodo, sampleTodos } from "@/test/factories";
 
 import {
+  selectAllTags,
   selectCompletedIds,
   selectListCounts,
   selectListProgress,
@@ -101,10 +102,10 @@ describe("selectors", () => {
 describe("selectTagCounts", () => {
   it("counts tags of active tasks, case-insensitively and once per task", () => {
     const state = stateWith([
-      makeTodo({ id: "a", title: "Slides #Work #work" }),
-      makeTodo({ id: "b", title: "Report #work #q4" }),
-      makeTodo({ id: "c", title: "Done #home", completed: true, completedAt: 1 }),
-      makeTodo({ id: "d", title: "Plan #q4" }),
+      makeTodo({ id: "a", title: "Slides", tags: ["#Work", "#work"] }),
+      makeTodo({ id: "b", title: "Report", tags: ["#work", "#q4"] }),
+      makeTodo({ id: "c", title: "Done", tags: ["#home"], completed: true, completedAt: 1 }),
+      makeTodo({ id: "d", title: "Plan", tags: ["#q4"] }),
       makeTodo({ id: "e", title: "No tags" }),
     ]);
 
@@ -112,6 +113,7 @@ describe("selectTagCounts", () => {
       { tag: "#q4", count: 2 },
       { tag: "#Work", count: 2 },
     ]);
+    expect(selectAllTags(state)).toEqual(["#q4", "#Work", "#home"]);
   });
 });
 

@@ -55,6 +55,7 @@
   --glass-tint-hover: rgb(255 255 255 / 56%);
   --glass-tint-pressed: rgb(255 255 255 / 70%);
   --glass-tint-strong: rgb(248 250 255 / 74%);
+  --glass-tint-overlay: rgb(248 250 255 / 94%);
   --glass-tint-content: rgb(250 252 255 / 68%);
   --glass-tint-bar: rgb(246 249 255 / 58%);
   --glass-saturate: 180%;
@@ -143,6 +144,7 @@
   --glass-tint-hover: rgb(255 255 255 / 10%);
   --glass-tint-pressed: rgb(255 255 255 / 15%);
   --glass-tint-strong: rgb(16 20 36 / 60%);
+  --glass-tint-overlay: rgb(16 20 36 / 94%);
   --glass-tint-content: rgb(24 28 48 / 62%);
   --glass-tint-bar: rgb(10 14 26 / 48%);
   --glass-tint-accent: color-mix(in srgb, var(--color-accent) 88%, transparent);
@@ -300,6 +302,7 @@
   --glass-tint-hover: rgb(32 36 58 / 58%);
   --glass-tint-pressed: rgb(40 44 68 / 64%);
   --glass-tint-strong: rgb(16 20 36 / 82%);
+  --glass-tint-overlay: rgb(16 20 36 / 94%);
   --glass-tint-content: rgb(20 24 42 / 78%);
   --glass-tint-bar: rgb(12 16 30 / 72%);
 }
@@ -310,6 +313,7 @@
   --glass-tint-hover: rgb(34 38 62 / 84%);
   --glass-tint-pressed: rgb(42 46 72 / 90%);
   --glass-tint-strong: rgb(18 22 38 / 94%);
+  --glass-tint-overlay: rgb(18 22 38 / 94%);
   --glass-tint-content: rgb(20 24 42 / 90%);
   --glass-tint-bar: rgb(12 16 30 / 92%);
   --glass-edge: inset 0 1px 0 rgb(255 255 255 / 8%), inset 0 0 0 1px rgb(255 255 255 / 9%);
@@ -324,6 +328,7 @@
   --glass-tint-hover: rgb(255 255 255 / 86%);
   --glass-tint-pressed: rgb(255 255 255 / 94%);
   --glass-tint-strong: rgb(250 251 255 / 95%);
+  --glass-tint-overlay: rgb(250 251 255 / 95%);
   --glass-tint-content: rgb(252 253 255 / 92%);
   --glass-tint-bar: rgb(248 250 255 / 92%);
   --glass-edge: inset 0 1px 0 rgb(255 255 255 / 80%), inset 0 0 0 1px rgb(20 32 64 / 8%);
@@ -338,6 +343,7 @@
   --glass-tint-hover: rgb(255 255 255 / 76%);
   --glass-tint-pressed: rgb(255 255 255 / 86%);
   --glass-tint-strong: rgb(250 251 255 / 90%);
+  --glass-tint-overlay: rgb(250 251 255 / 94%);
   --glass-tint-content: rgb(252 253 255 / 86%);
   --glass-tint-bar: rgb(248 250 255 / 82%);
 }

@@ -1,7 +1,8 @@
 @use "@/shared/styles/mixins" as *;
 
+// Nearly opaque, as the blur cannot see through the dialogs it opens over
 .popover {
-  @include glass(var(--radius-xl), var(--glass-tint-strong), var(--glass-blur-thick));
+  @include glass(var(--radius-xl), var(--glass-tint-overlay), var(--glass-blur-thick));
   position: fixed;
   inset: auto;
   inset-block-start: var(--popover-top, 72px);
@@ -51,10 +52,13 @@
     background: transparent;
   }
 
-  // Anchor positioning places the popover and flips it when needed
+  // Anchor positioning places the popover and flips it when a side lacks room
   @supports (position-area: block-end) {
     margin-block-start: 10px;
-    position-try-fallbacks: flip-block;
+    position-try-fallbacks:
+      flip-inline,
+      flip-block,
+      flip-block flip-inline;
 
     &[data-align="end"] {
       inset: auto;

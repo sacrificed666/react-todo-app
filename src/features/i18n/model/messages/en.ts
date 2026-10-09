@@ -7,6 +7,7 @@ export const en = {
 
   "app.skip": "Skip to tasks",
   "app.name": "Tasks",
+  "app.tagline": "Private to-do list",
 
   "search.placeholder": "Search tasks",
   "search.label": "Search tasks",
@@ -127,6 +128,10 @@ export const en = {
   "todo.subtasks": "{done} of {total} subtasks",
 
   "tags.title": "Tags",
+  "tags.chip": "Tags: {tags}",
+  "tags.find": "Find or create a tag",
+  "tags.create": "Create {tag}",
+  "tags.empty": "No tags yet: type one above.",
 
   "section.todo": "To do",
   "section.completed": "Completed",
@@ -255,6 +260,7 @@ export const en = {
   "history.unstarred": "unstar “{title}”",
   "history.scheduled": "reschedule “{title}”",
   "history.noted": "edit notes of “{title}”",
+  "history.tagged": "change the tags of “{title}”",
   "history.subtaskAdded": "add subtask “{title}”",
   "history.subtaskCompleted": "complete subtask “{title}”",
   "history.subtaskReopened": "reopen subtask “{title}”",

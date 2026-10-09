@@ -121,12 +121,12 @@ describe("App shell", () => {
     expect(screen.getByRole("link", { name: /^Вихідний код/ })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Нове завдання" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Завдання, головна сторінка" })).toHaveTextContent("Завдання");
-    expect(document.title).toBe("Завдання");
+    expect(document.title).toBe("Завдання · Приватний список справ");
   });
 
   it("names the browser tab after the open list", async () => {
     const { user } = renderApp(plannedTodos);
-    expect(document.title).toBe("Tasks");
+    expect(document.title).toBe("Tasks · Private to-do list");
 
     await user.click(screen.getByRole("button", { name: /^Today/ }));
     expect(document.title).toBe("Today · Tasks");
@@ -164,9 +164,9 @@ describe("Layout", () => {
 
   it("filters by tag from the sidebar", async () => {
     const { user, store } = renderApp([
-      makeTodo({ id: "a", title: "Slides #work" }),
-      makeTodo({ id: "b", title: "Report #work" }),
-      makeTodo({ id: "c", title: "Groceries #home" }),
+      makeTodo({ id: "a", title: "Slides", tags: ["#work"] }),
+      makeTodo({ id: "b", title: "Report", tags: ["#work"] }),
+      makeTodo({ id: "c", title: "Groceries", tags: ["#home"] }),
     ]);
 
     const tags = screen.getByRole("navigation", { name: "Tags" });
@@ -176,7 +176,7 @@ describe("Layout", () => {
     await user.click(work);
     expect(store.getState().view.query).toBe("#work");
     expect(work).toHaveAttribute("aria-pressed", "true");
-    expect(itemTitles(section(/^To do/))).toEqual(["Slides #work", "Report #work"]);
+    expect(itemTitles(section(/^To do/))).toEqual(["Slides", "Report"]);
 
     await user.click(work);
     expect(store.getState().view.query).toBe("");

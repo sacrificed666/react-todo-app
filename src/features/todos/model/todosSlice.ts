@@ -6,7 +6,16 @@ import { isDateKey, toDateKey } from "@/shared/lib/date";
 
 import { nextOccurrence } from "./repeat";
 import { createSubtask, MAX_SUBTASKS, normalizeSubtaskTitle, type Subtask } from "./subtasks";
-import { createTodo, normalizeNotes, normalizeTitle, type Repeat, type Todo, type TodoDraft } from "./todo";
+import {
+  createTodo,
+  mergeTags,
+  normalizeNotes,
+  sameTags,
+  splitTitleTags,
+  type Repeat,
+  type Todo,
+  type TodoDraft,
+} from "./todo";
 
 export interface RemovedTodo {
   todo: Todo;
@@ -66,12 +75,25 @@ export const todosSlice = createSlice({
     todoRenamed: {
       reducer(state, action: PayloadAction<{ id: string; title: string; at: number }>) {
         const todo = state.entities[action.payload.id];
-        const title = normalizeTitle(action.payload.title);
-        if (!todo || !title || todo.title === title) return;
+        const { title, tags: typed } = splitTitleTags(action.payload.title);
+        if (!todo || !title) return;
+        const tags = mergeTags(todo.tags, typed);
+        if (todo.title === title && sameTags(todo.tags, tags)) return;
         todo.title = title;
+        todo.tags = tags;
         todo.updatedAt = action.payload.at;
       },
       prepare: (id: string, title: string) => ({ payload: { id, title, at: Date.now() } }),
+    },
+    todoTagsChanged: {
+      reducer(state, action: PayloadAction<{ id: string; tags: readonly string[]; at: number }>) {
+        const todo = state.entities[action.payload.id];
+        const tags = mergeTags(action.payload.tags);
+        if (!todo || sameTags(todo.tags, tags)) return;
+        todo.tags = tags;
+        todo.updatedAt = action.payload.at;
+      },
+      prepare: (id: string, tags: readonly string[]) => ({ payload: { id, tags, at: Date.now() } }),
     },
     todoImportanceToggled: {
       reducer(state, action: PayloadAction<{ id: string; at: number }>) {
@@ -271,6 +293,7 @@ export const {
   todoAdded,
   todoToggled,
   todoRenamed,
+  todoTagsChanged,
   todoImportanceToggled,
   todoScheduled,
   todosScheduled,

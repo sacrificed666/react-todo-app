@@ -35,7 +35,7 @@ import IconButton from "@/shared/ui/IconButton/IconButton";
 
 import { subtaskProgress } from "../../model/subtasks";
 import { duplicateTodo, removeTodos, toggleTodo } from "../../model/thunks";
-import { extractTags, MAX_TITLE_LENGTH, stripTags, type Todo } from "../../model/todo";
+import { MAX_TITLE_LENGTH, type Todo } from "../../model/todo";
 import {
   todoImportanceToggled,
   todoMoved,
@@ -149,8 +149,7 @@ const TodoItem = ({
 
   const checked = pendingToggle ? !todo.completed : todo.completed;
   const due = todo.dueDate && !hideDueDate ? describeDueDate(todo.dueDate, today, intlLocale) : null;
-  const tags = extractTags(todo.title);
-  const title = stripTags(todo.title) || todo.title;
+  const { tags, title } = todo;
   const checklist = subtaskProgress(todo.subtasks);
   const neighborId = nextId ?? previousId;
   const showProject = project !== undefined && project.id !== viewProjectId;

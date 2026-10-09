@@ -9,7 +9,7 @@ test.describe("with a Ukrainian browser", () => {
     await page.goto("./");
     await expect(page.locator("html")).toHaveAttribute("lang", "uk");
     await expect(page.getByRole("heading", { level: 1, name: "Усі завдання" })).toBeVisible();
-    await expect(page).toHaveTitle("Завдання");
+    await expect(page).toHaveTitle("Завдання · Приватний список справ");
   });
 });
 
@@ -20,7 +20,7 @@ test.describe("with a Czech browser", () => {
     await page.goto("./");
     await expect(page.locator("html")).toHaveAttribute("lang", "cs");
     await expect(page.getByRole("heading", { level: 1, name: "Všechny úkoly" })).toBeVisible();
-    await expect(page).toHaveTitle("Úkoly");
+    await expect(page).toHaveTitle("Úkoly · Soukromý seznam úkolů");
     await page.getByRole("textbox", { name: "Nový úkol" }).fill("Zavolat mámě zítra");
     await page.keyboard.press("Enter");
     await expect(page.getByText("Zavolat mámě", { exact: true })).toBeVisible();

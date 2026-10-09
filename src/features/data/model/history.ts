@@ -21,6 +21,7 @@ import {
   todoRepeatChanged,
   todoScheduled,
   todosScheduled,
+  todoTagsChanged,
   todosRemoved,
   todosRestored,
   todoToggled,
@@ -96,6 +97,7 @@ export const describeChange = (action: UnknownAction, { todos, projects }: Snaps
   if (todoRepeatChanged.match(action)) return titled("history.repeat", todos.entities[action.payload.id]);
   if (todoProjectChanged.match(action)) return titled("history.projectChanged", todos.entities[action.payload.id]);
   if (todoNoted.match(action)) return titled("history.noted", todos.entities[action.payload.id]);
+  if (todoTagsChanged.match(action)) return titled("history.tagged", todos.entities[action.payload.id]);
   if (subtaskAdded.match(action))
     return { key: "history.subtaskAdded", params: { title: action.payload.subtask.title } };
   if (subtaskToggled.match(action)) {

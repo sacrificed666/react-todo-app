@@ -21,8 +21,10 @@
   }
 }
 
+// Only up and down: nothing inside may push the panel sideways
 .body {
   min-block-size: 0;
+  overflow-x: clip;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;

@@ -9,6 +9,7 @@ export const pt: Messages = {
 
   "app.skip": "Saltar para as tarefas",
   "app.name": "Tarefas",
+  "app.tagline": "Lista de tarefas privada",
 
   "search.placeholder": "Pesquisar tarefas",
   "search.label": "Pesquisar tarefas",
@@ -129,6 +130,10 @@ export const pt: Messages = {
   "todo.subtasks": "{done} de {total} subtarefas",
 
   "tags.title": "Etiquetas",
+  "tags.chip": "Etiquetas: {tags}",
+  "tags.find": "Procurar ou criar uma etiqueta",
+  "tags.create": "Criar {tag}",
+  "tags.empty": "Ainda não há etiquetas: escreva uma acima.",
 
   "section.todo": "Por fazer",
   "section.completed": "Concluídas",
@@ -260,6 +265,7 @@ export const pt: Messages = {
   "history.unstarred": "tirar a estrela de «{title}»",
   "history.scheduled": "reagendar «{title}»",
   "history.noted": "editar as notas de «{title}»",
+  "history.tagged": "alterar as etiquetas de «{title}»",
   "history.subtaskAdded": "adicionar a subtarefa «{title}»",
   "history.subtaskCompleted": "concluir a subtarefa «{title}»",
   "history.subtaskReopened": "reabrir a subtarefa «{title}»",

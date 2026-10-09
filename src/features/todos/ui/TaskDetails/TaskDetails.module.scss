@@ -62,8 +62,7 @@
   gap: 8px;
 }
 
-.toggleButton,
-.tag {
+.toggleButton {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -89,14 +88,6 @@
 .toggleButton[aria-pressed="true"] {
   background-color: color-mix(in srgb, var(--color-star) 18%, transparent);
   color: var(--color-star);
-}
-
-.tag {
-  color: var(--color-accent-bright);
-
-  svg {
-    font-size: 0.9375rem;
-  }
 }
 
 .notes {

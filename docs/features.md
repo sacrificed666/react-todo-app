@@ -166,10 +166,12 @@ The ⓘ button, the <kbd>I</kbd> key, a tap on the title on phones or a task fou
 
 ## 🏷️ Tags
 
-Any `#word` in a title is a tag. Tags are shown as chips instead of being repeated in the title, and work in any script: `#дім`, `#travel`, `#q4`.
+Tags group tasks across lists and projects, like `#travel`, `#дім` or `#q4`. A task can have up to ten, each a single word in any script of up to 32 letters, digits, `_` or `-`.
 
+- #️⃣ **Pick or create** tags with the **#** chip in the composer and in the details: it lists the tags you already use, filters them as you type and offers **Create #word** for a new one. <kbd>Enter</kbd> adds the typed tag, <kbd>↑</kbd>/<kbd>↓</kbd> move through the list.
+- ⌨️ **Type** `#word` anywhere in quick add or when you rename a task: the tag moves out of the title into the task's tags, so the title stays clean.
 - 🧭 The sidebar lists every tag of your active tasks with a counter, most used first.
-- 🔎 Clicking a tag in the sidebar, on a task or in the details searches every list for it; clicking the highlighted tag in the sidebar clears the search.
+- 🔎 Clicking a tag in the sidebar or on a task searches every list for it, and the search finds tasks by their tags too; clicking the highlighted tag in the sidebar clears the search.
 
 ## 🔀 Sorting
 
@@ -274,13 +276,14 @@ Exported files look like this:
   "todos": [
     {
       "id": "V1StGXR8_Z5jdHi6B-myT",
-      "title": "Book train tickets to Lviv #travel",
+      "title": "Book train tickets to Lviv",
       "completed": false,
       "important": true,
       "dueDate": "2026-10-03",
       "repeat": null,
       "repeatAnchor": null,
       "projectId": "trip",
+      "tags": ["#travel"],
       "notes": "Window seats if possible",
       "subtasks": [
         { "id": "a1", "title": "Check the timetable", "completed": true },
@@ -308,6 +311,7 @@ Importing never deletes anything:
 - 🔁 tasks and projects whose `id` already exists are skipped, new ones are appended;
 - 🔗 links to projects that are missing from the file are dropped, so a task never points to nothing;
 - 📄 a plain array of tasks is accepted as well as the full export;
+- 🏷️ files from versions that kept `#tags` in the title get them moved into `tags`;
 - 🕰️ older files without projects, repeats, notes, subtasks, importance or dates, with `- [ ]` checklists in the notes, or in the first `{ "id", "text", "isCompleted" }` format, are converted automatically;
 - 🚫 invalid entries, dates, colours and ids are ignored or replaced, and broken or oversized files are reported in a notification.
 

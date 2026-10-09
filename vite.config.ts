@@ -10,7 +10,7 @@ import packageJson from "./package.json" with { type: "json" };
 
 const base = "/react-todo-app/";
 const description =
-  "A free, private to-do list with projects, smart lists, repeating tasks and a calendar. Works offline in ten languages and keeps your tasks on your device.";
+  "A free, private to-do list with projects, tags, smart lists, repeating tasks and a calendar. Works offline in ten languages and keeps your tasks on your device.";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -53,6 +53,19 @@ export default defineConfig({
   },
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+  },
+  build: {
+    rolldownOptions: {
+      output: {
+        // Libraries change less often than the app, so an update downloads only the app
+        codeSplitting: {
+          groups: [
+            { name: "react", test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/, priority: 2 },
+            { name: "vendor", test: /node_modules[\\/]/, priority: 1 },
+          ],
+        },
+      },
+    },
   },
   plugins: [
     react(),

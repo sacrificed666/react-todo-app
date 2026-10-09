@@ -9,6 +9,7 @@ export const de: Messages = {
 
   "app.skip": "Zu den Aufgaben springen",
   "app.name": "Aufgaben",
+  "app.tagline": "Private To-do-Liste",
 
   "search.placeholder": "Aufgaben durchsuchen",
   "search.label": "Aufgaben durchsuchen",
@@ -129,6 +130,10 @@ export const de: Messages = {
   "todo.subtasks": "{done} von {total} Unteraufgaben",
 
   "tags.title": "Tags",
+  "tags.chip": "Tags: {tags}",
+  "tags.find": "Tag suchen oder erstellen",
+  "tags.create": "{tag} erstellen",
+  "tags.empty": "Noch keine Tags: Gib oben einen ein.",
 
   "section.todo": "Zu erledigen",
   "section.completed": "Erledigt",
@@ -260,6 +265,7 @@ export const de: Messages = {
   "history.unstarred": "Markierung von „{title}“ entfernen",
   "history.scheduled": "Datum von „{title}“ ändern",
   "history.noted": "Notizen von „{title}“ bearbeiten",
+  "history.tagged": "Tags von „{title}“ ändern",
   "history.subtaskAdded": "Unteraufgabe „{title}“ hinzufügen",
   "history.subtaskCompleted": "Unteraufgabe „{title}“ erledigen",
   "history.subtaskReopened": "Unteraufgabe „{title}“ wieder öffnen",

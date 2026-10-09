@@ -81,7 +81,12 @@ describe("TodoItem keyboard", () => {
 describe("TodoItem content", () => {
   it("shows tags as filters and hints at notes and subtasks", async () => {
     const { user, store } = renderApp([
-      makeTodo({ id: "slides", title: "Prepare slides #work #q4", dueDate: dayFromToday(1) }),
+      makeTodo({
+        id: "slides",
+        title: "Prepare slides",
+        tags: ["#work", "#q4"],
+        dueDate: dayFromToday(1),
+      }),
       makeTodo({
         id: "trip",
         title: "Trip",
@@ -93,15 +98,13 @@ describe("TodoItem content", () => {
       makeTodo({ id: "call", title: "Call the bank", notes: "Ask about fees" }),
     ]);
 
-    expect(screen.getByRole("button", { name: "Edit “Prepare slides #work #q4”" })).toHaveTextContent(
-      /^Prepare slides$/,
-    );
+    expect(screen.getByRole("button", { name: "Edit “Prepare slides”" })).toHaveTextContent(/^Prepare slides$/);
     expect(screen.getByText("1 of 2 subtasks")).toBeInTheDocument();
     expect(screen.getByText("Has notes")).toBeInTheDocument();
 
     await user.click(within(section(/^To do/)).getByRole("button", { name: "Show tasks tagged #work" }));
     expect(store.getState().view.query).toBe("#work");
-    expect(itemTitles(section(/^To do/))).toEqual(["Prepare slides #work #q4"]);
+    expect(itemTitles(section(/^To do/))).toEqual(["Prepare slides"]);
   });
 
   it("finds tasks by their notes", async () => {

@@ -9,6 +9,7 @@ export const uk: Messages = {
 
   "app.skip": "Перейти до завдань",
   "app.name": "Завдання",
+  "app.tagline": "Приватний список справ",
 
   "search.placeholder": "Пошук завдань",
   "search.label": "Пошук завдань",
@@ -136,6 +137,10 @@ export const uk: Messages = {
   "todo.subtasks": "{done} з {total} підзавдань",
 
   "tags.title": "Теги",
+  "tags.chip": "Теги: {tags}",
+  "tags.find": "Знайти або створити тег",
+  "tags.create": "Створити {tag}",
+  "tags.empty": "Тегів ще немає: введіть перший вище.",
 
   "section.todo": "До виконання",
   "section.completed": "Виконані",
@@ -304,6 +309,7 @@ export const uk: Messages = {
   "history.unstarred": "зняття позначки «{title}»",
   "history.scheduled": "зміна терміну «{title}»",
   "history.noted": "зміна нотаток «{title}»",
+  "history.tagged": "зміну тегів «{title}»",
   "history.subtaskAdded": "додавання підзавдання «{title}»",
   "history.subtaskCompleted": "виконання підзавдання «{title}»",
   "history.subtaskReopened": "повернення підзавдання «{title}»",

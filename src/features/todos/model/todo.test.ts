@@ -5,9 +5,13 @@ import {
   createTodo,
   extractTags,
   MAX_NOTES_LENGTH,
+  MAX_TAGS,
   MAX_TITLE_LENGTH,
+  mergeTags,
+  normalizeTag,
   normalizeTitle,
   parseTodos,
+  splitTitleTags,
   stripTags,
 } from "./todo";
 
@@ -129,6 +133,7 @@ describe("createTodo", () => {
       repeat: null,
       repeatAnchor: null,
       projectId: null,
+      tags: [],
       notes: "",
       subtasks: [],
       createdAt: 42,
@@ -142,6 +147,13 @@ describe("createTodo", () => {
     expect(createTodo({ title: "Trip", notes: "a".repeat(MAX_NOTES_LENGTH + 10) }, 1).notes).toHaveLength(
       MAX_NOTES_LENGTH,
     );
+  });
+
+  it("takes #tags out of the title and joins them with the chosen ones", () => {
+    expect(createTodo({ title: "Plan #trip with #Anna", tags: ["work", "#trip"] }, 1)).toMatchObject({
+      title: "Plan with",
+      tags: ["#work", "#trip", "#Anna"],
+    });
   });
 
   it("keeps importance and valid due dates only", () => {
@@ -170,6 +182,7 @@ describe("parseTodos", () => {
       repeat: "weekly",
       repeatAnchor: "2026-09-17",
       projectId: "books",
+      tags: ["#reading"],
       notes: "Chapter 3",
       subtasks: [{ id: "s1", title: "Take notes", completed: true }],
       createdAt: 1,
@@ -191,6 +204,7 @@ describe("parseTodos", () => {
         repeat: null,
         repeatAnchor: null,
         projectId: null,
+        tags: [],
         notes: "",
         subtasks: [],
         createdAt: 500,
@@ -198,6 +212,16 @@ describe("parseTodos", () => {
         completedAt: 500,
       },
     ]);
+  });
+
+  it("moves #tags of older titles into the tags and drops invalid ones", () => {
+    const [todo] =
+      parseTodos([{ id: "a", title: "Read #books #Books", tags: ["#home", "two words", 3, "#home"] }]) ?? [];
+    expect(todo).toMatchObject({ title: "Read", tags: ["#home", "#books"] });
+    expect(parseTodos([{ id: "b", title: "#only" }])?.[0]).toMatchObject({
+      title: "#only",
+      tags: [],
+    });
   });
 
   it("moves a checklist from the notes of older versions into subtasks", () => {
@@ -239,5 +263,27 @@ describe("parseTodos", () => {
     expect(todo?.createdAt).toBe(Date.parse("2026-01-01T00:00:00.000Z"));
     expect(todo?.updatedAt).toBe(todo?.createdAt);
     expect(todo?.completedAt).toBe(todo?.updatedAt);
+  });
+});
+
+describe("tag helpers", () => {
+  it("normalizes tags and refuses spaces and signs", () => {
+    expect(normalizeTag("work")).toBe("#work");
+    expect(normalizeTag("  ##Дім ")).toBe("#Дім");
+    expect(normalizeTag("two words")).toBeNull();
+    expect(normalizeTag("#")).toBeNull();
+  });
+
+  it("merges lists without repeats in any letter case, within the limit", () => {
+    expect(mergeTags(["#Work", "home"], ["#work", "#trip"])).toEqual(["#Work", "#home", "#trip"]);
+    expect(mergeTags(Array.from({ length: 20 }, (_, index) => `#t${index}`))).toHaveLength(MAX_TAGS);
+  });
+
+  it("splits tags off a title unless nothing would be left", () => {
+    expect(splitTitleTags("Buy milk #home  #errands")).toEqual({
+      title: "Buy milk",
+      tags: ["#home", "#errands"],
+    });
+    expect(splitTitleTags("#home")).toEqual({ title: "#home", tags: [] });
   });
 });

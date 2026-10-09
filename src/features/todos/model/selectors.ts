@@ -5,7 +5,7 @@ import { isOverdue, matchesList, matchesView, type ListId } from "@/features/lis
 import { selectList, selectQuery, selectSort } from "@/features/lists/model/selectors";
 import { sortTodos } from "@/features/lists/model/sort";
 
-import { createMatcher, extractTags } from "./todo";
+import { createMatcher } from "./todo";
 import { todosAdapter } from "./todosSlice";
 
 const todoSelectors = todosAdapter.getSelectors((state: RootState) => state.todos);
@@ -76,7 +76,10 @@ export const selectVisibleTodos = createSelector(
     const matches = createMatcher(query);
     const visible = todos.filter((todo) =>
       searching
-        ? matches(todo.title) || matches(todo.notes) || todo.subtasks.some((subtask) => matches(subtask.title))
+        ? matches(todo.title) ||
+          todo.tags.some(matches) ||
+          matches(todo.notes) ||
+          todo.subtasks.some((subtask) => matches(subtask.title))
         : matchesView(todo, list, today),
     );
     return {
@@ -103,7 +106,7 @@ export const selectTagCounts = createSelector([selectTodos], (todos): TagCount[]
   for (const todo of todos) {
     if (todo.completed) continue;
     const seen = new Set<string>();
-    for (const tag of extractTags(todo.title)) {
+    for (const tag of todo.tags) {
       const key = tag.toLocaleLowerCase();
       if (seen.has(key)) continue;
       seen.add(key);
@@ -112,4 +115,17 @@ export const selectTagCounts = createSelector([selectTodos], (todos): TagCount[]
     }
   }
   return [...counts.values()].toSorted((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+});
+
+// Every tag in use, those of open tasks first, for picking tags
+export const selectAllTags = createSelector([selectTodos, selectTagCounts], (todos, open): string[] => {
+  const seen = new Set(open.map(({ tag }) => tag.toLocaleLowerCase()));
+  const rest: string[] = [];
+  for (const tag of todos.flatMap((todo) => todo.tags)) {
+    const key = tag.toLocaleLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    rest.push(tag);
+  }
+  return [...open.map(({ tag }) => tag), ...rest.toSorted((a, b) => a.localeCompare(b))];
 });

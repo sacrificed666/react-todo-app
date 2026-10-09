@@ -1,4 +1,12 @@
-import { closestCenter, DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import {
+  closestCenter,
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type Modifier,
+} from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
@@ -20,6 +28,19 @@ import type { Todo } from "../../model/todo";
 import { subtaskAdded, subtaskMoved, subtaskRemoved, subtaskRenamed, subtaskToggled } from "../../model/todosSlice";
 
 import styles from "./SubtaskList.module.scss";
+
+// A subtask only moves up and down, and never past the ends of its list
+const keepInList: Modifier = ({ transform, draggingNodeRect, containerNodeRect }) => {
+  if (!draggingNodeRect || !containerNodeRect) return { ...transform, x: 0 };
+  const top = containerNodeRect.top - draggingNodeRect.top;
+  const bottom = containerNodeRect.bottom - draggingNodeRect.bottom;
+  return { ...transform, x: 0, y: Math.min(Math.max(transform.y, top), bottom) };
+};
+
+const MODIFIERS = [keepInList];
+
+// The panel scrolls only up and down while a subtask is dragged near its edge
+const AUTO_SCROLL = { threshold: { x: 0, y: 0.15 } };
 
 interface SubtaskRowProps {
   todoId: string;
@@ -165,7 +186,13 @@ const SubtaskList = ({ todo }: SubtaskListProps) => {
         ) : null}
       </h3>
       {subtasks.length > 0 ? (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={MODIFIERS}
+          autoScroll={AUTO_SCROLL}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext items={subtasks.map((subtask) => subtask.id)} strategy={verticalListSortingStrategy}>
             <ul className={styles.list}>
               {subtasks.map((subtask, index) => (

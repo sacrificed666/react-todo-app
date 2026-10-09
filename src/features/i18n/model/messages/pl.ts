@@ -9,6 +9,7 @@ export const pl: Messages = {
 
   "app.skip": "Przejdź do zadań",
   "app.name": "Zadania",
+  "app.tagline": "Prywatna lista zadań",
 
   "search.placeholder": "Szukaj zadań",
   "search.label": "Szukaj zadań",
@@ -136,6 +137,10 @@ export const pl: Messages = {
   "todo.subtasks": "{done} z {total} podzadań",
 
   "tags.title": "Tagi",
+  "tags.chip": "Tagi: {tags}",
+  "tags.find": "Znajdź lub utwórz tag",
+  "tags.create": "Utwórz {tag}",
+  "tags.empty": "Nie ma jeszcze tagów: wpisz pierwszy powyżej.",
 
   "section.todo": "Do zrobienia",
   "section.completed": "Ukończone",
@@ -304,6 +309,7 @@ export const pl: Messages = {
   "history.unstarred": "usunięcie gwiazdki z „{title}”",
   "history.scheduled": "zmiana terminu „{title}”",
   "history.noted": "edycja notatek „{title}”",
+  "history.tagged": "zmiana tagów „{title}”",
   "history.subtaskAdded": "dodanie podzadania „{title}”",
   "history.subtaskCompleted": "ukończenie podzadania „{title}”",
   "history.subtaskReopened": "ponowne otwarcie podzadania „{title}”",

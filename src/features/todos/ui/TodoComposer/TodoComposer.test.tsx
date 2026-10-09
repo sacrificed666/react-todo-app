@@ -2,8 +2,8 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { selectTodos } from "@/features/todos/model/selectors";
-import { dayFromToday } from "@/test/factories";
-import { renderApp } from "@/test/render";
+import { dayFromToday, makeTodo } from "@/test/factories";
+import { openPopover, renderApp } from "@/test/render";
 
 describe("TodoComposer quick add", () => {
   it("recognises dates, importance and tags while typing", async () => {
@@ -28,12 +28,28 @@ describe("TodoComposer quick add", () => {
     expect(screen.getByRole("button", { name: "Important" })).toHaveAttribute("aria-pressed", "false");
   });
 
-  it("understands Ukrainian phrases and keeps hashtags", async () => {
+  it("understands Ukrainian phrases and turns hashtags into tags", async () => {
     const { user, store } = renderApp([]);
 
-    await user.type(screen.getByRole("textbox", { name: "New task" }), "Купити квіти #дім через 3 дні{Enter}");
+    await user.type(screen.getByRole("textbox", { name: "New task" }), "Купити квіти #дім через 3 дні");
+    expect(screen.getByRole("button", { name: "Tags: #дім" })).toHaveAttribute("title", "Recognised from the title");
+    await user.keyboard("{Enter}");
 
-    expect(selectTodos(store.getState())[0]).toMatchObject({ title: "Купити квіти #дім", dueDate: dayFromToday(3) });
+    expect(selectTodos(store.getState())[0]).toMatchObject({
+      title: "Купити квіти",
+      tags: ["#дім"],
+      dueDate: dayFromToday(3),
+    });
+  });
+
+  it("adds the tags picked in the composer", async () => {
+    const { user, store } = renderApp([makeTodo({ id: "old", title: "Old", tags: ["#home"] })]);
+
+    const picker = await openPopover(user, screen.getByRole("button", { name: "Tags" }));
+    await user.click(picker.getByRole("button", { name: "home" }));
+    await user.type(screen.getByRole("textbox", { name: "New task" }), "Water the plants{Enter}");
+
+    expect(selectTodos(store.getState()).find((todo) => todo.title === "Water the plants")?.tags).toEqual(["#home"]);
   });
 
   it("lets a recognised date override the picker only while it is typed", async () => {

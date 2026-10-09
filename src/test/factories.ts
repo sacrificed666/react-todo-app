@@ -21,6 +21,7 @@ export const makeTodo = (overrides: Partial<Todo> & Pick<Todo, "id" | "title">):
   repeat: null,
   repeatAnchor: null,
   projectId: null,
+  tags: [],
   notes: "",
   subtasks: [],
   createdAt: 1_700_000_000_000,

@@ -9,6 +9,7 @@ export const it: Messages = {
 
   "app.skip": "Vai alle attività",
   "app.name": "Attività",
+  "app.tagline": "Lista di cose da fare privata",
 
   "search.placeholder": "Cerca attività",
   "search.label": "Cerca attività",
@@ -126,6 +127,10 @@ export const it: Messages = {
   "todo.subtasks": "{done} di {total} sottoattività",
 
   "tags.title": "Tag",
+  "tags.chip": "Tag: {tags}",
+  "tags.find": "Cerca o crea un tag",
+  "tags.create": "Crea {tag}",
+  "tags.empty": "Ancora nessun tag: scrivine uno qui sopra.",
 
   "section.todo": "Da fare",
   "section.completed": "Completate",
@@ -254,6 +259,7 @@ export const it: Messages = {
   "history.unstarred": "rimozione della stella da «{title}»",
   "history.scheduled": "modifica della scadenza di «{title}»",
   "history.noted": "modifica delle note di «{title}»",
+  "history.tagged": "modifica dei tag di «{title}»",
   "history.subtaskAdded": "aggiunta della sottoattività «{title}»",
   "history.subtaskCompleted": "completamento della sottoattività «{title}»",
   "history.subtaskReopened": "riapertura della sottoattività «{title}»",

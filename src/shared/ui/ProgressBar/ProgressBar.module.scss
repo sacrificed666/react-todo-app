@@ -17,6 +17,11 @@
   transform-origin: left center;
   transition: transform var(--duration-slow) var(--ease-spring);
 
+  // Grows from empty when it first appears
+  @starting-style {
+    transform: scaleX(0);
+  }
+
   .track[data-complete] & {
     background: linear-gradient(90deg, var(--color-success), var(--color-success));
     box-shadow: 0 0 12px var(--color-success-glow);

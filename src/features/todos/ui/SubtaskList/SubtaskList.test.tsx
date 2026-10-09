@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { selectTodos } from "@/features/todos/model/selectors";
@@ -52,6 +52,7 @@ describe("SubtaskList", () => {
     const list = await openDetails(user);
     await user.click(list.getByRole("button", { name: "Delete subtask “Tickets”" }));
     expect(subtaskTitles(store)).toEqual(["Passport", "Charger"]);
+    await waitFor(() => expect(list.getByRole("textbox", { name: "Subtask 1" })).toHaveFocus());
 
     await user.click(list.getByRole("textbox", { name: "Subtask 2" }));
     await user.keyboard("{Alt>}{ArrowUp}{/Alt}");

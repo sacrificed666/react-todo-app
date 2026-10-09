@@ -18,7 +18,8 @@ A private to-do list that lives in your browser: plan the day with smart lists, 
 - 📁 **Projects**: Work, 🏠 Home or a trip, each with one of ten colours, an optional emoji icon and its own page with progress; deleting one can be undone together with its tasks
 - ✍️ **Quick add**: `Call mom tomorrow @home !`, `Teammeeting am Freitag` or `Zavolat mámě zítra` fill in the date, repeat, project and importance, in all ten languages
 - 🔁 **Repeats** every day, weekday, week, month or year; monthly tasks keep their day after a short month
-- 📝 **Details**: subtasks that can be ticked off, renamed and dragged into order with a progress chip, notes and `#tags` with a tag cloud
+- 📝 **Details**: subtasks that can be ticked off, renamed and dragged into order with a progress chip, and notes
+- 🏷️ **Tags**: pick, find or create tags with the **#** chip, or type `#word` in a title; the sidebar shows them as a cloud with counters
 - 🗓️ **Calendar and dates**: dots on busy days, the week starting on the day your region expects, dates in the format of your language
 - ✋ **Drag and drop** to reorder tasks or drop them on a list or project, and a context menu on right-click or long press
 - ↩️ **Undo and redo** for the last 50 changes to tasks and projects, each with a description

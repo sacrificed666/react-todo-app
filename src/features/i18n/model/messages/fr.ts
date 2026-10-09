@@ -9,6 +9,7 @@ export const fr: Messages = {
 
   "app.skip": "Aller aux tâches",
   "app.name": "Tâches",
+  "app.tagline": "Liste de tâches privée",
 
   "search.placeholder": "Rechercher des tâches",
   "search.label": "Rechercher des tâches",
@@ -132,6 +133,10 @@ export const fr: Messages = {
   "todo.subtasks": "{done} sur {total} sous-tâches",
 
   "tags.title": "Étiquettes",
+  "tags.chip": "Étiquettes\u00a0: {tags}",
+  "tags.find": "Chercher ou créer une étiquette",
+  "tags.create": "Créer {tag}",
+  "tags.empty": "Aucune étiquette pour l’instant\u00a0: saisissez-en une ci-dessus.",
 
   "section.todo": "À faire",
   "section.completed": "Terminées",
@@ -266,6 +271,7 @@ export const fr: Messages = {
   "history.unstarred": "le retrait de l’étoile de «\u00a0{title}\u00a0»",
   "history.scheduled": "le changement d’échéance de «\u00a0{title}\u00a0»",
   "history.noted": "la modification des notes de «\u00a0{title}\u00a0»",
+  "history.tagged": "la modification des étiquettes de «\u00a0{title}\u00a0»",
   "history.subtaskAdded": "l’ajout de la sous-tâche «\u00a0{title}\u00a0»",
   "history.subtaskCompleted": "l’achèvement de la sous-tâche «\u00a0{title}\u00a0»",
   "history.subtaskReopened": "la réouverture de la sous-tâche «\u00a0{title}\u00a0»",

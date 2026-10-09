@@ -12,6 +12,7 @@ describe("parseQuickAdd", () => {
       important: false,
       repeat: null,
       projectId: null,
+      tags: [],
     });
     expect(parseQuickAdd("Подзвонити мамі завтра", today).dueDate).toBe("2026-10-02");
     expect(parseQuickAdd("Renew passport in 10 days", today).dueDate).toBe("2026-10-11");
@@ -35,14 +36,20 @@ describe("parseQuickAdd", () => {
     expect(parseQuickAdd("Invalid 31.02", today)).toMatchObject({ title: "Invalid 31.02", dueDate: null });
   });
 
-  it("marks tasks as important and keeps tags", () => {
+  it("marks tasks as important and moves #tags out of the title", () => {
     expect(parseQuickAdd("Ship the release friday #work !", today)).toEqual({
-      title: "Ship the release #work",
+      title: "Ship the release",
       dueDate: "2026-10-02",
       important: true,
       repeat: null,
       projectId: null,
+      tags: ["#work"],
     });
+    expect(parseQuickAdd("Call #mom about the #Trip #trip", today)).toMatchObject({
+      title: "Call about the",
+      tags: ["#mom", "#Trip"],
+    });
+    expect(parseQuickAdd("#idea", today)).toMatchObject({ title: "#idea", tags: [] });
   });
 
   it("leaves ordinary titles untouched", () => {
@@ -52,6 +59,7 @@ describe("parseQuickAdd", () => {
       important: false,
       repeat: null,
       projectId: null,
+      tags: [],
     });
     expect(parseQuickAdd("Tomorrow", today)).toEqual({
       title: "Tomorrow",
@@ -59,6 +67,7 @@ describe("parseQuickAdd", () => {
       important: false,
       repeat: null,
       projectId: null,
+      tags: [],
     });
     expect(parseQuickAdd("Enjoy the sun", today).dueDate).toBeNull();
   });
@@ -226,11 +235,12 @@ describe("parseQuickAdd repeats", () => {
 
   it("combines repeats with explicit dates, importance and tags", () => {
     expect(parseQuickAdd("Pay rent monthly 05.10 #home !", today)).toEqual({
-      title: "Pay rent #home",
+      title: "Pay rent",
       dueDate: "2026-10-05",
       important: true,
       repeat: "monthly",
       projectId: null,
+      tags: ["#home"],
     });
   });
 
@@ -254,6 +264,7 @@ describe("parseQuickAdd projects", () => {
       important: false,
       repeat: null,
       projectId: "work",
+      tags: [],
     });
     expect(parseQuickAdd("@Home Fix the shelf", today, projects)).toMatchObject({
       title: "Fix the shelf",

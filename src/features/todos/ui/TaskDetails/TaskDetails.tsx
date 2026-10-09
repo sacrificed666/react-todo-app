@@ -2,7 +2,6 @@ import { useId, useState, type KeyboardEvent } from "react";
 
 import { useAppDispatch } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
-import { queryChanged } from "@/features/lists/model/viewSlice";
 import ProjectPicker from "@/features/projects/ui/ProjectPicker/ProjectPicker";
 import { useToday } from "@/shared/hooks/useToday";
 import { formatDateTime } from "@/shared/lib/date";
@@ -11,7 +10,7 @@ import Icon from "@/shared/ui/Icon/Icon";
 import IconButton from "@/shared/ui/IconButton/IconButton";
 
 import { duplicateTodo, removeTodos, toggleTodo } from "../../model/thunks";
-import { extractTags, MAX_NOTES_LENGTH, MAX_TITLE_LENGTH, normalizeTitle, type Todo } from "../../model/todo";
+import { MAX_NOTES_LENGTH, MAX_TITLE_LENGTH, splitTitleTags, type Todo } from "../../model/todo";
 import {
   todoImportanceToggled,
   todoNoted,
@@ -19,10 +18,12 @@ import {
   todoRenamed,
   todoRepeatChanged,
   todoScheduled,
+  todoTagsChanged,
 } from "../../model/todosSlice";
 import DuePicker from "../DuePicker/DuePicker";
 import RepeatPicker from "../RepeatPicker/RepeatPicker";
 import SubtaskList from "../SubtaskList/SubtaskList";
+import TagPicker from "../TagPicker/TagPicker";
 
 import styles from "./TaskDetails.module.scss";
 
@@ -39,12 +40,12 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
   const notesId = useId();
   const [title, setTitle] = useState(todo.title);
   const [notes, setNotes] = useState(todo.notes);
-  const tags = extractTags(todo.title);
 
-  // Keeps a valid title, or brings the old one back
+  // Keeps a valid title, or brings the old one back; typed #tags move to the tags
   const saveTitle = () => {
-    if (normalizeTitle(title)) dispatch(todoRenamed(todo.id, title));
-    else setTitle(todo.title);
+    const named = splitTitleTags(title);
+    if (named.title) dispatch(todoRenamed(todo.id, title));
+    setTitle(named.title || todo.title);
   };
 
   // Enter saves the title instead of adding a line
@@ -52,12 +53,6 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
     if (event.key !== "Enter" || event.nativeEvent.isComposing) return;
     event.preventDefault();
     saveTitle();
-  };
-
-  // Closes the details and searches for a tag
-  const showTag = (tag: string) => {
-    onClose();
-    dispatch(queryChanged(tag));
   };
 
   // Closes the details and copies the task
@@ -124,12 +119,7 @@ const TaskDetails = ({ todo, onClose }: TaskDetailsProps) => {
           value={todo.projectId}
           onChange={(projectId) => dispatch(todoProjectChanged(todo.id, projectId))}
         />
-        {tags.map((tag) => (
-          <button key={tag} type="button" className={styles.tag} onClick={() => showTag(tag)}>
-            <Icon name="hash" />
-            {tag.slice(1)}
-          </button>
-        ))}
+        <TagPicker value={todo.tags} onChange={(tags) => dispatch(todoTagsChanged(todo.id, tags))} />
       </div>
 
       <SubtaskList todo={todo} />

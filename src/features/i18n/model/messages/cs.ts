@@ -9,6 +9,7 @@ export const cs: Messages = {
 
   "app.skip": "Přejít na úkoly",
   "app.name": "Úkoly",
+  "app.tagline": "Soukromý seznam úkolů",
 
   "search.placeholder": "Hledat úkoly",
   "search.label": "Hledat úkoly",
@@ -134,6 +135,10 @@ export const cs: Messages = {
   "todo.subtasks": "{done} z {total} dílčích úkolů",
 
   "tags.title": "Štítky",
+  "tags.chip": "Štítky: {tags}",
+  "tags.find": "Najít nebo vytvořit štítek",
+  "tags.create": "Vytvořit {tag}",
+  "tags.empty": "Zatím žádné štítky: napište první nahoře.",
 
   "section.todo": "K udělání",
   "section.completed": "Dokončené",
@@ -286,6 +291,7 @@ export const cs: Messages = {
   "history.unstarred": "odebrání hvězdičky u „{title}“",
   "history.scheduled": "změna termínu „{title}“",
   "history.noted": "úprava poznámek u „{title}“",
+  "history.tagged": "změna štítků „{title}“",
   "history.subtaskAdded": "přidání dílčího úkolu „{title}“",
   "history.subtaskCompleted": "dokončení dílčího úkolu „{title}“",
   "history.subtaskReopened": "znovuotevření dílčího úkolu „{title}“",

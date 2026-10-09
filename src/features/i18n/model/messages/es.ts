@@ -9,6 +9,7 @@ export const es: Messages = {
 
   "app.skip": "Ir a las tareas",
   "app.name": "Tareas",
+  "app.tagline": "Lista de tareas privada",
 
   "search.placeholder": "Buscar tareas",
   "search.label": "Buscar tareas",
@@ -129,6 +130,10 @@ export const es: Messages = {
   "todo.subtasks": "{done} de {total} subtareas",
 
   "tags.title": "Etiquetas",
+  "tags.chip": "Etiquetas: {tags}",
+  "tags.find": "Buscar o crear una etiqueta",
+  "tags.create": "Crear {tag}",
+  "tags.empty": "Aún no hay etiquetas: escribe una arriba.",
 
   "section.todo": "Pendientes",
   "section.completed": "Completadas",
@@ -257,6 +262,7 @@ export const es: Messages = {
   "history.unstarred": "quitar el destacado de «{title}»",
   "history.scheduled": "cambiar la fecha de «{title}»",
   "history.noted": "editar las notas de «{title}»",
+  "history.tagged": "cambiar las etiquetas de «{title}»",
   "history.subtaskAdded": "añadir la subtarea «{title}»",
   "history.subtaskCompleted": "completar la subtarea «{title}»",
   "history.subtaskReopened": "reabrir la subtarea «{title}»",

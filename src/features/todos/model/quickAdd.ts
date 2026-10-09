@@ -1,6 +1,6 @@
 import { addDays, fromDateKey, isDateKey, toDateKey } from "@/shared/lib/date";
 
-import type { Repeat } from "./todo";
+import { splitTitleTags, type Repeat } from "./todo";
 
 export interface QuickAddResult {
   title: string;
@@ -8,6 +8,7 @@ export interface QuickAddResult {
   important: boolean;
   repeat: Repeat | null;
   projectId: string | null;
+  tags: string[];
 }
 
 export interface QuickAddProject {
@@ -689,11 +690,13 @@ export const parseQuickAdd = (
     break;
   }
 
+  const named = splitTitleTags([...tokens.slice(0, end), ...tags].join(" "));
   return {
-    title: [...tokens.slice(0, end), ...tags].join(" "),
+    title: named.title,
     dueDate: dueDate ?? repeatStart ?? (repeat ? today : null),
     important,
     repeat,
     projectId: mention?.projectId ?? null,
+    tags: named.tags,
   };
 };

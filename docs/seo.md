@@ -6,15 +6,15 @@ Tasks is one static page that also works offline, so everything a search engine 
 
 | Field                    | Value                                                                                               |
 | ------------------------ | --------------------------------------------------------------------------------------------------- |
-| 🏷️ Title                 | `Tasks`, then `Today · Tasks`, `Work · Tasks` and so on while the app is open                       |
-| 📝 Description           | A 150-character summary: projects, smart lists, repeats, the calendar, offline, privacy             |
+| 🏷️ Title                 | `Tasks · Private to-do list`, then `Today · Tasks`, `Work · Tasks` and so on while the app is open  |
+| 📝 Description           | A 156-character summary: projects, tags, smart lists, repeats, the calendar, offline, privacy       |
 | 🔗 Canonical             | `https://sacrificed666.github.io/react-todo-app/`, whatever a shortcut or a share adds to the query |
 | 🖼️ Open Graph and X card | Title, description and a 1200 × 630 preview (`public/og-image.jpg`) with alternative text           |
 | 🌍 `og:locale`           | `en_GB`, with the nine other interface languages as `og:locale:alternate`                           |
 | 🙈 `<noscript>`          | A heading and a summary for visitors and crawlers without JavaScript                                |
 | 🎨 Colours and app name  | `color-scheme`, `theme-color`, `application-name` and `apple-mobile-web-app-title`                  |
 
-`useDocumentTitle()` in `app/useDocumentTitle.ts` names the tab after the open list in the interface language, so history entries, bookmarks and screen readers tell lists apart. **All tasks** keeps the plain app name.
+`useDocumentTitle()` in `app/useDocumentTitle.ts` names the tab after the open list in the interface language, so history entries, bookmarks and screen readers tell lists apart. **All tasks** shows the app name with a short tagline, which also gives search results a clearer title.
 
 ## 🌍 Languages
 

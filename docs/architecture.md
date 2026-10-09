@@ -40,18 +40,18 @@ flowchart TB
 | ✨ Features | `src/features` | One folder per capability with a `model/` (state, logic) and a `ui/` (components)                                       | other features, shared, `@/app/hooks`, store types        |
 | 🧰 Shared   | `src/shared`   | Store-agnostic UI primitives, hooks, helpers and styles                                                                 | shared only                                               |
 
-| Feature            | Model                                                                                                                                                    | UI                                                                                                                                                                |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ `todos`         | `Todo` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, subtasks                                    | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker` |
-| 📁 `projects`      | `Project` model with colours and emoji icons, slice, selectors, `createProject()` and `deleteProject()`                                                  | `ProjectNav`, `ProjectDialog`, `EmojiPicker`, `ProjectPicker`, `ProjectIcon`                                                                                      |
-| 📚 `lists`         | Smart lists and project views (`ViewId`), date groups, sort orders, view slice with overlays, `useViewInfo()`, list shortcuts, page swipes               | `ListNav`, `TagNav`, `TabBar`, `ListsSheet`, `ListHeader`, `SortMenu`                                                                                             |
-| 💾 `data`          | The stored document (`parseData`, `serializeData`), import and export, `dataReplaced` and `dataImported`, undo history                                   | None                                                                                                                                                              |
-| 🔎 `search`        | None                                                                                                                                                     | `TodoSearch`                                                                                                                                                      |
-| 📊 `stats`         | The 7-day activity, streak and project progress selectors                                                                                                | `Overview`                                                                                                                                                        |
-| ⌘ `commands`       | `useTaskCommands()` shared by both menus, command ranking                                                                                                | `ActionsMenu`, `CommandPalette`                                                                                                                                   |
-| 🎨 `settings`      | Appearance, accent, background, glass, language and effects, `changeLocale()`, document sync                                                             | `SettingsDialog`, `SettingsButton`                                                                                                                                |
-| 🌍 `i18n`          | Typed messages for ten languages, the lazy catalog, `LOCALE_INFO` with native names, flags and `Intl` tags, `translate()`, `useI18n()`, `useWeekStart()` | `LocaleFlag`                                                                                                                                                      |
-| 🔔 `notifications` | Toast slice and message formatting                                                                                                                       | `Toaster`, `OfflineBadge`                                                                                                                                         |
+| Feature            | Model                                                                                                                                                    | UI                                                                                                                                                                             |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ✅ `todos`         | `Todo` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, subtasks                                    | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker`, `TagPicker` |
+| 📁 `projects`      | `Project` model with colours and emoji icons, slice, selectors, `createProject()` and `deleteProject()`                                                  | `ProjectNav`, `ProjectDialog`, `EmojiPicker`, `ProjectPicker`, `ProjectIcon`                                                                                                   |
+| 📚 `lists`         | Smart lists and project views (`ViewId`), date groups, sort orders, view slice with overlays, `useViewInfo()`, list shortcuts, page swipes               | `ListNav`, `TagNav`, `TabBar`, `ListsSheet`, `ListHeader`, `SortMenu`                                                                                                          |
+| 💾 `data`          | The stored document (`parseData`, `serializeData`), import and export, `dataReplaced` and `dataImported`, undo history                                   | None                                                                                                                                                                           |
+| 🔎 `search`        | None                                                                                                                                                     | `TodoSearch`                                                                                                                                                                   |
+| 📊 `stats`         | The 7-day activity, streak and project progress selectors                                                                                                | `Overview`                                                                                                                                                                     |
+| ⌘ `commands`       | `useTaskCommands()` shared by both menus, command ranking                                                                                                | `ActionsMenu`, `CommandPalette`                                                                                                                                                |
+| 🎨 `settings`      | Appearance, accent, background, glass, language and effects, `changeLocale()`, document sync                                                             | `SettingsDialog`, `SettingsButton`                                                                                                                                             |
+| 🌍 `i18n`          | Typed messages for ten languages, the lazy catalog, `LOCALE_INFO` with native names, flags and `Intl` tags, `translate()`, `useI18n()`, `useWeekStart()` | `LocaleFlag`                                                                                                                                                                   |
+| 🔔 `notifications` | Toast slice and message formatting                                                                                                                       | `Toaster`, `OfflineBadge`                                                                                                                                                      |
 
 ## 🔀 Data flow
 
@@ -123,13 +123,14 @@ erDiagram
   }
   TODO {
     string id PK "nanoid, matches [A-Za-z0-9_-]{1,64}"
-    string title "1-200 characters, may contain #tags"
+    string title "1-200 characters"
     boolean completed
     boolean important
     string dueDate "YYYY-MM-DD or null"
     string repeat "daily, weekdays, weekly, monthly, yearly or null"
     string repeatAnchor "first date of the series or null"
     string projectId FK "project id or null"
+    string[] tags "up to 10 #words, unique in any letter case"
     string notes "up to 2000 characters"
     Subtask[] subtasks "up to 50"
     number createdAt "epoch milliseconds"
@@ -137,7 +138,7 @@ erDiagram
     number completedAt "epoch milliseconds or null"
   }
   TAG {
-    string name "#word in the title"
+    string name "#word of up to 32 letters, digits, _ or -"
   }
   SUBTASK {
     string id "unique within the task"
@@ -145,14 +146,14 @@ erDiagram
     boolean completed
   }
   PROJECT ||--o{ TODO : "contains"
-  TODO ||--o{ TAG : "title mentions"
+  TODO ||--o{ TAG : "is tagged with"
   TODO ||--o{ SUBTASK : "has, in order"
 ```
 
 - 📅 `dueDate` and `repeatAnchor` are local calendar dates. Keeping dates as keys instead of timestamps avoids time zone surprises and lets lists compare dates as plain strings.
 - 🔗 `projectId` is validated twice: `parseTodos()` keeps only well-formed ids, and `parseData()` drops links to projects that are not in the same document.
 - 😀 A project's emoji icon is **derived** by `splitProjectName()` with `Intl.Segmenter`, so flags and emoji built from several code points stay whole. The project dialog edits the emoji and the rest of the name separately and joins them with `joinProjectName()`, so the stored name keeps its old format.
-- 🏷️ Tags are **derived**, not stored: `extractTags()` reads `#words` from the title, so nothing needs migrating when the rules evolve.
+- 🏷️ Tags are **stored** on the task. `splitTitleTags()` moves `#words` out of a title when a task is created, renamed or read from an older version that kept them in the title, and `mergeTags()` drops repeats in any letter case and keeps at most ten.
 - ☑️ Subtasks are stored in order on the task (`model/subtasks.ts`). Data from versions that wrote `- [ ] item` lines into the notes is converted by `extractChecklist()` the first time it is read, and a repeating task starts its next occurrence with every subtask open again.
 
 ## 🔄 Task lifecycle
@@ -303,15 +304,16 @@ flowchart LR
   Project --> Tokens[Split into words]
   Tokens --> Trailing{"Trailing ! or #tag?"}
   Trailing -- "! / !! / !!!" --> Important[important = true]
-  Trailing -- "#tag" --> Tags[keep the tag]
+  Trailing -- "#tag" --> Tags[collect the tag]
   Trailing -- no --> Phrase{"Last words form<br/>a repeat or a date?"}
   Important --> Trailing
   Tags --> Trailing
   Phrase -- yes --> Due[repeat and dueDate]
   Phrase -- no --> Title
-  Due --> Title["title = remaining words + tags"]
+  Due --> Title["title = remaining words, without any #tag"]
 ```
 
+- 🏷️ Every `#word` becomes a tag, wherever it stands; a title made only of a tag keeps it as the title.
 - 📁 Mentions match the full project name or the name without its emoji, case- and accent-insensitively with `localeCompare(…, { sensitivity: "base" })`, and must end at a space or the end of the text, so `anna@work.com` and `@workshop` stay untouched. The longest matching name wins, so `@trip to lviv` beats `@trip`.
 - 📅 `parseDatePhrase()` and `parseRepeatPhrase()` understand phrases in all ten languages, validate calendar dates and roll `dd.mm` over to the next year when the date has passed. The full list is in [Features](./features.md#-quick-add).
 
@@ -453,7 +455,7 @@ App
 │   │   └── Overview         Progress, stats, 7-day chart, streak and project progress (below 1240 px)
 │   ├── Workspace
 │   │   ├── ListHeader       Icon, title, date or result count, progress, sort and project edit buttons
-│   │   ├── TodoComposer     Quick add field with the star, DuePicker and ProjectPicker, N shortcut
+│   │   ├── TodoComposer     Quick add field with the star, DuePicker, ProjectPicker and TagPicker, N shortcut
 │   │   └── TodoList         Date groups, empty states, deferred search
 │   │       └── TodoSection  SortableContext, chunked rendering, one glass group per section
 │   │           └── TodoItem Checkbox, title, chips, actions, swipes, long press, keyboard, TaskMenu

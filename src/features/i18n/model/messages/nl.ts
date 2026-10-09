@@ -9,6 +9,7 @@ export const nl: Messages = {
 
   "app.skip": "Naar de taken",
   "app.name": "Taken",
+  "app.tagline": "Privé takenlijst",
 
   "search.placeholder": "Taken zoeken",
   "search.label": "Taken zoeken",
@@ -129,6 +130,10 @@ export const nl: Messages = {
   "todo.subtasks": "{done} van {total} subtaken",
 
   "tags.title": "Tags",
+  "tags.chip": "Tags: {tags}",
+  "tags.find": "Tag zoeken of maken",
+  "tags.create": "{tag} maken",
+  "tags.empty": "Nog geen tags: typ er hierboven een.",
 
   "section.todo": "Te doen",
   "section.completed": "Voltooid",
@@ -257,6 +262,7 @@ export const nl: Messages = {
   "history.unstarred": "ster van “{title}” halen",
   "history.scheduled": "deadline van “{title}” wijzigen",
   "history.noted": "notities van “{title}” bewerken",
+  "history.tagged": "tags van “{title}” wijzigen",
   "history.subtaskAdded": "subtaak “{title}” toevoegen",
   "history.subtaskCompleted": "subtaak “{title}” voltooien",
   "history.subtaskReopened": "subtaak “{title}” heropenen",

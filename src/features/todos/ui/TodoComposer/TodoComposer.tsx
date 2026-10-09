@@ -16,9 +16,10 @@ import IconButton from "@/shared/ui/IconButton/IconButton";
 
 import { parseQuickAdd } from "../../model/quickAdd";
 import { addTodo } from "../../model/thunks";
-import { MAX_TITLE_LENGTH, normalizeTitle } from "../../model/todo";
+import { MAX_TITLE_LENGTH, mergeTags, normalizeTitle } from "../../model/todo";
 import DuePicker from "../DuePicker/DuePicker";
 import { COMPOSER_INPUT_ID } from "../ids";
+import TagPicker from "../TagPicker/TagPicker";
 
 import styles from "./TodoComposer.module.scss";
 
@@ -45,6 +46,7 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
   const [dueDate, setDueDate] = useState(() => defaultDueDate(view, today));
   const [important, setImportant] = useState(view === "important");
   const [project, setProject] = useState(() => projectIdOf(view));
+  const [tags, setTags] = useState<string[]>([]);
   const [engaged, setEngaged] = useState(false);
   const expanded = engaged || title !== "";
 
@@ -111,6 +113,7 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
       important: effectiveImportant,
       repeat: parsed.repeat,
       projectId: effectiveProject,
+      tags: mergeTags(tags, parsed.tags),
     };
     if (dispatch(addTodo(draft))) {
       setTitle("");
@@ -166,6 +169,7 @@ const TodoComposer = ({ view }: TodoComposerProps) => {
             hideEmptyLabel
           />
         ) : null}
+        <TagPicker value={tags} detected={parsed.tags} onChange={setTags} hideEmptyLabel />
         {parsed.repeat ? (
           <span className={styles.repeat} title={t("composer.detected")}>
             <Icon name="repeat" className={styles.repeatIcon} />

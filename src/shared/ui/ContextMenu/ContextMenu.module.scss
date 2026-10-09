@@ -1,7 +1,7 @@
 @use "@/shared/styles/mixins" as *;
 
 .menu {
-  @include glass(var(--radius-lg), var(--glass-tint-strong), var(--glass-blur-thick));
+  @include glass(var(--radius-lg), var(--glass-tint-overlay), var(--glass-blur-thick));
   position: fixed;
   inset: auto;
   inset-block-start: var(--menu-y, 0);

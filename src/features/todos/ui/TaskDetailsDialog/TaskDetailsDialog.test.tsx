@@ -83,15 +83,26 @@ describe("TaskDetailsDialog", () => {
     expect(screen.getByRole("status", { name: "Notification" })).toHaveTextContent("Deleted “Call grandma”");
   });
 
-  it("filters by a tag and closes with Escape", async () => {
-    const { user, store } = renderApp([...sampleTodos, makeTodo({ id: "tagged", title: "Prepare slides #work" })]);
+  it("picks, creates and removes tags and closes with Escape", async () => {
+    const { user, store } = renderApp([...sampleTodos, makeTodo({ id: "tagged", title: "Slides", tags: ["#work"] })]);
 
-    await user.click(screen.getByRole("button", { name: "Details for “Prepare slides #work”" }));
+    await user.click(screen.getByRole("button", { name: "Details for “Slides”" }));
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog", { name: "Task details" })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Details for “Prepare slides #work”" }));
-    await user.click(within(details()).getByRole("button", { name: "work" }));
-    expect(store.getState().view).toMatchObject({ query: "#work", detailsId: null });
+    await user.click(screen.getByRole("button", { name: "Details for “Slides”" }));
+    const picker = await openPopover(user, within(details()).getByRole("button", { name: "Tags: #work" }));
+    await user.type(picker.getByRole("textbox", { name: "Find or create a tag" }), "q4{Enter}");
+    expect(store.getState().todos.entities.tagged?.tags).toEqual(["#work", "#q4"]);
+    await user.click(picker.getByRole("button", { name: "work" }));
+    expect(store.getState().todos.entities.tagged?.tags).toEqual(["#q4"]);
+
+    await user.clear(within(details()).getByRole("textbox", { name: "Title" }));
+    await user.type(within(details()).getByRole("textbox", { name: "Title" }), "Slides for Q4 #talk{Enter}");
+    expect(store.getState().todos.entities.tagged).toMatchObject({
+      title: "Slides for Q4",
+      tags: ["#q4", "#talk"],
+    });
+    expect(within(details()).getByRole("textbox", { name: "Title" })).toHaveValue("Slides for Q4");
   });
 });

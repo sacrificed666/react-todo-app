@@ -5,8 +5,8 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { undo } from "@/features/data/model/thunks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { listChanged } from "@/features/lists/model/viewSlice";
-import { undoRemoval } from "@/features/todos/model/thunks";
-import { toggleId } from "@/features/todos/ui/ids";
+import { undoRemoval } from "@/features/tasks/model/thunks";
+import { toggleId } from "@/features/tasks/ui/ids";
 import { useRefraction } from "@/shared/hooks/useRefraction";
 import { applyUpdate } from "@/shared/lib/serviceWorker";
 import Icon from "@/shared/ui/Icon/Icon";
@@ -48,9 +48,9 @@ const ToastCard = ({ toast }: ToastCardProps) => {
   const run = (action: ToastAction) => {
     switch (action.type) {
       case "restore": {
-        const [first] = action.todos;
+        const [first] = action.tasks;
         flushSync(() => dispatch(undoRemoval()));
-        if (first) document.getElementById(toggleId(first.todo.id))?.focus();
+        if (first) document.getElementById(toggleId(first.task.id))?.focus();
         return;
       }
       case "undo":
@@ -64,7 +64,7 @@ const ToastCard = ({ toast }: ToastCardProps) => {
           dispatch(listChanged(action.list));
           dispatch(toastDismissed(toast.id));
         });
-        document.getElementById(toggleId(action.todoId))?.focus();
+        document.getElementById(toggleId(action.taskId))?.focus();
     }
   };
 

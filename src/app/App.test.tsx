@@ -2,9 +2,9 @@ import { act, fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { TOAST_DURATION } from "@/features/notifications/ui/Toaster/Toaster";
-import { selectTodos } from "@/features/todos/model/selectors";
-import { parseTodos } from "@/features/todos/model/todo";
-import { dayFromToday, makeProject, makeTodo, todayKey } from "@/test/factories";
+import { selectTasks } from "@/features/tasks/model/selectors";
+import { parseTasks } from "@/features/tasks/model/task";
+import { dayFromToday, makeProject, makeTask, todayKey } from "@/test/factories";
 import { itemTitles, mockMediaQueries, openPopover, renderApp, section, type User } from "@/test/render";
 
 const notification = () => screen.getByRole("status", { name: "Notification" });
@@ -20,16 +20,16 @@ const chooseMenuItem = async (user: User, name: string) => {
   expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
 };
 
-const plannedTodos = [
-  makeTodo({ id: "late", title: "Send the invoice", dueDate: dayFromToday(-2), important: true }),
-  makeTodo({ id: "now", title: "Daily standup", dueDate: todayKey() }),
-  makeTodo({ id: "soon", title: "Dentist appointment", dueDate: dayFromToday(3) }),
-  makeTodo({ id: "free", title: "Read a book" }),
+const plannedTasks = [
+  makeTask({ id: "late", title: "Send the invoice", dueDate: dayFromToday(-2), important: true }),
+  makeTask({ id: "now", title: "Daily standup", dueDate: todayKey() }),
+  makeTask({ id: "soon", title: "Dentist appointment", dueDate: dayFromToday(3) }),
+  makeTask({ id: "free", title: "Read a book" }),
 ];
 
 describe("App shell", () => {
   it("keeps the header, search and lists in the sidebar and the credits in a footer", () => {
-    renderApp(plannedTodos);
+    renderApp(plannedTasks);
 
     const banner = screen.getByRole("banner");
     expect(within(banner).getByRole("link", { name: "Tasks, home page" })).toHaveTextContent("Tasks");
@@ -53,7 +53,7 @@ describe("App shell", () => {
   });
 
   it("switches lists with the navigation and number keys", async () => {
-    const { user } = renderApp(plannedTodos);
+    const { user } = renderApp(plannedTasks);
 
     await user.click(screen.getByRole("button", { name: /^Today/ }));
     expect(screen.getByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
@@ -66,7 +66,7 @@ describe("App shell", () => {
     expect(itemTitles(screen.getByRole("main"))).toEqual(["Dentist appointment"]);
 
     await user.keyboard("4");
-    expect(itemTitles(section(/^To do/))).toEqual(["Send the invoice"]);
+    expect(itemTitles(section(/^Active/))).toEqual(["Send the invoice"]);
   });
 
   it("shows list-specific empty states", async () => {
@@ -109,7 +109,7 @@ describe("App shell", () => {
   });
 
   it("switches the interface language", async () => {
-    const { user, store } = renderApp(plannedTodos);
+    const { user, store } = renderApp(plannedTasks);
 
     const panel = await openSettings(user);
     await user.click(panel.getByRole("radio", { name: "Українська" }));
@@ -121,12 +121,12 @@ describe("App shell", () => {
     expect(screen.getByRole("link", { name: /^Вихідний код/ })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Нове завдання" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Завдання, головна сторінка" })).toHaveTextContent("Завдання");
-    expect(document.title).toBe("Завдання · Приватний список справ");
+    expect(document.title).toBe("Завдання · Приватний планувальник завдань");
   });
 
   it("names the browser tab after the open list", async () => {
-    const { user } = renderApp(plannedTodos);
-    expect(document.title).toBe("Tasks · Private to-do list");
+    const { user } = renderApp(plannedTasks);
+    expect(document.title).toBe("Tasks · Private task planner");
 
     await user.click(screen.getByRole("button", { name: /^Today/ }));
     expect(document.title).toBe("Today · Tasks");
@@ -143,7 +143,7 @@ describe("App shell", () => {
 
   it("uses a bottom tab bar on narrow screens", async () => {
     mockMediaQueries(["(max-width: 899px)"]);
-    const { user } = renderApp(plannedTodos);
+    const { user } = renderApp(plannedTasks);
 
     const tabs = screen.getByRole("navigation", { name: "Lists" });
     expect(within(tabs).getByRole("button", { name: "All (4)" })).toHaveAttribute("aria-current", "page");
@@ -164,9 +164,9 @@ describe("Layout", () => {
 
   it("filters by tag from the sidebar", async () => {
     const { user, store } = renderApp([
-      makeTodo({ id: "a", title: "Slides", tags: ["#work"] }),
-      makeTodo({ id: "b", title: "Report", tags: ["#work"] }),
-      makeTodo({ id: "c", title: "Groceries", tags: ["#home"] }),
+      makeTask({ id: "a", title: "Slides", tags: ["#work"] }),
+      makeTask({ id: "b", title: "Report", tags: ["#work"] }),
+      makeTask({ id: "c", title: "Groceries", tags: ["#home"] }),
     ]);
 
     const tags = screen.getByRole("navigation", { name: "Tags" });
@@ -176,7 +176,7 @@ describe("Layout", () => {
     await user.click(work);
     expect(store.getState().view.query).toBe("#work");
     expect(work).toHaveAttribute("aria-pressed", "true");
-    expect(itemTitles(section(/^To do/))).toEqual(["Slides", "Report"]);
+    expect(itemTitles(section(/^Active/))).toEqual(["Slides", "Report"]);
 
     await user.click(work);
     expect(store.getState().view.query).toBe("");
@@ -201,7 +201,7 @@ describe("Layout", () => {
   });
 
   it("switches to any of the ten languages", async () => {
-    const { user, store } = renderApp(plannedTodos);
+    const { user, store } = renderApp(plannedTasks);
 
     const panel = await openSettings(user);
     expect(
@@ -236,8 +236,8 @@ describe("Planning", () => {
   it("groups overdue tasks in Today and moves them to today in one step", async () => {
     const { user, store } = renderApp(
       [
-        makeTodo({ id: "late", title: "Send the invoice", dueDate: dayFromToday(-2) }),
-        makeTodo({ id: "now", title: "Daily standup", dueDate: todayKey() }),
+        makeTask({ id: "late", title: "Send the invoice", dueDate: dayFromToday(-2) }),
+        makeTask({ id: "now", title: "Daily standup", dueDate: todayKey() }),
       ],
       "today",
     );
@@ -247,19 +247,19 @@ describe("Planning", () => {
     await user.click(within(overdue).getByRole("button", { name: "Move to today" }));
 
     expect(screen.queryByRole("region", { name: /^Overdue/ })).not.toBeInTheDocument();
-    expect(selectTodos(store.getState()).map((todo) => todo.dueDate)).toEqual([todayKey(), todayKey()]);
+    expect(selectTasks(store.getState()).map((task) => task.dueDate)).toEqual([todayKey(), todayKey()]);
     expect(notification()).toHaveTextContent("Moved 1 task to today");
 
     await user.click(screen.getByRole("button", { name: "Undo" }));
-    expect(selectTodos(store.getState())[0]?.dueDate).toBe(dayFromToday(-2));
+    expect(selectTasks(store.getState())[0]?.dueDate).toBe(dayFromToday(-2));
   });
 
   it("groups Upcoming by day without repeating the date on every row", () => {
     renderApp(
       [
-        makeTodo({ id: "a", title: "Dentist appointment", dueDate: dayFromToday(1) }),
-        makeTodo({ id: "b", title: "Book flights", dueDate: dayFromToday(1) }),
-        makeTodo({ id: "c", title: "Plan the holidays", dueDate: dayFromToday(30) }),
+        makeTask({ id: "a", title: "Dentist appointment", dueDate: dayFromToday(1) }),
+        makeTask({ id: "b", title: "Book flights", dueDate: dayFromToday(1) }),
+        makeTask({ id: "c", title: "Plan the holidays", dueDate: dayFromToday(30) }),
       ],
       "upcoming",
     );
@@ -284,7 +284,7 @@ describe("Planning", () => {
   });
 
   it("repeats tasks set up in the details", async () => {
-    const { user, store } = renderApp([makeTodo({ id: "plants", title: "Water the plants", dueDate: todayKey() })]);
+    const { user, store } = renderApp([makeTask({ id: "plants", title: "Water the plants", dueDate: todayKey() })]);
 
     await user.click(screen.getByRole("button", { name: "Details for “Water the plants”" }));
     const repeat = await openPopover(user, screen.getByRole("button", { name: "Repeat" }));
@@ -294,9 +294,9 @@ describe("Planning", () => {
     expect(screen.getByText("Repeat: Every week")).toBeInTheDocument();
     await user.click(screen.getByRole("checkbox", { name: "Water the plants" }));
 
-    const todos = selectTodos(store.getState());
-    expect(todos).toHaveLength(2);
-    expect(todos.find((todo) => !todo.completed)).toMatchObject({ dueDate: dayFromToday(7), repeat: "weekly" });
+    const tasks = selectTasks(store.getState());
+    expect(tasks).toHaveLength(2);
+    expect(tasks.find((task) => !task.completed)).toMatchObject({ dueDate: dayFromToday(7), repeat: "weekly" });
   });
 
   it("explains the overview and hides empty counters while there are no tasks", () => {
@@ -322,7 +322,7 @@ describe("Composer", () => {
     await user.click(submit);
 
     expect(input).toHaveValue("");
-    expect(itemTitles(section(/^To do/))).toEqual(["Feed the cat", "Water the plants"]);
+    expect(itemTitles(section(/^Active/))).toEqual(["Feed the cat", "Water the plants"]);
   });
 
   it("sets a due date and importance for new tasks", async () => {
@@ -333,12 +333,12 @@ describe("Composer", () => {
     await user.click(screen.getByRole("button", { name: "Important", pressed: false }));
     await user.type(screen.getByRole("textbox", { name: "New task" }), "Renew passport{Enter}");
 
-    expect(selectTodos(store.getState())[0]).toMatchObject({
+    expect(selectTasks(store.getState())[0]).toMatchObject({
       title: "Renew passport",
       dueDate: dayFromToday(1),
       important: true,
     });
-    expect(within(section(/^To do/)).getByText("Tomorrow", { ignore: "[popover] *" })).toBeInTheDocument();
+    expect(within(section(/^Active/)).getByText("Tomorrow", { ignore: "[popover] *" })).toBeInTheDocument();
   });
 
   it("uses the defaults of the selected list", async () => {
@@ -346,7 +346,7 @@ describe("Composer", () => {
 
     expect(screen.getByRole("button", { name: "Due date: Today" })).toBeInTheDocument();
     await user.type(screen.getByRole("textbox", { name: "New task" }), "Stretch{Enter}");
-    expect(selectTodos(store.getState())[0]?.dueDate).toBe(todayKey());
+    expect(selectTasks(store.getState())[0]?.dueDate).toBe(todayKey());
 
     await user.click(screen.getByRole("button", { name: "Important (0)" }));
     expect(screen.getByRole("button", { name: "Important", pressed: true })).toBeInTheDocument();
@@ -365,7 +365,7 @@ describe("Tasks", () => {
 
     await user.click(screen.getByRole("checkbox", { name: "Buy milk" }));
 
-    expect(itemTitles(section(/^To do/))).toEqual(["Call grandma"]);
+    expect(itemTitles(section(/^Active/))).toEqual(["Call grandma"]);
     expect(itemTitles(section(/^Completed/))).toEqual(["Buy milk", "Write the quarterly report"]);
     expect(screen.getByRole("checkbox", { name: "Buy milk" })).toHaveFocus();
   });
@@ -408,15 +408,15 @@ describe("Tasks", () => {
 
     const picker = await openPopover(user, screen.getByRole("button", { name: "Set due date for “Buy milk”" }));
     await user.click(picker.getByRole("button", { name: /Next week/ }));
-    expect(selectTodos(store.getState())[0]?.dueDate).toBe(dayFromToday(7));
+    expect(selectTasks(store.getState())[0]?.dueDate).toBe(dayFromToday(7));
 
     const again = await openPopover(user, screen.getByRole("button", { name: "Set due date for “Buy milk”" }));
     await user.click(again.getByRole("button", { name: "Remove date" }));
-    expect(selectTodos(store.getState())[0]?.dueDate).toBeNull();
+    expect(selectTasks(store.getState())[0]?.dueDate).toBeNull();
   });
 
   it("removes tasks that leave the current list", async () => {
-    const { user } = renderApp(plannedTodos, "important");
+    const { user } = renderApp(plannedTasks, "important");
 
     await user.click(screen.getByRole("button", { name: "Mark “Send the invoice” as important" }));
     expect(screen.getByText("No important tasks")).toBeInTheDocument();
@@ -432,7 +432,7 @@ describe("Tasks", () => {
 
     await user.click(screen.getByRole("button", { name: "Undo" }));
 
-    expect(selectTodos(store.getState()).map((todo) => todo.id)).toEqual(["milk", "report", "call"]);
+    expect(selectTasks(store.getState()).map((task) => task.id)).toEqual(["milk", "report", "call"]);
     expect(screen.getByRole("checkbox", { name: "Buy milk" })).toHaveFocus();
   });
 
@@ -477,14 +477,14 @@ describe("Tasks", () => {
 
 describe("Sorting and search", () => {
   it("sorts tasks and disables manual reordering", async () => {
-    const { user } = renderApp(plannedTodos);
+    const { user } = renderApp(plannedTasks);
 
     expect(screen.getAllByRole("button", { name: /^Reorder/ })).toHaveLength(4);
 
     const menu = await openPopover(user, screen.getByRole("button", { name: "Sort tasks: Manual" }));
     await user.click(menu.getByRole("button", { name: "Title A-Z" }));
 
-    expect(itemTitles(section(/^To do/))).toEqual([
+    expect(itemTitles(section(/^Active/))).toEqual([
       "Daily standup",
       "Dentist appointment",
       "Read a book",
@@ -502,7 +502,7 @@ describe("Sorting and search", () => {
     expect(search).toHaveFocus();
 
     await user.type(search, "GRAND");
-    expect(itemTitles(section(/^To do/))).toEqual(["Call grandma"]);
+    expect(itemTitles(section(/^Active/))).toEqual(["Call grandma"]);
 
     await user.clear(search);
     await user.type(search, "zebra");
@@ -516,7 +516,7 @@ describe("Sorting and search", () => {
   });
 
   it("searches every list, not only the open one", async () => {
-    const { user } = renderApp(plannedTodos, "today");
+    const { user } = renderApp(plannedTasks, "today");
 
     await user.type(screen.getByRole("searchbox", { name: "Search tasks" }), "dentist");
 
@@ -559,7 +559,7 @@ describe("More actions menu", () => {
     const { user } = renderApp();
 
     await chooseMenuItem(user, "Complete all");
-    expect(screen.queryByRole("region", { name: /^To do/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: /^Active/ })).not.toBeInTheDocument();
     expect(screen.getByText("All done")).toBeInTheDocument();
 
     await chooseMenuItem(user, "Mark all as active");
@@ -572,7 +572,7 @@ describe("More actions menu", () => {
   });
 
   it("exports tasks as a JSON file", async () => {
-    const createObjectURL = vi.fn<(blob: Blob) => string>(() => "blob:todos");
+    const createObjectURL = vi.fn<(blob: Blob) => string>(() => "blob:tasks");
     Object.defineProperty(URL, "createObjectURL", { configurable: true, value: createObjectURL });
     Object.defineProperty(URL, "revokeObjectURL", { configurable: true, value: vi.fn<(url: string) => void>() });
     const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
@@ -584,18 +584,22 @@ describe("More actions menu", () => {
     expect(click.mock.contexts[0]).toHaveProperty("download", expect.stringMatching(/^tasks-\d{4}-\d{2}-\d{2}\.json$/));
 
     const blob = createObjectURL.mock.calls[0]?.[0];
-    expect(parseTodos(JSON.parse((await blob?.text()) ?? "null"))).toHaveLength(3);
+    expect(parseTasks(JSON.parse((await blob?.text()) ?? "null"))).toHaveLength(3);
   });
 
   it("imports tasks from a JSON file", async () => {
     const { user } = renderApp([]);
-    const file = new File([JSON.stringify([{ id: "1", text: "Legacy import", isCompleted: false }])], "todos.json", {
-      type: "application/json",
-    });
+    const file = new File(
+      [JSON.stringify({ tasks: [{ id: "1", title: "Imported", completed: false }] })],
+      "tasks.json",
+      {
+        type: "application/json",
+      },
+    );
 
     await user.upload(screen.getByLabelText("Import tasks from a JSON file"), file);
 
-    expect(await screen.findByRole("checkbox", { name: "Legacy import" })).toBeInTheDocument();
+    expect(await screen.findByRole("checkbox", { name: "Imported" })).toBeInTheDocument();
     expect(notification()).toHaveTextContent("Imported 1 task");
   });
 });
@@ -622,7 +626,7 @@ describe("Projects", () => {
 
     const [project] = store.getState().projects.ids;
     expect(store.getState().projects.entities[project ?? ""]).toMatchObject({ name: "💡 Ideas", color: "teal" });
-    expect(selectTodos(store.getState())[0]?.projectId).toBe(project);
+    expect(selectTasks(store.getState())[0]?.projectId).toBe(project);
     expect(
       within(screen.getByRole("navigation", { name: "Projects" })).getByRole("button", { name: "Ideas (1)" }),
     ).toHaveAttribute("aria-current", "page");
@@ -635,21 +639,21 @@ describe("Projects", () => {
     expect(screen.getByRole("button", { name: "Project: Work" })).toHaveAttribute("title", "Recognised from the title");
     await user.keyboard("{Enter}");
 
-    expect(selectTodos(store.getState())[0]).toMatchObject({ title: "Prepare slides", projectId: "work" });
+    expect(selectTasks(store.getState())[0]).toMatchObject({ title: "Prepare slides", projectId: "work" });
     await user.click(screen.getByRole("button", { name: "Open Work" }));
     expect(screen.getByRole("heading", { level: 1, name: "Work" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Open Work" })).not.toBeInTheDocument();
   });
 
   it("moves a task to another project from its details", async () => {
-    const { user, store } = renderApp([makeTodo({ id: "deck", title: "Slides" })], "all", [work]);
+    const { user, store } = renderApp([makeTask({ id: "deck", title: "Slides" })], "all", [work]);
 
     await user.click(screen.getByRole("button", { name: "Details for “Slides”" }));
     const details = within(screen.getByRole("dialog", { name: "Task details" }));
     const picker = await openPopover(user, details.getByRole("button", { name: "Project" }));
     await user.click(picker.getByRole("button", { name: "Work" }));
 
-    expect(selectTodos(store.getState())[0]?.projectId).toBe("work");
+    expect(selectTasks(store.getState())[0]?.projectId).toBe("work");
     expect(details.getByRole("button", { name: "Project: Work" })).toBeInTheDocument();
   });
 
@@ -684,7 +688,7 @@ describe("Projects", () => {
   });
 
   it("edits and deletes a project with undo", async () => {
-    const { user, store } = renderApp([makeTodo({ id: "deck", title: "Slides", projectId: "work" })], "project:work", [
+    const { user, store } = renderApp([makeTask({ id: "deck", title: "Slides", projectId: "work" })], "project:work", [
       work,
     ]);
 
@@ -702,17 +706,17 @@ describe("Projects", () => {
     await user.click(dialog.getByRole("button", { name: "Delete" }));
 
     expect(screen.getByRole("heading", { level: 1, name: "All tasks" })).toBeInTheDocument();
-    expect(selectTodos(store.getState())).toEqual([]);
+    expect(selectTasks(store.getState())).toEqual([]);
     expect(notification()).toHaveTextContent("Deleted “Job” and 1 task");
 
     await user.click(screen.getByRole("button", { name: "Undo" }));
     expect(store.getState().projects.entities.work?.name).toBe("Job");
-    expect(selectTodos(store.getState())[0]?.title).toBe("Slides");
+    expect(selectTasks(store.getState())[0]?.title).toBe("Slides");
   });
 
   it("browses lists and projects from a sheet on phones", async () => {
     mockMediaQueries(["(max-width: 899px)"]);
-    const { user } = renderApp([makeTodo({ id: "deck", title: "Slides", projectId: "work" })], "all", [work]);
+    const { user } = renderApp([makeTask({ id: "deck", title: "Slides", projectId: "work" })], "all", [work]);
 
     await user.click(screen.getByRole("button", { name: "Lists" }));
     const sheet = within(screen.getByRole("dialog", { name: "Lists" }));
@@ -754,7 +758,7 @@ describe("Swipe navigation", () => {
 
   it("ignores short, vertical and mouse swipes and leaves task rows their own swipes", () => {
     mockMediaQueries(["(max-width: 899px)"]);
-    const { store } = renderApp([makeTodo({ id: "milk", title: "Buy milk" })], "all");
+    const { store } = renderApp([makeTask({ id: "milk", title: "Buy milk" })], "all");
     const main = screen.getByRole("main");
 
     swipeOn(main, -40);
@@ -769,7 +773,7 @@ describe("Swipe navigation", () => {
 
     swipeOn(screen.getByRole("checkbox", { name: "Buy milk" }), 160);
     expect(pageTitle()).toBe("All tasks");
-    expect(selectTodos(store.getState())[0]?.completed).toBe(true);
+    expect(selectTasks(store.getState())[0]?.completed).toBe(true);
   });
 
   it("keeps wide screens still", () => {
@@ -782,7 +786,7 @@ describe("Swipe navigation", () => {
 
 const historyMarker = (): unknown => {
   const state: unknown = window.history.state;
-  return typeof state === "object" && state !== null && "todoOverlay" in state ? state.todoOverlay : undefined;
+  return typeof state === "object" && state !== null && "taskOverlay" in state ? state.taskOverlay : undefined;
 };
 
 describe("Back button", () => {

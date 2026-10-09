@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { selectOverlay } from "@/features/lists/model/selectors";
 import { overlayClosed } from "@/features/lists/model/viewSlice";
-import { selectTodos } from "@/features/todos/model/selectors";
+import { selectTasks } from "@/features/tasks/model/selectors";
 import Dialog from "@/shared/ui/Dialog/Dialog";
 import Icon from "@/shared/ui/Icon/Icon";
 import IconButton from "@/shared/ui/IconButton/IconButton";
@@ -41,7 +41,7 @@ const ProjectForm = ({ project, onClose }: ProjectFormProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const projectCount = useAppSelector((state) => selectProjects(state).length);
   const taskCount = useAppSelector((state) =>
-    project ? selectTodos(state).filter((todo) => todo.projectId === project.id).length : 0,
+    project ? selectTasks(state).filter((task) => task.projectId === project.id).length : 0,
   );
   const [emoji, setEmoji] = useState(() => splitProjectName(project?.name ?? "").emoji);
   const [label, setLabel] = useState(() => splitProjectName(project?.name ?? "").label);

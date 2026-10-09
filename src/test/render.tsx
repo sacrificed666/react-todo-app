@@ -8,9 +8,9 @@ import App from "@/app/App";
 import { setupStore, type AppStore, type RootState } from "@/app/store";
 import type { ViewId } from "@/features/lists/model/lists";
 import type { Project } from "@/features/projects/model/project";
-import type { Todo } from "@/features/todos/model/todo";
+import type { Task } from "@/features/tasks/model/task";
 
-import { makeState, sampleTodos } from "./factories";
+import { makeState, sampleTasks } from "./factories";
 
 interface RenderWithStoreOptions {
   preloadedState?: Partial<RootState>;
@@ -30,10 +30,10 @@ export const renderWithStore = (
 
 // Renders the whole app with tasks and a list
 export const renderApp = (
-  todos: readonly Todo[] = sampleTodos,
+  tasks: readonly Task[] = sampleTasks,
   list: ViewId = "all",
   projects: readonly Project[] = [],
-) => renderWithStore(<App />, { preloadedState: makeState(todos, list, "", projects) });
+) => renderWithStore(<App />, { preloadedState: makeState(tasks, list, "", projects) });
 
 // Clicks a trigger and returns its popover
 export const openPopover = async (user: User, trigger: HTMLElement) => {

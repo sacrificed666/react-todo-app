@@ -55,6 +55,26 @@ After `npm run build`, `node scripts/build-report.mjs` prints the bundle sizes a
 > [!TIP]
 > Install the browser for the end-to-end tests once with `npx playwright install chromium`.
 
+## 🛠️ make
+
+Every common task has a short `make` command with a coloured summary of what it is doing:
+
+| Command                                              | What it does                                                                                     |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `make` or `make help`                                | 📖 Every command, grouped and coloured                                                           |
+| `make setup`                                         | 🧰 Installs the packages, creates `.env` from `.env.example` and installs Chromium for the tests |
+| `make env`                                           | 🔐 Creates the env file from `.env.example` if it is missing, never overwrites one               |
+| `make doctor`                                        | 🩺 Checks Node.js, npm, Docker, the packages and the env file                                    |
+| `make dev`                                           | 🚀 Starts the dev server                                                                         |
+| `make check` / `make ci`                             | ✅ The checks before pushing / everything CI runs, including the build and the end-to-end tests  |
+| `make fix`                                           | 🪄 Applies the lint fixes and formats every file                                                 |
+| `make up ENV=…`                                      | 🐳 Starts `development` (hot reload, the default), `staging` or `production` in Docker           |
+| `make logs` · `make ps` · `make shell` · `make down` | 📜 Follows, lists, enters or stops the containers of `ENV`                                       |
+| `make clean` · `make reset`                          | 🧹 Removes build output and reports / also reinstalls the packages                               |
+
+> [!NOTE]
+> The Makefile needs GNU Make and Bash, which macOS and Linux ship with; on Windows use WSL or the npm scripts above. Colours switch off in pipes and with `NO_COLOR=1`.
+
 ## 🗂️ Project layout
 
 ```text
@@ -77,7 +97,7 @@ tasks/
 │   ├── app/                         Entry point, App shell, store, persistence, launch intents, PWA, back button, error screen
 │   ├── widgets/                     Sidebar, Toolbar (phones), Workspace, Inspector, Backdrop, Footer
 │   ├── features/
-│   │   ├── todos/                   Task model, repeats, quick add, subtasks; composer, list, rows, context menu, drag and drop, details
+│   │   ├── tasks/                   Task model, repeats, quick add, subtasks; composer, list, rows, context menu, drag and drop, details
 │   │   ├── projects/                Project model, colours and emoji icons; sidebar list, picker, dialog
 │   │   ├── lists/                   Smart lists and project views, date groups, sorting, view state; navigation, tags, tab bar, Lists sheet, list header
 │   │   ├── data/                    The stored document, import and export, undo history
@@ -96,6 +116,7 @@ tasks/
 │   ├── test/                        Test setup, polyfills, factories and render helpers
 │   └── types/                       Global type declarations
 ├── CHANGELOG.md                     Every release, newest first
+├── Makefile                         make help, setup, dev, checks and Docker commands
 ├── compose.yaml                     The Docker Compose service shared by every environment
 ├── index.html
 ├── vite.config.ts                   Vite, React Compiler, PWA, CSP and Vitest configuration
@@ -105,7 +126,7 @@ tasks/
 └── .oxfmtrc.json                    Formatting rules
 ```
 
-Every feature has a `model/` folder for state and logic and, when it renders something, a `ui/` folder with one folder per component, for example `features/todos/ui/TodoItem/TodoItem.tsx` and `TodoItem.module.scss`. Tests sit next to the code they cover as `*.test.ts(x)`. The layers and their rules are explained in [Architecture](./architecture.md#-layers).
+Every feature has a `model/` folder for state and logic and, when it renders something, a `ui/` folder with one folder per component, for example `features/tasks/ui/TaskItem/TaskItem.tsx` and `TaskItem.module.scss`. Tests sit next to the code they cover as `*.test.ts(x)`. The layers and their rules are explained in [Architecture](./architecture.md#-layers).
 
 ## 💻 Editor setup
 

@@ -1,7 +1,7 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { makeProject, makeTodo } from "@/test/factories";
+import { makeProject, makeTask } from "@/test/factories";
 import { renderApp } from "@/test/render";
 
 const palette = () => screen.getByRole("dialog", { name: "Command palette" });
@@ -67,7 +67,7 @@ describe("CommandPalette", () => {
   });
 
   it("finds tasks and opens their details", async () => {
-    const { user } = renderApp([makeTodo({ id: "trip", title: "Plan the trip", notes: "Book hotel" })]);
+    const { user } = renderApp([makeTask({ id: "trip", title: "Plan the trip", notes: "Book hotel" })]);
 
     await user.keyboard("{Meta>}k{/Meta}");
     await user.type(combobox(), "hotel");

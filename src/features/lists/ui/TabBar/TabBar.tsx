@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import ProjectIcon from "@/features/projects/ui/ProjectIcon/ProjectIcon";
-import { selectListCounts } from "@/features/todos/model/selectors";
+import { selectListCounts } from "@/features/tasks/model/selectors";
 import { useRefraction } from "@/shared/hooks/useRefraction";
 import { useToday } from "@/shared/hooks/useToday";
 import { tap } from "@/shared/lib/haptics";

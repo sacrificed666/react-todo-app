@@ -1,7 +1,9 @@
 @use "@/shared/styles/mixins" as *;
 
+// Items inside follow the menu's corners, minus its padding
 .menu {
   @include glass(var(--radius-lg), var(--glass-tint-overlay), var(--glass-blur-thick));
+  --menu-item-radius: var(--radius-in-menu);
   position: fixed;
   inset: auto;
   inset-block-start: var(--menu-y, 0);

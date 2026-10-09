@@ -35,8 +35,8 @@ Formatting and linting are automated, so reviews can focus on behaviour.
 Names, small functions and types carry the intent, and every function, component, hook and effect, and every block that is not obvious, gets one short line above it that says what it does:
 
 ```ts
-// Moves a value saved under an earlier key unless the new key is already taken
-export const moveKey = (storage: Storage, from: string, to: string) => {
+// Drops later entries that describe an item already in the list
+const unique = <Item>(items: readonly Item[], isSame: (a: Item, b: Item) => boolean) =>
 ```
 
 > [!IMPORTANT]
@@ -65,7 +65,7 @@ Styles, configuration, Dockerfiles and workflows follow the same convention: mix
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 🧩 Components       | One folder per component: `ComponentName/ComponentName.tsx` and `ComponentName.module.scss`, arrow functions, default export                        |
 | 🪝 Hooks            | `useSomething.ts` next to the feature that owns it, or in `src/shared/hooks` when it is generic                                                     |
-| 🗃️ Redux            | Past-tense action names (`todoAdded`), pure reducers, timestamps and ids in `prepare` callbacks, side effects in thunks                             |
+| 🗃️ Redux            | Past-tense action names (`taskAdded`), pure reducers, timestamps and ids in `prepare` callbacks, side effects in thunks                             |
 | 🌍 Texts            | Never hard-code UI text. Add a key to all ten catalogs and use `t()`; notifications store `{ key, params }`, see [Localization](./i18n.md)          |
 | 🎨 Styles           | Tokens from `_tokens.scss`, the `glass()`, `hover`, `pressable` and `visually-hidden` mixins, logical properties (`inline-size`, `margin-block`)    |
 | 📥 Imports          | Use the `@/` alias for anything outside the current feature, relative paths inside it                                                               |
@@ -131,7 +131,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```text
 feat(palette): add sort commands
-fix(todos): keep undo positions after import
+fix(tasks): keep undo positions after import
 style: refine glass rim
 ci: verify npm registry signatures
 docs: describe the update flow

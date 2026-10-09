@@ -6,11 +6,14 @@
   inline-size: min(34rem, calc(100vw - 24px));
 }
 
+// Sections sit 16px inside the sheet, their contents 12px inside the sections
 .content {
+  --section-radius: calc(var(--radius-sheet) - 16px);
+  --section-inner-radius: calc(var(--section-radius) - 12px);
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 14px 20px 22px;
+  padding: 14px 16px 16px;
 }
 
 .head {
@@ -19,7 +22,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 18px 20px 6px;
+  padding: 18px 22px 6px 28px;
 }
 
 .title {
@@ -32,9 +35,10 @@
 .section {
   display: flex;
   flex-direction: column;
+  --segmented-radius: var(--section-inner-radius);
   gap: 10px;
-  padding: 14px;
-  border-radius: var(--radius-lg);
+  padding: 12px;
+  border-radius: var(--section-radius);
   background-color: var(--color-fill);
 
   & + & {
@@ -112,7 +116,7 @@
   display: block;
   block-size: 64px;
   overflow: hidden;
-  border-radius: var(--radius-md);
+  border-radius: var(--section-inner-radius);
   background-color: var(--color-backdrop);
   box-shadow: inset 0 0 0 1px var(--color-separator);
   transition:
@@ -168,10 +172,11 @@
   }
 }
 
+// 9px inside the preview, so a quarter of its radius
 .previewSidebar,
 .previewCard {
   position: absolute;
-  border-radius: 7px;
+  border-radius: 4px;
   background-color: rgb(255 255 255 / 22%);
   box-shadow: 0 2px 6px -2px rgb(0 0 0 / 25%);
   -webkit-backdrop-filter: blur(6px);
@@ -229,7 +234,7 @@
   gap: 10px;
   min-block-size: 42px;
   padding-inline: 10px 8px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--section-inner-radius);
   font-size: 0.875rem;
   cursor: pointer;
   transition: background-color var(--duration-fast) var(--ease-out);

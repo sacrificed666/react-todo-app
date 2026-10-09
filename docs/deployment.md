@@ -108,6 +108,15 @@ docker compose -f compose.yaml -f docker/staging.yaml up --build -d
 docker compose -f compose.yaml -f docker/production.yaml up --build -d
 ```
 
+The same with `make`:
+
+```bash
+make up                      # development with hot reload
+make up ENV=staging          # staging in the background
+make logs ENV=staging        # follow its logs
+make down ENV=staging        # stop it
+```
+
 - 🌐 **The same addresses as on GitHub Pages.** The app lives under `/react-todo-app/`, the root redirects there, and unknown paths fall back to `index.html`.
 - 🧭 **`APP_ENV` decides indexing.** nginx sends `X-Robots-Tag: noindex, nofollow` for every value except `production`.
 - 🗃️ **Caching.** Hashed files in `assets/` are cached for a year as `immutable`; `index.html`, the service worker and the manifest are revalidated on every visit, so an update reaches everyone through the usual update prompt.

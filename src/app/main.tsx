@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 
 import { loadMessages } from "@/features/i18n/model/catalog";
 import { applySettings } from "@/features/settings/model/settings";
-import { COMPOSER_INPUT_ID } from "@/features/todos/ui/ids";
+import { COMPOSER_INPUT_ID } from "@/features/tasks/ui/ids";
 
 import App from "./App";
 import ErrorBoundary from "./ErrorBoundary";

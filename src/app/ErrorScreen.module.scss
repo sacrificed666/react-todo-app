@@ -92,7 +92,7 @@
   pre {
     margin-block-start: 8px;
     padding: 12px;
-    border-radius: var(--radius-sm);
+    border-radius: calc(var(--radius-xl) - 24px);
     background-color: var(--color-fill);
     overflow: auto;
     white-space: pre-wrap;

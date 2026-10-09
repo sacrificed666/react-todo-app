@@ -54,8 +54,4 @@ describe("readSettings", () => {
       locale: "nl",
     });
   });
-
-  it("keeps the reduced level saved under its old name", () => {
-    expect(readSettings({ effects: "lite" }, []).effects).toBe("reduced");
-  });
 });

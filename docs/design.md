@@ -5,7 +5,7 @@ Controls are made of a translucent **glass** material that blurs, tints and bend
 ## 💡 Principles
 
 - 🫧 **Controls float, content flows.** There is no header or footer bar: the sidebar, the composer, the phone toolbar and every overlay are glass islands floating over the backdrop. Task rows are content: they sit together on one grouped glass panel instead of being glass themselves, which is both calmer to read and much cheaper to render.
-- ⭕ **Concentric shapes.** Capsules for controls, rounded rectangles for rows, inner radii derived from outer radii minus padding.
+- ⭕ **Concentric shapes.** Capsules for controls, rounded rectangles for rows, and every inner radius is the outer radius minus the padding between them: items 6 px inside a 28 px popover are rounded 22 px, sections 16 px inside a 40 px sheet 24 px and their controls 12 px. A round button that hugs an edge sets the radius of its container instead, which is why the composer is a capsule. The `--radius-in-*` tokens hold these differences, so a change to an outer radius carries inwards.
 - 💡 **Light, not borders.** Edges are drawn by a specular rim and inner highlights rather than solid strokes.
 - 🌊 **Motion with mass.** Transitions use spring curves; nothing snaps unless the user asked for reduced motion.
 - 🎨 **Personal, not noisy.** Ten accents, six backgrounds and two glass styles let everyone make the app their own without ever losing legibility.
@@ -212,20 +212,20 @@ Things worth knowing:
 
 Tokens live in `src/shared/styles/_tokens.scss` as CSS custom properties; accent and background palettes come from `_palettes.scss`.
 
-| Group         | Tokens                                                                                                                                                                                       |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🔤 Typography | `--font-sans`, `--font-display`: Montserrat Variable with a system fallback                                                                                                                  |
-| 🖋️ Text       | `--color-text`, `--color-text-secondary`, `--color-text-tertiary`                                                                                                                            |
-| 🎨 Accent     | `--color-accent` and derived `--color-accent-bright`, `--color-accent-soft`, `--color-accent-glow`, `--color-on-accent`                                                                      |
-| 🚦 Semantic   | `--color-danger`, `--color-warning`, `--color-success`, `--color-star` and their `-soft` / `-glow` variants                                                                                  |
-| 🏷️ Lists      | `--tone-all`, `--tone-today`, `--tone-upcoming`, `--tone-important`, `--tone-completed`                                                                                                      |
-| 📁 Projects   | `--project-blue` … `--project-gray`, and `--project-color` on elements with `data-project-color`                                                                                             |
-| 🧱 Surfaces   | `--color-surface`, `--color-fill`, `--color-fill-strong`, `--color-shade`, `--color-separator`, `--color-focus`                                                                              |
-| 🫧 Glass      | `--glass-tint*` (incl. `--glass-tint-content`), `--glass-blur*`, `--glass-saturate`, `--glass-brightness`, `--glass-rim`, `--glass-sheen`, `--glass-edge`, `--glass-shadow*`, `--bar-shadow` |
-| 🌌 Backdrop   | `--backdrop-base`, `--accent-orb-1` … `--accent-orb-5`, `--orb-1` … `--orb-5`, `--orb-opacity`, `--orb-blend`, `--waves-filter`, `--waves-opacity`, `--grain-opacity`, `--star-color`        |
-| ⭕ Shape      | `--radius-sm` 12 px, `--radius-md` 16 px, `--radius-lg` 22 px, `--radius-xl` 28 px, `--radius-full`                                                                                          |
-| 🌊 Motion     | `--ease-out`, `--ease-in-out`, `--ease-spring`, `--ease-bounce`, `--duration-fast`, `--duration-base`, `--duration-slow`                                                                     |
-| 📐 Layout     | `--layout-width` (76 rem, 92 rem from 1240 px), `--sidebar-width` (16.75 rem), `--inspector-width` (20 rem), `--tabbar-offset` (0, or 76 px below 900 px), `--titlebar-height`               |
+| Group         | Tokens                                                                                                                                                                                                                      |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔤 Typography | `--font-sans`, `--font-display`: Montserrat Variable with a system fallback                                                                                                                                                 |
+| 🖋️ Text       | `--color-text`, `--color-text-secondary`, `--color-text-tertiary`                                                                                                                                                           |
+| 🎨 Accent     | `--color-accent` and derived `--color-accent-bright`, `--color-accent-soft`, `--color-accent-glow`, `--color-on-accent`                                                                                                     |
+| 🚦 Semantic   | `--color-danger`, `--color-warning`, `--color-success`, `--color-star` and their `-soft` / `-glow` variants                                                                                                                 |
+| 🏷️ Lists      | `--tone-all`, `--tone-today`, `--tone-upcoming`, `--tone-important`, `--tone-completed`                                                                                                                                     |
+| 📁 Projects   | `--project-blue` … `--project-gray`, and `--project-color` on elements with `data-project-color`                                                                                                                            |
+| 🧱 Surfaces   | `--color-surface`, `--color-fill`, `--color-fill-strong`, `--color-shade`, `--color-separator`, `--color-focus`                                                                                                             |
+| 🫧 Glass      | `--glass-tint*` (incl. `--glass-tint-content`), `--glass-blur*`, `--glass-saturate`, `--glass-brightness`, `--glass-rim`, `--glass-sheen`, `--glass-edge`, `--glass-shadow*`, `--bar-shadow`                                |
+| 🌌 Backdrop   | `--backdrop-base`, `--accent-orb-1` … `--accent-orb-5`, `--orb-1` … `--orb-5`, `--orb-opacity`, `--orb-blend`, `--waves-filter`, `--waves-opacity`, `--grain-opacity`, `--star-color`                                       |
+| ⭕ Shape      | `--radius-sm` 12 px, `--radius-md` 16 px, `--radius-lg` 22 px, `--radius-xl` 28 px, `--radius-sheet` 40 px, `--radius-full`; inner radii `--radius-in-popover`, `--radius-in-menu`, `--radius-in-card`, `--radius-in-sheet` |
+| 🌊 Motion     | `--ease-out`, `--ease-in-out`, `--ease-spring`, `--ease-bounce`, `--duration-fast`, `--duration-base`, `--duration-slow`                                                                                                    |
+| 📐 Layout     | `--layout-width` (76 rem, 92 rem from 1240 px), `--sidebar-width` (16.75 rem), `--inspector-width` (20 rem), `--tabbar-offset` (0, or 76 px below 900 px), `--titlebar-height`                                              |
 
 ## 🌊 Motion
 

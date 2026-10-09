@@ -50,12 +50,12 @@ describe("ErrorBoundary", () => {
 
   it("downloads a backup of the stored tasks", async () => {
     const downloadJson = vi.spyOn(download, "downloadJson").mockImplementation(() => {});
-    localStorage.setItem(STORAGE_KEYS.data, JSON.stringify({ todos: [], projects: [] }));
+    localStorage.setItem(STORAGE_KEYS.data, JSON.stringify({ tasks: [], projects: [] }));
     const user = renderBroken();
 
     await user.click(screen.getByRole("button", { name: "Download a backup" }));
 
-    expect(downloadJson).toHaveBeenCalledWith(expect.stringMatching(/^tasks-/), { todos: [], projects: [] });
+    expect(downloadJson).toHaveBeenCalledWith(expect.stringMatching(/^tasks-/), { tasks: [], projects: [] });
   });
 
   it("resets the view settings and reloads", async () => {

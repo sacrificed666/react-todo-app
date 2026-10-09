@@ -12,6 +12,7 @@ docs
 docker
 !docker/nginx.conf
 compose.yaml
+Makefile
 .env
 .env.*
 !.env.example

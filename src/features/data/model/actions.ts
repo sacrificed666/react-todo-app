@@ -1,10 +1,10 @@
 import { createAction } from "@reduxjs/toolkit";
 
 import type { Project } from "@/features/projects/model/project";
-import type { Todo } from "@/features/todos/model/todo";
+import type { Task } from "@/features/tasks/model/task";
 
 export interface DataSnapshot {
-  todos: readonly Todo[];
+  tasks: readonly Task[];
   projects: readonly Project[];
 }
 

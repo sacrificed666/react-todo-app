@@ -24,6 +24,7 @@ The first release.
 - 🛡️ A strict Content Security Policy with Trusted Types, validated imports and flags served by the app itself.
 - 🧪 Unit tests, end-to-end tests on the production build, axe checks and a Lighthouse budget in CI, with deployment to GitHub Pages.
 - 🐳 Docker images for development, staging and production: a multi-stage Dockerfile, a Compose overlay per environment and an unprivileged nginx with security headers and caching.
+- 🛠️ A Makefile with a coloured, grouped `make help`: setup that creates `.env` from `.env.example`, the dev server, checks, end-to-end tests and every Docker environment.
 
 [Unreleased]: https://github.com/sacrificed666/tasks/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/sacrificed666/tasks/releases/tag/v1.0.0

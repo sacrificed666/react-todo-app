@@ -21,7 +21,7 @@
   gap: 12px;
   block-size: 44px;
   padding-inline: 12px;
-  border-radius: calc(var(--radius-xl) - 6px);
+  border-radius: var(--radius-in-popover);
   font-size: 0.9375rem;
   text-align: start;
   transition: background-color var(--duration-fast) var(--ease-out);

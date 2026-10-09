@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 
-interface SeedTodo {
+interface SeedTask {
   title: string;
   due?: number;
   important?: boolean;
@@ -21,7 +21,7 @@ export const SAMPLE_PROJECTS: SeedProject[] = [
   { id: "home", name: "🏠 Home", color: "green" },
 ];
 
-export const SAMPLE_TODOS: SeedTodo[] = [
+export const SAMPLE_TASKS: SeedTask[] = [
   { title: "Send the invoice", due: -2, important: true, project: "work" },
   {
     title: "Daily standup",
@@ -38,14 +38,14 @@ export const SAMPLE_TODOS: SeedTodo[] = [
 ];
 
 // Stores sample tasks and projects before the first load of a test
-export const seed = async (page: Page, todos: SeedTodo[] = SAMPLE_TODOS, projects: SeedProject[] = SAMPLE_PROJECTS) => {
+export const seed = async (page: Page, tasks: SeedTask[] = SAMPLE_TASKS, projects: SeedProject[] = SAMPLE_PROJECTS) => {
   await page.addInitScript(
-    ({ todos: entries, projects: groups }) => {
+    ({ tasks: entries, projects: groups }) => {
       if (sessionStorage.getItem("e2e-seeded")) return;
       sessionStorage.setItem("e2e-seeded", "1");
       const now = Date.now();
       const data = {
-        todos: entries.map((entry, index) => ({
+        tasks: entries.map((entry, index) => ({
           id: `seed-${index}`,
           title: entry.title,
           completed: entry.completed ?? false,
@@ -67,9 +67,9 @@ export const seed = async (page: Page, todos: SeedTodo[] = SAMPLE_TODOS, project
         })),
         projects: groups.map((group) => ({ ...group, createdAt: now, updatedAt: now })),
       };
-      localStorage.setItem("tasks/todos", JSON.stringify(data));
+      localStorage.setItem("tasks/data", JSON.stringify(data));
     },
-    { todos, projects },
+    { tasks, projects },
   );
 };
 

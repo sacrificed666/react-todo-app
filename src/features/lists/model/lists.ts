@@ -1,4 +1,4 @@
-import type { Todo } from "@/features/todos/model/todo";
+import type { Task } from "@/features/tasks/model/task";
 import { toDateKey } from "@/shared/lib/date";
 import { isEntityId } from "@/shared/lib/guards";
 
@@ -31,29 +31,29 @@ export const isViewId = (value: unknown): value is ViewId =>
   (typeof value === "string" && value.startsWith(PROJECT_PREFIX) && isEntityId(value.slice(PROJECT_PREFIX.length)));
 
 // Whether a task was completed on a day
-const completedOn = (todo: Todo, day: string) =>
-  todo.completedAt !== null && toDateKey(new Date(todo.completedAt)) === day;
+const completedOn = (task: Task, day: string) =>
+  task.completedAt !== null && toDateKey(new Date(task.completedAt)) === day;
 
 // Whether a task belongs to a smart list
-export const matchesList = (todo: Todo, list: ListId, today: string) => {
+export const matchesList = (task: Task, list: ListId, today: string) => {
   switch (list) {
     case "all":
       return true;
     case "today":
-      return todo.dueDate !== null && todo.dueDate <= today && (!todo.completed || completedOn(todo, today));
+      return task.dueDate !== null && task.dueDate <= today && (!task.completed || completedOn(task, today));
     case "upcoming":
-      return todo.dueDate !== null && todo.dueDate > today;
+      return task.dueDate !== null && task.dueDate > today;
     case "important":
-      return todo.important;
+      return task.important;
     case "completed":
-      return todo.completed;
+      return task.completed;
   }
 };
 
 // Whether a task belongs to a list or a project
-export const matchesView = (todo: Todo, view: ViewId, today: string) =>
-  isProjectView(view) ? todo.projectId === projectIdOf(view) : matchesList(todo, view, today);
+export const matchesView = (task: Task, view: ViewId, today: string) =>
+  isProjectView(view) ? task.projectId === projectIdOf(view) : matchesList(task, view, today);
 
 // An open task whose date has passed
-export const isOverdue = (todo: Todo, today: string) =>
-  !todo.completed && todo.dueDate !== null && todo.dueDate < today;
+export const isOverdue = (task: Task, today: string) =>
+  !task.completed && task.dueDate !== null && task.dueDate < today;

@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useRef } from "react";
 
 import { isRecord } from "@/shared/lib/guards";
 
-const MARKER = "todoOverlay";
+const MARKER = "taskOverlay";
 
 // The overlay marker of the current history entry
 const currentMarker = () => {

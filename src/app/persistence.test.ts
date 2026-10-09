@@ -11,24 +11,24 @@ import {
   glassChanged,
   localeChanged,
 } from "@/features/settings/model/settingsSlice";
-import { selectTodos } from "@/features/todos/model/selectors";
-import { parseTodos } from "@/features/todos/model/todo";
-import { todoAdded } from "@/features/todos/model/todosSlice";
+import { selectTasks } from "@/features/tasks/model/selectors";
+import { parseTasks } from "@/features/tasks/model/task";
+import { taskAdded } from "@/features/tasks/model/tasksSlice";
 import { readJson } from "@/shared/lib/storage";
-import { makeProject, makeTodo, sampleTodos } from "@/test/factories";
+import { makeProject, makeTask, sampleTasks } from "@/test/factories";
 
 import { loadPersistedState, startPersistence, STORAGE_KEYS } from "./persistence";
 import { setupStore } from "./store";
 
-const storedTitles = () => (parseTodos(readJson(localStorage, STORAGE_KEYS.data)) ?? []).map((todo) => todo.title);
+const storedTitles = () => (parseTasks(readJson(localStorage, STORAGE_KEYS.data)) ?? []).map((task) => task.title);
 
 const work = makeProject({ id: "work", name: "Work" });
 
-const serializeTodos = (todos: Parameters<typeof serializeData>[0]["todos"]) => serializeData({ todos, projects: [] });
+const serializeTasks = (tasks: Parameters<typeof serializeData>[0]["tasks"]) => serializeData({ tasks, projects: [] });
 
 describe("loadPersistedState", () => {
-  it("reads saved todos, projects and preferences", () => {
-    localStorage.setItem(STORAGE_KEYS.data, serializeData({ todos: sampleTodos, projects: [work] }));
+  it("reads saved tasks, projects and preferences", () => {
+    localStorage.setItem(STORAGE_KEYS.data, serializeData({ tasks: sampleTasks, projects: [work] }));
     localStorage.setItem(
       STORAGE_KEYS.preferences,
       JSON.stringify({
@@ -44,7 +44,7 @@ describe("loadPersistedState", () => {
 
     const store = setupStore(loadPersistedState());
 
-    expect(selectTodos(store.getState())).toEqual(sampleTodos);
+    expect(selectTasks(store.getState())).toEqual(sampleTasks);
     expect(selectProjects(store.getState())).toEqual([work]);
     expect(store.getState().view).toEqual({
       list: "project:work",
@@ -65,7 +65,7 @@ describe("loadPersistedState", () => {
   });
 
   it("opens all tasks when the saved project no longer exists", () => {
-    localStorage.setItem(STORAGE_KEYS.data, serializeTodos(sampleTodos));
+    localStorage.setItem(STORAGE_KEYS.data, serializeTasks(sampleTasks));
     localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ list: "project:gone" }));
     expect(setupStore(loadPersistedState()).getState().view.list).toBe("all");
   });
@@ -81,43 +81,13 @@ describe("loadPersistedState", () => {
     expect(loadPersistedState(localStorage, ["uk-UA"])?.settings?.locale).toBe("en");
   });
 
-  it("maps the old filter preference to a list", () => {
-    localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ filter: "completed" }));
-    expect(setupStore(loadPersistedState()).getState().view.list).toBe("completed");
-  });
-
-  it("moves data saved under the keys of the app before its rename", () => {
-    localStorage.setItem(
-      STORAGE_KEYS.legacyData,
-      JSON.stringify({ todos: [makeTodo({ id: "kept", title: "Kept" })], projects: [] }),
-    );
-    localStorage.setItem(STORAGE_KEYS.legacyPreferences, JSON.stringify({ accent: "forest" }));
-
-    const store = setupStore(loadPersistedState());
-
-    expect(selectTodos(store.getState()).map((todo) => todo.title)).toEqual(["Kept"]);
-    expect(store.getState().settings.accent).toBe("forest");
-    expect(localStorage.getItem(STORAGE_KEYS.legacyData)).toBeNull();
-    expect(localStorage.getItem(STORAGE_KEYS.legacyPreferences)).toBeNull();
-  });
-
-  it("migrates todos saved in the legacy format", () => {
-    localStorage.setItem(STORAGE_KEYS.legacyTodos, JSON.stringify([{ id: "1", text: "Old task", isCompleted: false }]));
-
-    const store = setupStore(loadPersistedState());
-
-    expect(selectTodos(store.getState()).map((todo) => todo.title)).toEqual(["Old task"]);
-    expect(localStorage.getItem(STORAGE_KEYS.legacyTodos)).toBeNull();
-    expect(storedTitles()).toEqual(["Old task"]);
-  });
-
   it("falls back to defaults for corrupted data", () => {
     localStorage.setItem(STORAGE_KEYS.data, "{broken");
     localStorage.setItem(STORAGE_KEYS.preferences, JSON.stringify({ list: "everything", sort: 1, accent: "magenta" }));
 
     const state = setupStore(loadPersistedState()).getState();
 
-    expect(selectTodos(state)).toEqual([]);
+    expect(selectTasks(state)).toEqual([]);
     expect(state.view).toMatchObject({ list: "all", sort: "manual", showCompleted: true });
     expect(state.settings).toEqual({
       appearance: "system",
@@ -136,11 +106,11 @@ describe("loadPersistedState", () => {
 });
 
 describe("startPersistence", () => {
-  it("saves todos and preferences", () => {
+  it("saves tasks and preferences", () => {
     const store = setupStore();
     const stop = startPersistence(store);
 
-    store.dispatch(todoAdded({ title: "Persist me" }));
+    store.dispatch(taskAdded({ title: "Persist me" }));
     store.dispatch(listChanged("important"));
     store.dispatch(sortChanged("newest"));
     store.dispatch(appearanceChanged("dark"));
@@ -165,27 +135,27 @@ describe("startPersistence", () => {
     });
 
     stop();
-    store.dispatch(todoAdded({ title: "Not saved" }));
+    store.dispatch(taskAdded({ title: "Not saved" }));
     expect(storedTitles()).toEqual(["Persist me"]);
   });
 
   it("syncs changes made in another tab", () => {
     const store = setupStore();
     const stop = startPersistence(store);
-    const external = serializeTodos([makeTodo({ id: "remote", title: "From another tab" })]);
+    const external = serializeTasks([makeTask({ id: "remote", title: "From another tab" })]);
 
     window.dispatchEvent(
       new StorageEvent("storage", { key: STORAGE_KEYS.data, newValue: external, storageArea: localStorage }),
     );
-    expect(selectTodos(store.getState()).map((todo) => todo.id)).toEqual(["remote"]);
+    expect(selectTasks(store.getState()).map((task) => task.id)).toEqual(["remote"]);
 
     window.dispatchEvent(new StorageEvent("storage", { key: null, newValue: null, storageArea: localStorage }));
-    expect(selectTodos(store.getState())).toEqual([]);
+    expect(selectTasks(store.getState())).toEqual([]);
 
     window.dispatchEvent(
       new StorageEvent("storage", { key: STORAGE_KEYS.preferences, newValue: "{}", storageArea: localStorage }),
     );
-    expect(selectTodos(store.getState())).toEqual([]);
+    expect(selectTasks(store.getState())).toEqual([]);
 
     stop();
   });

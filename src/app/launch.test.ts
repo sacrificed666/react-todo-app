@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { selectTodos } from "@/features/todos/model/selectors";
+import { selectTasks } from "@/features/tasks/model/selectors";
 
 import { applyLaunchIntent, readLaunchIntent } from "./launch";
 import { setupStore } from "./store";
@@ -43,7 +43,7 @@ describe("applyLaunchIntent", () => {
     const store = setupStore();
     applyLaunchIntent(store, { list: null, compose: false, draft: { title: "Read later", notes: "https://a.b" } });
 
-    expect(selectTodos(store.getState())).toMatchObject([{ title: "Read later", notes: "https://a.b" }]);
+    expect(selectTasks(store.getState())).toMatchObject([{ title: "Read later", notes: "https://a.b" }]);
     expect(store.getState().toast.current?.message).toEqual({ key: "toast.added", params: { title: "Read later" } });
   });
 });

@@ -1,23 +1,23 @@
 import { describe, expect, it } from "vitest";
 
-import { makeProject, makeTodo } from "@/test/factories";
+import { makeProject, makeTask } from "@/test/factories";
 
 import { linkProjects, parseData, serializeData } from "./document";
 
 const work = makeProject({ id: "work", name: "Work" });
 
 describe("parseData", () => {
-  it("reads todos and projects and keeps their links", () => {
-    const todo = makeTodo({ id: "a", title: "Report", projectId: "work" });
-    expect(parseData({ todos: [todo], projects: [work] })).toEqual({ todos: [todo], projects: [work] });
+  it("reads tasks and projects and keeps their links", () => {
+    const task = makeTask({ id: "a", title: "Report", projectId: "work" });
+    expect(parseData({ tasks: [task], projects: [work] })).toEqual({ tasks: [task], projects: [work] });
   });
 
   it("drops links to projects that do not exist", () => {
-    const data = parseData({ todos: [makeTodo({ id: "a", title: "Orphan", projectId: "gone" })], projects: [] });
-    expect(data?.todos[0]?.projectId).toBeNull();
+    const data = parseData({ tasks: [makeTask({ id: "a", title: "Orphan", projectId: "gone" })], projects: [] });
+    expect(data?.tasks[0]?.projectId).toBeNull();
   });
 
-  it("rejects input without todos", () => {
+  it("rejects input without tasks", () => {
     expect(parseData({ projects: [work] })).toBeNull();
     expect(parseData("nope")).toBeNull();
   });
@@ -25,15 +25,15 @@ describe("parseData", () => {
 
 describe("linkProjects", () => {
   it("keeps the same objects when every link is valid", () => {
-    const todo = makeTodo({ id: "a", title: "Report", projectId: "work" });
-    expect(linkProjects([todo], new Set(["work"]))[0]).toBe(todo);
+    const task = makeTask({ id: "a", title: "Report", projectId: "work" });
+    expect(linkProjects([task], new Set(["work"]))[0]).toBe(task);
   });
 });
 
 describe("serializeData", () => {
   it("writes tasks and projects", () => {
-    expect(JSON.parse(serializeData({ todos: [], projects: [work] }))).toEqual({
-      todos: [],
+    expect(JSON.parse(serializeData({ tasks: [], projects: [work] }))).toEqual({
+      tasks: [],
       projects: [work],
     });
   });

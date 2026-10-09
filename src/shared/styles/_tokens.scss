@@ -190,7 +190,14 @@
   --radius-md: 16px;
   --radius-lg: 22px;
   --radius-xl: 28px;
+  --radius-sheet: 40px;
   --radius-full: 999px;
+
+  // Inner radius = outer radius - the padding between them
+  --radius-in-popover: calc(var(--radius-xl) - 6px);
+  --radius-in-menu: calc(var(--radius-lg) - 6px);
+  --radius-in-card: calc(var(--radius-xl) - 16px);
+  --radius-in-sheet: calc(var(--radius-sheet) - 20px);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);

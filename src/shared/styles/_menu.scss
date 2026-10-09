@@ -18,7 +18,7 @@
   inline-size: 100%;
   min-block-size: 40px;
   padding-inline: 10px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--menu-item-radius, var(--radius-in-popover));
   font-size: 0.9375rem;
   text-align: start;
   transition: background-color var(--duration-fast) var(--ease-out);

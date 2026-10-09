@@ -9,7 +9,7 @@ test.describe("with a Ukrainian browser", () => {
     await page.goto("./");
     await expect(page.locator("html")).toHaveAttribute("lang", "uk");
     await expect(page.getByRole("heading", { level: 1, name: "Усі завдання" })).toBeVisible();
-    await expect(page).toHaveTitle("Завдання · Приватний список справ");
+    await expect(page).toHaveTitle("Завдання · Приватний планувальник завдань");
   });
 });
 
@@ -20,7 +20,7 @@ test.describe("with a Czech browser", () => {
     await page.goto("./");
     await expect(page.locator("html")).toHaveAttribute("lang", "cs");
     await expect(page.getByRole("heading", { level: 1, name: "Všechny úkoly" })).toBeVisible();
-    await expect(page).toHaveTitle("Úkoly · Soukromý seznam úkolů");
+    await expect(page).toHaveTitle("Úkoly · Soukromý plánovač úkolů");
     await page.getByRole("textbox", { name: "Nový úkol" }).fill("Zavolat mámě zítra");
     await page.keyboard.press("Enter");
     await expect(page.getByText("Zavolat mámě", { exact: true })).toBeVisible();
@@ -37,7 +37,7 @@ test("switches the language in the settings and remembers it", async ({ page }) 
   await expect(page.getByRole("dialog", { name: "Ustawienia" })).toBeHidden();
   await page.waitForFunction(() => {
     const state: unknown = history.state;
-    return typeof state !== "object" || state === null || !("todoOverlay" in state);
+    return typeof state !== "object" || state === null || !("taskOverlay" in state);
   });
 
   await page.reload();

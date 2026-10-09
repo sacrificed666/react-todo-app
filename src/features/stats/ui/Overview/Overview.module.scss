@@ -66,7 +66,7 @@
   gap: 2px;
   min-inline-size: 0;
   padding: 10px 8px 10px 10px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-in-card);
   background-color: var(--color-fill);
 
   &[data-tone="overdue"] {
@@ -250,7 +250,7 @@
   row-gap: 5px;
   inline-size: 100%;
   padding: 7px 8px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-in-card);
   text-align: start;
   transition: background-color var(--duration-fast) var(--ease-out);
 

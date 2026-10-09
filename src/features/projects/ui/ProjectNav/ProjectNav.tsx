@@ -6,8 +6,8 @@ import { useI18n } from "@/features/i18n/model/useI18n";
 import { projectView } from "@/features/lists/model/lists";
 import { selectList, selectSearching } from "@/features/lists/model/selectors";
 import { listChanged, overlayOpened } from "@/features/lists/model/viewSlice";
-import { selectProjectCounts } from "@/features/todos/model/selectors";
-import { useDropTarget } from "@/features/todos/ui/TaskDnd/useDropTarget";
+import { selectProjectCounts } from "@/features/tasks/model/selectors";
+import { useDropTarget } from "@/features/tasks/ui/TaskDnd/useDropTarget";
 import IconButton from "@/shared/ui/IconButton/IconButton";
 
 import { splitProjectName, type Project } from "../../model/project";

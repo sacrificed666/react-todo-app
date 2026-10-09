@@ -6,36 +6,26 @@ import { initialViewState, type ViewPreferences } from "@/features/lists/model/v
 import { projectsAdapter } from "@/features/projects/model/projectsSlice";
 import { selectProjects } from "@/features/projects/model/selectors";
 import { readSettings, type Settings } from "@/features/settings/model/settings";
-import { selectTodos } from "@/features/todos/model/selectors";
-import { todosAdapter } from "@/features/todos/model/todosSlice";
+import { selectTasks } from "@/features/tasks/model/selectors";
+import { tasksAdapter } from "@/features/tasks/model/tasksSlice";
 import { isRecord } from "@/shared/lib/guards";
-import { getStorage, moveKey, readJson, removeKey, writeText } from "@/shared/lib/storage";
+import { getStorage, readJson, writeText } from "@/shared/lib/storage";
 
 import type { AppStore, RootState } from "./store";
 
 export const STORAGE_KEYS = {
-  data: "tasks/todos",
+  data: "tasks/data",
   preferences: "tasks/preferences",
-  legacyData: "react-todo-app/todos",
-  legacyPreferences: "react-todo-app/preferences",
-  legacyTodos: "toDoList",
 } as const;
 
 type Preferences = Settings & ViewPreferences;
 
-const EMPTY_DATA: DataSnapshot = { todos: [], projects: [] };
+const EMPTY_DATA: DataSnapshot = { tasks: [], projects: [] };
 
-// Saved tasks and projects, moved over from the oldest format once
+// Saved tasks and projects, empty when there are none
 const loadData = (storage: Storage): DataSnapshot => {
-  const current = readJson(storage, STORAGE_KEYS.data);
-  if (current !== undefined) return parseData(current) ?? EMPTY_DATA;
-
-  const legacy = readJson(storage, STORAGE_KEYS.legacyTodos);
-  if (legacy === undefined) return EMPTY_DATA;
-
-  const migrated = parseData(legacy) ?? EMPTY_DATA;
-  if (writeText(storage, STORAGE_KEYS.data, serializeData(migrated))) removeKey(storage, STORAGE_KEYS.legacyTodos);
-  return migrated;
+  const stored = readJson(storage, STORAGE_KEYS.data);
+  return stored === undefined ? EMPTY_DATA : (parseData(stored) ?? EMPTY_DATA);
 };
 
 // The saved list, unless its project no longer exists
@@ -43,9 +33,8 @@ const readListPreference = (preferences: Record<string, unknown>, data: DataSnap
   if (isViewId(preferences.list)) {
     const projectId = projectIdOf(preferences.list);
     if (projectId === null || data.projects.some((project) => project.id === projectId)) return preferences.list;
-    return initialViewState.list;
   }
-  return preferences.filter === "completed" ? "completed" : initialViewState.list;
+  return initialViewState.list;
 };
 
 // Saved settings, list, sort and completed toggle with defaults
@@ -77,13 +66,11 @@ export const loadPersistedState = (
 ): Partial<RootState> | undefined => {
   if (!storage) return undefined;
 
-  moveKey(storage, STORAGE_KEYS.legacyData, STORAGE_KEYS.data);
-  moveKey(storage, STORAGE_KEYS.legacyPreferences, STORAGE_KEYS.preferences);
   const data = loadData(storage);
   const { list, sort, showCompleted, ...settings } = loadPreferences(storage, languages, data);
 
   return {
-    todos: todosAdapter.setAll(todosAdapter.getInitialState(), data.todos),
+    tasks: tasksAdapter.setAll(tasksAdapter.getInitialState(), data.tasks),
     projects: projectsAdapter.setAll(projectsAdapter.getInitialState(), data.projects),
     view: { ...initialViewState, list, sort, showCompleted },
     settings,
@@ -104,18 +91,18 @@ const parseStoredData = (value: string | null): DataSnapshot => {
 export const startPersistence = (store: AppStore, storage: Storage | null = getStorage()): (() => void) => {
   if (!storage) return () => {};
 
-  let { todos, projects } = store.getState();
+  let { tasks, projects } = store.getState();
   let preferences = JSON.stringify(selectPreferences(store.getState()));
 
   const unsubscribe = store.subscribe(() => {
     const state = store.getState();
 
-    if (state.todos !== todos || state.projects !== projects) {
-      ({ todos, projects } = state);
+    if (state.tasks !== tasks || state.projects !== projects) {
+      ({ tasks, projects } = state);
       writeText(
         storage,
         STORAGE_KEYS.data,
-        serializeData({ todos: selectTodos(state), projects: selectProjects(state) }),
+        serializeData({ tasks: selectTasks(state), projects: selectProjects(state) }),
       );
     }
 

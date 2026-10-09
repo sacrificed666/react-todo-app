@@ -6,7 +6,7 @@ import ListNav from "@/features/lists/ui/ListNav/ListNav";
 import TagNav from "@/features/lists/ui/TagNav/TagNav";
 import OfflineBadge from "@/features/notifications/ui/OfflineBadge/OfflineBadge";
 import ProjectNav from "@/features/projects/ui/ProjectNav/ProjectNav";
-import TodoSearch from "@/features/search/ui/TodoSearch/TodoSearch";
+import TaskSearch from "@/features/search/ui/TaskSearch/TaskSearch";
 import SettingsButton from "@/features/settings/ui/SettingsButton/SettingsButton";
 import Overview from "@/features/stats/ui/Overview/Overview";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
@@ -41,7 +41,7 @@ const Navigator = () => {
           <ActionsMenu variant="ghost" />
         </div>
       </div>
-      <TodoSearch inputRef={searchRef} />
+      <TaskSearch inputRef={searchRef} />
       <ListNav />
       <ProjectNav />
       <TagNav />

@@ -4,13 +4,13 @@ import type { DataSnapshot } from "./actions";
 import { parseData } from "./document";
 
 export const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
-export const MAX_IMPORT_TODOS = 5000;
+export const MAX_IMPORT_TASKS = 5000;
 
 // The export document with its date
-export const createExport = ({ todos, projects }: DataSnapshot, exportedAt: Date) => ({
+export const createExport = ({ tasks, projects }: DataSnapshot, exportedAt: Date) => ({
   app: "tasks",
   exportedAt: exportedAt.toISOString(),
-  todos,
+  tasks,
   projects,
 });
 
@@ -29,5 +29,5 @@ export const readImport = (text: string): DataSnapshot | null => {
   }
 
   const snapshot = parseData(data);
-  return snapshot ? { todos: snapshot.todos.slice(0, MAX_IMPORT_TODOS), projects: snapshot.projects } : null;
+  return snapshot ? { tasks: snapshot.tasks.slice(0, MAX_IMPORT_TASKS), projects: snapshot.projects } : null;
 };

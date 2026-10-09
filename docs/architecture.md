@@ -21,7 +21,7 @@ The source code is organised by **feature**, in four layers. A layer may only im
 flowchart TB
   app["🚀 app<br/>entry point, store, persistence, launch, PWA, back button, error boundary"]
   widgets["🧩 widgets<br/>Sidebar, Toolbar, Workspace, Inspector, Backdrop"]
-  features["✨ features<br/>todos, projects, lists, data, stats, commands, search, settings, i18n, notifications"]
+  features["✨ features<br/>tasks, projects, lists, data, stats, commands, search, settings, i18n, notifications"]
   shared["🧰 shared<br/>ui primitives, hooks, lib, styles"]
 
   app --> widgets
@@ -42,11 +42,11 @@ flowchart TB
 
 | Feature            | Model                                                                                                                                                    | UI                                                                                                                                                                             |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ✅ `todos`         | `Todo` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, subtasks                                    | `TodoComposer`, `TodoList`, `TodoSection`, `TodoItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker`, `TagPicker` |
+| ✅ `tasks`         | `Task` model, slice, selectors (tags, due dates, projects), thunks (incl. drops), repeats, quick add parser, subtasks                                    | `TaskComposer`, `TaskList`, `TaskSection`, `TaskItem`, `TaskMenu`, `TaskDnd`, `TaskDetails`, `TaskDetailsDialog`, `TaskDetailsPanel`, `DuePicker`, `RepeatPicker`, `TagPicker` |
 | 📁 `projects`      | `Project` model with colours and emoji icons, slice, selectors, `createProject()` and `deleteProject()`                                                  | `ProjectNav`, `ProjectDialog`, `EmojiPicker`, `ProjectPicker`, `ProjectIcon`                                                                                                   |
 | 📚 `lists`         | Smart lists and project views (`ViewId`), date groups, sort orders, view slice with overlays, `useViewInfo()`, list shortcuts, page swipes               | `ListNav`, `TagNav`, `TabBar`, `ListsSheet`, `ListHeader`, `SortMenu`                                                                                                          |
 | 💾 `data`          | The stored document (`parseData`, `serializeData`), import and export, `dataReplaced` and `dataImported`, undo history                                   | None                                                                                                                                                                           |
-| 🔎 `search`        | None                                                                                                                                                     | `TodoSearch`                                                                                                                                                                   |
+| 🔎 `search`        | None                                                                                                                                                     | `TaskSearch`                                                                                                                                                                   |
 | 📊 `stats`         | The 7-day activity, streak and project progress selectors                                                                                                | `Overview`                                                                                                                                                                     |
 | ⌘ `commands`       | `useTaskCommands()` shared by both menus, command ranking                                                                                                | `ActionsMenu`, `CommandPalette`                                                                                                                                                |
 | 🎨 `settings`      | Appearance, accent, background, glass, language and effects, `changeLocale()`, document sync                                                             | `SettingsDialog`, `SettingsButton`                                                                                                                                             |
@@ -74,7 +74,7 @@ Reducers are pure: they never touch `localStorage`, timers or `Date.now()`. Time
 
 ```ts
 interface RootState {
-  todos: EntityState<Todo, string>;
+  tasks: EntityState<Task, string>;
   projects: EntityState<Project, string>;
   view: {
     list: ViewId;
@@ -102,13 +102,13 @@ interface RootState {
 }
 ```
 
-- 🗂️ `todos` and `projects` are normalized with `createEntityAdapter`. The order of `ids` is the manual order of tasks and the sidebar order of projects, so drag and drop only rearranges `ids`.
+- 🗂️ `tasks` and `projects` are normalized with `createEntityAdapter`. The order of `ids` is the manual order of tasks and the sidebar order of projects, so drag and drop only rearranges `ids`.
 - 🧭 `view.list` is a `ViewId`: a smart list (`"all"`, `"today"`, …) or a project view `` `project:${id}` ``. `selectList()` falls back to `"all"` when the project no longer exists, so undoing a project's creation or deleting it in another tab never leaves an empty screen.
 - 🪟 `view.overlay` describes the one open modal surface: the palette, the settings, the phones' Lists sheet or the project dialog. `overlayClosed(kind)` only closes the overlay of that kind, so a late close event from one dialog can never close the next one.
 - 👁️ Only `list`, `sort` and `showCompleted` of the view are persisted.
 - 🎨 `settings` holds the colour scheme, accent, background, glass style, language and effects level.
 - 🔔 `toast` holds the current notification as a **message key with parameters**, so it is translated at render time and switches language together with the rest of the UI.
-- ↩️ `history` keeps up to 50 snapshots of the `todos` and `projects` slices for undo and redo.
+- ↩️ `history` keeps up to 50 snapshots of the `tasks` and `projects` slices for undo and redo.
 
 ## 🧬 Data model
 
@@ -121,7 +121,7 @@ erDiagram
     number createdAt "epoch milliseconds"
     number updatedAt "epoch milliseconds"
   }
-  TODO {
+  TASK {
     string id PK "nanoid, matches [A-Za-z0-9_-]{1,64}"
     string title "1-200 characters"
     boolean completed
@@ -145,16 +145,16 @@ erDiagram
     string title "1-200 characters"
     boolean completed
   }
-  PROJECT ||--o{ TODO : "contains"
-  TODO ||--o{ TAG : "is tagged with"
-  TODO ||--o{ SUBTASK : "has, in order"
+  PROJECT ||--o{ TASK : "contains"
+  TASK ||--o{ TAG : "is tagged with"
+  TASK ||--o{ SUBTASK : "has, in order"
 ```
 
 - 📅 `dueDate` and `repeatAnchor` are local calendar dates. Keeping dates as keys instead of timestamps avoids time zone surprises and lets lists compare dates as plain strings.
-- 🔗 `projectId` is validated twice: `parseTodos()` keeps only well-formed ids, and `parseData()` drops links to projects that are not in the same document.
+- 🔗 `projectId` is validated twice: `parseTasks()` keeps only well-formed ids, and `parseData()` drops links to projects that are not in the same document.
 - 😀 A project's emoji icon is **derived** by `splitProjectName()` with `Intl.Segmenter`, so flags and emoji built from several code points stay whole. The project dialog edits the emoji and the rest of the name separately and joins them with `joinProjectName()`, so the stored name keeps its old format.
-- 🏷️ Tags are **stored** on the task. `splitTitleTags()` moves `#words` out of a title when a task is created, renamed or read from an older version that kept them in the title, and `mergeTags()` drops repeats in any letter case and keeps at most ten.
-- ☑️ Subtasks are stored in order on the task (`model/subtasks.ts`). Data from versions that wrote `- [ ] item` lines into the notes is converted by `extractChecklist()` the first time it is read, and a repeating task starts its next occurrence with every subtask open again.
+- 🏷️ Tags are **stored** on the task. `splitTitleTags()` moves `#words` out of a title when a task is created or renamed, and `mergeTags()` drops repeats in any letter case and keeps at most ten.
+- ☑️ Subtasks are stored in order on the task (`model/subtasks.ts`). A repeating task starts its next occurrence with every subtask open again.
 
 ## 🔄 Task lifecycle
 
@@ -177,16 +177,16 @@ Completing the last active task of a list or project triggers the `toast.allDone
 ```mermaid
 sequenceDiagram
   actor User
-  participant Row as TodoItem
-  participant Slice as todosSlice
+  participant Row as TaskItem
+  participant Slice as tasksSlice
   User->>Row: Completes "Pay rent" (monthly, due 28 Feb, anchor 31 Jan)
-  Row->>Slice: todoToggled(id) with a fresh nextId
+  Row->>Slice: taskToggled(id) with a fresh nextId
   Slice->>Slice: mark completed, clear repeat and anchor on the original
   Slice->>Slice: insert copy due nextOccurrence(28 Feb, monthly, today, 31 Jan)
   Slice-->>Row: "Pay rent" completed + "Pay rent" due 31 Mar
 ```
 
-`nextOccurrence()` in `features/todos/model/repeat.ts` advances daily and weekly series from the due date, skips weekends for `weekdays` and counts monthly and yearly series from the **anchor**: the first date of the series. A series that started on the 31st returns to the 31st after a short month. Choosing a new date by hand moves the anchor; **Move to today** keeps it. Because the whole change is one action, one undo removes the copy and reopens the original.
+`nextOccurrence()` in `features/tasks/model/repeat.ts` advances daily and weekly series from the due date, skips weekends for `weekdays` and counts monthly and yearly series from the **anchor**: the first date of the series. A series that started on the 31st returns to the 31st after a short month. Choosing a new date by hand moves the anchor; **Move to today** keeps it. Because the whole change is one action, one undo removes the copy and reopens the original.
 
 ## 🍰 Slices and actions
 
@@ -194,26 +194,26 @@ Action names follow the Redux style guide and describe events in the past tense.
 
 | Slice      | Action                       | Effect                                                                                        |
 | ---------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
-| `todos`    | `todoAdded`                  | Prepends a todo created from a draft (title, importance, date, repeat, project)               |
-|            | `todoToggled`                | Flips `completed`, updates the timestamps and inserts the next occurrence of a repeating todo |
-|            | `todoRenamed`                | Renames a todo, ignoring empty or unchanged titles                                            |
-|            | `todoImportanceToggled`      | Stars or unstars a todo                                                                       |
-|            | `todoScheduled`              | Sets or clears the due date and moves the repeat anchor                                       |
-|            | `todosScheduled`             | Moves several todos to one date (Move to today), keeping their anchors                        |
-|            | `todoRepeatChanged`          | Sets or clears the repeat rule, giving undated todos a date                                   |
-|            | `todoProjectChanged`         | Moves a todo to a project or out of it                                                        |
-|            | `todoNoted`                  | Replaces the notes, normalized and limited to 2000 characters                                 |
-|            | `todoDuplicated`             | Inserts an active copy right after the original                                               |
-|            | `todoMoved`                  | Moves one id to the position of another (drag and drop)                                       |
-|            | `allTodosMarked`             | Marks every todo as completed or active                                                       |
-|            | `todosRemoved`               | Removes several todos                                                                         |
-|            | `todosRestored`              | Re-inserts removed todos at their original indices                                            |
+| `tasks`    | `taskAdded`                  | Prepends a task created from a draft (title, importance, date, repeat, project)               |
+|            | `taskToggled`                | Flips `completed`, updates the timestamps and inserts the next occurrence of a repeating task |
+|            | `taskRenamed`                | Renames a task, ignoring empty or unchanged titles                                            |
+|            | `taskImportanceToggled`      | Stars or unstars a task                                                                       |
+|            | `taskScheduled`              | Sets or clears the due date and moves the repeat anchor                                       |
+|            | `tasksScheduled`             | Moves several tasks to one date (Move to today), keeping their anchors                        |
+|            | `taskRepeatChanged`          | Sets or clears the repeat rule, giving undated tasks a date                                   |
+|            | `taskProjectChanged`         | Moves a task to a project or out of it                                                        |
+|            | `taskNoted`                  | Replaces the notes, normalized and limited to 2000 characters                                 |
+|            | `taskDuplicated`             | Inserts an active copy right after the original                                               |
+|            | `taskMoved`                  | Moves one id to the position of another (drag and drop)                                       |
+|            | `allTasksMarked`             | Marks every task as completed or active                                                       |
+|            | `tasksRemoved`               | Removes several tasks                                                                         |
+|            | `tasksRestored`              | Re-inserts removed tasks at their original indices                                            |
 | `projects` | `projectAdded`               | Appends a project created from a name and colour                                              |
 |            | `projectUpdated`             | Renames and recolours a project in one step                                                   |
 |            | `projectMoved`               | Moves a project in the sidebar order                                                          |
-|            | `projectRemoved`             | Removes a project; `todos` removes its tasks and `view` leaves its screen in the same action  |
-| `data`     | `dataImported`               | Appends todos and projects whose ids are not known yet                                        |
-|            | `dataReplaced`               | Replaces todos and projects, used by cross-tab sync                                           |
+|            | `projectRemoved`             | Removes a project; `tasks` removes its tasks and `view` leaves its screen in the same action  |
+| `data`     | `dataImported`               | Appends tasks and projects whose ids are not known yet                                        |
+|            | `dataReplaced`               | Replaces tasks and projects, used by cross-tab sync                                           |
 | `view`     | `listChanged`                | Opens a smart list or a project and ends the search                                           |
 |            | `queryChanged`               | Updates the search query                                                                      |
 |            | `sortChanged`                | Selects the sort order                                                                        |
@@ -234,7 +234,7 @@ Action names follow the Redux style guide and describe events in the past tense.
 
 ## ↩️ Undo and redo
 
-`withHistory()` in `features/data/model/history.ts` wraps the combined root reducer. After every action it compares the `todos` and `projects` slices before and after; when either changed, both previous slices are pushed to `history.past` together with a translatable description such as `history.renamed { title }` or `history.projectRemoved { name }`.
+`withHistory()` in `features/data/model/history.ts` wraps the combined root reducer. After every action it compares the `tasks` and `projects` slices before and after; when either changed, both previous slices are pushed to `history.past` together with a translatable description such as `history.renamed { title }` or `history.projectRemoved { name }`.
 
 ```mermaid
 sequenceDiagram
@@ -244,16 +244,16 @@ sequenceDiagram
   participant History as history slice
   User->>UI: Delete project "Work"
   UI->>Root: projectRemoved("work")
-  Root->>Root: projects and todos changed?
-  Root->>History: push { todos, projects, description }
+  Root->>Root: projects and tasks changed?
+  Root->>History: push { tasks, projects, description }
   User->>UI: ⌘Z
   UI->>Root: undo() → undone
   Root->>History: move the snapshot to future
-  Root-->>UI: todos and projects = snapshot
+  Root-->>UI: tasks and projects = snapshot
   UI-->>User: "Undone: delete project “Work”"
 ```
 
-- 🧠 Snapshots are cheap: Immer shares every unchanged todo and project between snapshots, so only the changed objects are new.
+- 🧠 Snapshots are cheap: Immer shares every unchanged task and project between snapshots, so only the changed objects are new.
 - 🔢 The history keeps the last **50** changes and clears the redo stack whenever a new change is made.
 - 🔄 `dataReplaced` (a change from another tab) clears the history, because undoing would overwrite the other tab's work.
 - ⌨️ <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes and <kbd>⇧</kbd>+<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd> or <kbd>Ctrl</kbd>+<kbd>Y</kbd> redoes, except inside text fields where the browser's own undo applies.
@@ -264,18 +264,18 @@ Thunks coordinate several slices:
 
 | Thunk                            | Feature  | What it does                                                                                                                                                    |
 | -------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ➕ `addTodo(draft)`              | todos    | Adds a todo, clears a search that would hide it and, when it belongs to another list or project, shows a notification with **Show**. Returns `false` for blanks |
-| ✅ `toggleTodo(id, day)`         | todos    | Toggles a todo and returns `true` when it was the last active task of the current list or project, after showing `toast.allDone`                                |
-| 🎯 `dropTodo(id, target, today)` | todos    | Applies a drop on the sidebar (schedule, star, complete or move to a project) and offers **Undo**                                                               |
-| 📄 `duplicateTodo(id)`           | todos    | Duplicates a todo, confirms it in a notification and returns the id of the copy                                                                                 |
-| 🗑️ `removeTodos(ids)`            | todos    | Captures each todo with its index, removes them, closes their details and shows a notification with a **Restore** action                                        |
-| 📆 `rescheduleOverdue(today)`    | todos    | Moves every overdue todo to today in one undoable step and offers **Undo** in the notification                                                                  |
-| 🧹 `clearCompleted()`            | todos    | Removes every completed todo through `removeTodos`                                                                                                              |
-| ↩️ `undoRemoval()`               | todos    | Restores the todos stored in the current notification and dismisses it                                                                                          |
+| ➕ `addTask(draft)`              | tasks    | Adds a task, clears a search that would hide it and, when it belongs to another list or project, shows a notification with **Show**. Returns `false` for blanks |
+| ✅ `toggleTask(id, day)`         | tasks    | Toggles a task and returns `true` when it was the last active task of the current list or project, after showing `toast.allDone`                                |
+| 🎯 `dropTask(id, target, today)` | tasks    | Applies a drop on the sidebar (schedule, star, complete or move to a project) and offers **Undo**                                                               |
+| 📄 `duplicateTask(id)`           | tasks    | Duplicates a task, confirms it in a notification and returns the id of the copy                                                                                 |
+| 🗑️ `removeTasks(ids)`            | tasks    | Captures each task with its index, removes them, closes their details and shows a notification with a **Restore** action                                        |
+| 📆 `rescheduleOverdue(today)`    | tasks    | Moves every overdue task to today in one undoable step and offers **Undo** in the notification                                                                  |
+| 🧹 `clearCompleted()`            | tasks    | Removes every completed task through `removeTasks`                                                                                                              |
+| ↩️ `undoRemoval()`               | tasks    | Restores the tasks stored in the current notification and dismisses it                                                                                          |
 | 📁 `createProject(draft)`        | projects | Adds a project and opens it                                                                                                                                     |
 | 🗑️ `deleteProject(id)`           | projects | Removes a project with its tasks, closes their details and offers **Undo**                                                                                      |
-| 📥 `importData(text)`            | data     | Validates a file, merges new todos and projects and reports the result                                                                                          |
-| 📤 `exportData()`                | data     | Downloads every todo and project as `tasks-YYYY-MM-DD.json`                                                                                                     |
+| 📥 `importData(text)`            | data     | Validates a file, merges new tasks and projects and reports the result                                                                                          |
+| 📤 `exportData()`                | data     | Downloads every task and project as `tasks-YYYY-MM-DD.json`                                                                                                     |
 | ⏪ `undo()` / `redo()`           | data     | Steps through the history and describes the step in a notification                                                                                              |
 | 🌍 `changeLocale(locale)`        | settings | Loads the language's messages, then switches; reports a failure in a notification                                                                               |
 
@@ -283,11 +283,11 @@ Thunks coordinate several slices:
 
 Selectors that depend on the calendar take today's date key as a second argument, which keeps them pure; components get it from `useToday()`, which refreshes every minute and therefore rolls over at midnight.
 
-- 🗂️ `selectTodos`, `selectTodoById`, `selectProjects`, `selectProjectById` from the entity adapters;
+- 🗂️ `selectTasks`, `selectTaskById`, `selectProjects`, `selectProjectById` from the entity adapters;
 - 🧭 `selectList`, `selectCurrentProject`, `selectSearching`, `selectOverlay` and `useViewInfo()`, which turns the view into a title, icon and kind (`list`, `project` or `search`);
 - 🔢 `selectListCounts(state, today)`: active counters for every list, plus `overdue` and `total`; `selectProjectCounts`: active tasks per project;
 - 📈 `selectListProgress(state, today)`: done and total for the open list or project;
-- 👁️ `selectVisibleTodos(state, today, query?)`: `{ active, completed }` after applying the view, the search (title **and** notes, across every list) and the sort order. The task list passes a deferred query, so typing stays instant;
+- 👁️ `selectVisibleTasks(state, today, query?)`: `{ active, completed }` after applying the view, the search (title **and** notes, across every list) and the sort order. The task list passes a deferred query, so typing stays instant;
 - 📅 `selectDueDateCounts`: active tasks per day, for the calendar dots;
 - 🔥 `selectActivity(state, today)`: completions for each of the last seven days and the current streak; `selectProjectProgress`: done and total per project;
 - 🧹 `selectCompletedIds`, `selectHistory`, `selectSettings`, `selectToast` and small field selectors.
@@ -319,7 +319,7 @@ flowchart LR
 
 ## 🗂️ Date groups
 
-`groupActiveTodos(todos, view, today)` in `features/lists/model/groups.ts` turns the active todos of a view into sections: **Today** becomes _Overdue_ and _Today_, **Upcoming** becomes one group per day for the next seven days and one per month after that, and every other list, project and search stays a single group. Each group is its own `SortableContext`, so dragging reorders within a day, and rows in a day group hide their date chip.
+`groupActiveTasks(tasks, view, today)` in `features/lists/model/groups.ts` turns the active tasks of a view into sections: **Today** becomes _Overdue_ and _Today_, **Upcoming** becomes one group per day for the next seven days and one per month after that, and every other list, project and search stays a single group. Each group is its own `SortableContext`, so dragging reorders within a day, and rows in a day group hide their date chip.
 
 ## 💾 Persistence
 
@@ -327,21 +327,19 @@ flowchart LR
 
 | Key                 | Content                                                                                                 |
 | ------------------- | ------------------------------------------------------------------------------------------------------- |
-| `tasks/todos`       | `{ "todos": Todo[], "projects": Project[] }`                                                            |
+| `tasks/data`        | `{ "tasks": Task[], "projects": Project[] }`                                                            |
 | `tasks/preferences` | `{ "list", "sort", "showCompleted", "appearance", "accent", "backdrop", "glass", "locale", "effects" }` |
-| `react-todo-app/*`  | Keys of the app before it was renamed to Tasks, moved to the keys above on first launch                 |
-| `toDoList`          | Legacy data in the original format, migrated and removed on first launch                                |
 
-- 📂 **Loading**: `loadPersistedState()` reads both keys and falls back to safe defaults when data is missing or corrupted. A saved project view whose project is gone opens **All tasks**, an old `filter` preference is mapped to the matching list, and the language is detected from `navigator.languages` on the first launch.
-- 🛡️ **Validation**: everything read from storage, other tabs or imported files goes through `parseData()`, which runs `parseTodos()` and `parseProjects()`. They accept every earlier format, drop invalid entries, dates, colours and links, replace unsafe or duplicate ids and normalize timestamps.
-- 💾 **Saving**: a store subscriber writes the data document only when the `todos` or `projects` slice changed, and the preferences only when their serialized form changed.
+- 📂 **Loading**: `loadPersistedState()` reads both keys and falls back to safe defaults when data is missing or corrupted. A saved project view whose project is gone opens **All tasks**, and the language is detected from `navigator.languages` on the first launch.
+- 🛡️ **Validation**: everything read from storage, other tabs or imported files goes through `parseData()`, which runs `parseTasks()` and `parseProjects()`. They accept only the current format, drop invalid entries, dates, colours and links, replace unsafe or duplicate ids and normalize timestamps.
+- 💾 **Saving**: a store subscriber writes the data document only when the `tasks` or `projects` slice changed, and the preferences only when their serialized form changed.
 - 🔄 **Cross-tab sync**: a `storage` event from another tab dispatches `dataReplaced`. Because identical values are never rewritten, tabs do not ping-pong updates.
 - 🎨 **Theme before paint**: `main.tsx` calls `applySettings()` before React renders; `useDocumentSync()` keeps `<html lang data-appearance data-accent data-backdrop data-glass data-effects>` and the `theme-color` meta tag in sync afterwards.
 - 🚫 **Unavailable storage**: private modes or blocked storage simply disable persistence; the app keeps working in memory.
 - ⏱️ **Pending completions**: a completed row waits 420 ms before it leaves the list so the check animation can play. If the page is hidden or closed, or the row disappears because another list opened, the pending completion is saved right away, so nothing is lost.
 
 > [!IMPORTANT]
-> The store subscriber writes synchronously after every change. Anything that delays a dispatch, such as an animation, must save its change on `pagehide` and on unmount, the way `TodoItem` does for completions.
+> The store subscriber writes synchronously after every change. Anything that delays a dispatch, such as an animation, must save its change on `pagehide` and on unmount, the way `TaskItem` does for completions.
 
 ```mermaid
 sequenceDiagram
@@ -349,7 +347,7 @@ sequenceDiagram
   participant LS as localStorage
   participant B as Tab B
   A->>A: projectAdded
-  A->>LS: write tasks/todos
+  A->>LS: write tasks/data
   LS-->>B: storage event
   B->>B: parseData(newValue)
   B->>B: dataReplaced, history cleared
@@ -390,7 +388,7 @@ sequenceDiagram
   participant App
   participant History as window.history
   User->>App: Opens the Lists sheet
-  App->>History: pushState({ todoOverlay: id })
+  App->>History: pushState({ taskOverlay: id })
   alt User presses Back
     History-->>App: popstate (marker gone)
     App->>App: overlayClosed / detailsClosed
@@ -409,7 +407,7 @@ sequenceDiagram
 `TaskDnd` wraps the whole layout in one `DndContext`, so tasks can travel from the list to the sidebar.
 
 - 🧲 **Collision detection** first looks for a sidebar drop target under the pointer (`pointerWithin`) and otherwise falls back to `closestCenter` among the sortable rows.
-- 🎯 **Targets**: `useDropTarget(view, label)` registers smart lists and projects as droppables with ids like `drop:today` and `drop:project:work`; `dropTodo()` turns a drop into a schedule, star, completion or project change.
+- 🎯 **Targets**: `useDropTarget(view, label)` registers smart lists and projects as droppables with ids like `drop:today` and `drop:project:work`; `dropTask()` turns a drop into a schedule, star, completion or project change.
 - 🪞 **Overlay**: a `DragOverlay` shows a glass copy of the task aligned with the handle, while the original row stays in place as a faded placeholder.
 - 🔊 **Announcements** describe picking up, moving over a row or a list, dropping and cancelling.
 
@@ -423,7 +421,7 @@ Large lists stay responsive through a few targeted techniques, measured with 200
 
 | Technique                                                                                 | Effect                                                         |
 | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| 🧠 `memo(TodoItem)` and rows that read the current list from the store only when they act | Changing one task re-renders one row instead of all of them    |
+| 🧠 `memo(TaskItem)` and rows that read the current list from the store only when they act | Changing one task re-renders one row instead of all of them    |
 | 🧷 A stable `items` array for every `SortableContext`                                     | dnd-kit no longer re-renders every sortable row on each change |
 | 🧩 Sections render the first 120 rows at once and the rest in a transition                | Opening a long list paints in about 0.1 s instead of 0.8 s     |
 | ⏳ The task list filters with `useDeferredValue(query)`                                   | Each keystroke in the search takes 30-50 ms                    |
@@ -436,7 +434,7 @@ A toast is `{ id, message, tone, action }`:
 
 - 💬 `message` is `{ key, params }`; parameters may themselves be messages (for example the undone action) or plain strings such as a project name, and `formatMessage()` translates them recursively.
 - 🎨 `tone` is `neutral`, `success` (with a sparkle) or `error`.
-- 🔘 `action` is `restore` (the removed todos with their positions), `undo` (step back through the history), `show` (jump to the list or project a new todo was added to) or `reload` (a waiting service worker update). Update notifications stay until the user acts on them; the others close after six seconds unless hovered or focused.
+- 🔘 `action` is `restore` (the removed tasks with their positions), `undo` (step back through the history), `show` (jump to the list or project a new task was added to) or `reload` (a waiting service worker update). Update notifications stay until the user acts on them; the others close after six seconds unless hovered or focused.
 
 ## 🗺️ Component map
 
@@ -448,17 +446,17 @@ App
 │   ├── Toolbar              Phones: brand, condensed title, 🔍, settings and ⋯ in a glass capsule
 │   ├── Sidebar              Desktop: a <header> banner panel with the overview below it
 │   │   ├── Brand, SettingsButton, ActionsMenu, OfflineBadge
-│   │   ├── TodoSearch       Search field with the ⌘K palette button, / shortcut
+│   │   ├── TaskSearch       Search field with the ⌘K palette button, / shortcut
 │   │   ├── ListNav          Smart lists with counters, drop targets
 │   │   ├── ProjectNav       Projects with icons and counters, + button, drop targets
 │   │   ├── TagNav           Tags of active tasks with counters
 │   │   └── Overview         Progress, stats, 7-day chart, streak and project progress (below 1240 px)
 │   ├── Workspace
 │   │   ├── ListHeader       Icon, title, date or result count, progress, sort and project edit buttons
-│   │   ├── TodoComposer     Quick add field with the star, DuePicker, ProjectPicker and TagPicker, N shortcut
-│   │   └── TodoList         Date groups, empty states, deferred search
-│   │       └── TodoSection  SortableContext, chunked rendering, one glass group per section
-│   │           └── TodoItem Checkbox, title, chips, actions, swipes, long press, keyboard, TaskMenu
+│   │   ├── TaskComposer     Quick add field with the star, DuePicker, ProjectPicker and TagPicker, N shortcut
+│   │   └── TaskList         Date groups, empty states, deferred search
+│   │       └── TaskSection  SortableContext, chunked rendering, one glass group per section
+│   │           └── TaskItem Checkbox, title, chips, actions, swipes, long press, keyboard, TaskMenu
 │   ├── Inspector            Wide screens: an <aside> with the Overview, or TaskDetailsPanel with TaskDetails
 │   └── ListsSheet           Phones: smart lists, projects and tags in a bottom sheet
 ├── Footer                   A <footer> with the author, the version and the source code
@@ -477,7 +475,7 @@ Reusable, store-agnostic primitives live in `shared/ui`: `Icon`, `IconButton`, `
 - 🪟 **Popovers**: `Popover` renders a native `<dialog popover>` anchored to its trigger with CSS anchor positioning, falls back to measured coordinates in older browsers and gets light dismiss, <kbd>Esc</kbd> and top-layer rendering from the platform.
 - 📋 **Context menus**: `ContextMenu` is a `role="menu"` popover placed at the pointer and kept inside the viewport. It moves focus with the arrow keys, closes on <kbd>Tab</kbd> and returns focus to where it was opened. When a long press opened it, clicks are ignored until the finger is lifted, so the release cannot pick an item.
 - 🗔 **Dialogs**: `Dialog` wraps a modal `<dialog>` opened with `showModal()` in a layout effect, closes on <kbd>Esc</kbd> or a backdrop click (`closedby="any"`) and returns focus to the element that opened it. On phones it becomes a bottom sheet.
-- 🌊 **Leave transitions**: when completing, deleting, starring, rescheduling or moving takes a task out of the current list, `TodoItem` first marks itself as leaving, waits for its CSS transitions with `waitForTransitions()`, and only then dispatches the action inside `flushSync`.
+- 🌊 **Leave transitions**: when completing, deleting, starring, rescheduling or moving takes a task out of the current list, `TaskItem` first marks itself as leaving, waits for its CSS transitions with `waitForTransitions()`, and only then dispatches the action inside `flushSync`.
 - ⏳ **Deferred completion**: completing a task waits about 0.4 s so the check mark can be seen. A second click during that window cancels the change.
 - 👆 **Touch**: horizontal moves of more than 12 px become swipes, a press held for about half a second without moving opens the menu, and a tap on the title opens the details. Vertical movement is left to the browser (`touch-action: pan-y`).
 - 📖 **Page swipes**: `useSwipeNavigation()` in `features/lists` listens to touches on the whole document on phones. Rows mark themselves with `data-own-swipe`, so a swipe that starts on a task stays with the task; open popovers, dialogs, a field being edited and anything that scrolls sideways keep their touches too. A move of 24 px engages the gesture, 64 px turns the page, and the click that ends a swipe is swallowed so it cannot press the tab under the finger.

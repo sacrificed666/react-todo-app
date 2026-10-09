@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest";
 
-import { makeProject, makeTodo, sampleTodos } from "@/test/factories";
+import { makeProject, makeTask, sampleTasks } from "@/test/factories";
 
-import { createExport, exportFileName, MAX_IMPORT_BYTES, MAX_IMPORT_TODOS, readImport } from "./transfer";
+import { createExport, exportFileName, MAX_IMPORT_BYTES, MAX_IMPORT_TASKS, readImport } from "./transfer";
 
 const projects = [makeProject({ id: "work", name: "Work", color: "violet" })];
-const todos = [makeTodo({ id: "deck", title: "Slides", projectId: "work" }), ...sampleTodos];
+const tasks = [makeTask({ id: "deck", title: "Slides", projectId: "work" }), ...sampleTasks];
 
 describe("createExport", () => {
-  it("wraps todos and projects with metadata", () => {
-    expect(createExport({ todos, projects }, new Date("2026-09-30T10:00:00.000Z"))).toEqual({
+  it("wraps tasks and projects with metadata", () => {
+    expect(createExport({ tasks, projects }, new Date("2026-09-30T10:00:00.000Z"))).toEqual({
       app: "tasks",
       exportedAt: "2026-09-30T10:00:00.000Z",
-      todos,
+      tasks,
       projects,
     });
   });
@@ -24,16 +24,16 @@ describe("createExport", () => {
 
 describe("readImport", () => {
   it("reads exports produced by the app", () => {
-    const text = JSON.stringify(createExport({ todos, projects }, new Date()));
-    expect(readImport(text)).toEqual({ todos, projects });
+    const text = JSON.stringify(createExport({ tasks, projects }, new Date()));
+    expect(readImport(text)).toEqual({ tasks, projects });
   });
 
-  it("reads older files without projects", () => {
-    expect(readImport(JSON.stringify({ version: 5, todos: sampleTodos }))).toEqual({
-      todos: sampleTodos,
+  it("reads files without projects and refuses a plain list", () => {
+    expect(readImport(JSON.stringify({ version: 5, tasks: sampleTasks }))).toEqual({
+      tasks: sampleTasks,
       projects: [],
     });
-    expect(readImport(JSON.stringify(sampleTodos))?.todos).toEqual(sampleTodos);
+    expect(readImport(JSON.stringify(sampleTasks))).toBeNull();
   });
 
   it("rejects broken, foreign and oversized files", () => {
@@ -42,10 +42,10 @@ describe("readImport", () => {
     expect(readImport(" ".repeat(MAX_IMPORT_BYTES + 1))).toBeNull();
   });
 
-  it("limits the number of imported todos", () => {
-    const many = Array.from({ length: MAX_IMPORT_TODOS + 5 }, (_, index) =>
-      makeTodo({ id: `todo-${index}`, title: `Task ${index}` }),
+  it("limits the number of imported tasks", () => {
+    const many = Array.from({ length: MAX_IMPORT_TASKS + 5 }, (_, index) =>
+      makeTask({ id: `task-${index}`, title: `Task ${index}` }),
     );
-    expect(readImport(JSON.stringify(many))?.todos).toHaveLength(MAX_IMPORT_TODOS);
+    expect(readImport(JSON.stringify({ tasks: many }))?.tasks).toHaveLength(MAX_IMPORT_TASKS);
   });
 });

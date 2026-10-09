@@ -10,7 +10,7 @@ import { useViewInfo } from "@/features/lists/model/useViewInfo";
 import { queryChanged } from "@/features/lists/model/viewSlice";
 import { LIST_TITLE_ID } from "@/features/lists/ui/ListHeader/ListHeader";
 import OfflineBadge from "@/features/notifications/ui/OfflineBadge/OfflineBadge";
-import TodoSearch from "@/features/search/ui/TodoSearch/TodoSearch";
+import TaskSearch from "@/features/search/ui/TaskSearch/TaskSearch";
 import SettingsButton from "@/features/settings/ui/SettingsButton/SettingsButton";
 import { useRefraction } from "@/shared/hooks/useRefraction";
 import { useScrolledPast } from "@/shared/hooks/useScrolledPast";
@@ -63,7 +63,7 @@ const Toolbar = () => {
     <header className={styles.toolbar} data-condensed={condensed || undefined}>
       {searchVisible ? (
         <div className={styles.search}>
-          <TodoSearch inputRef={inputRef} onClose={closeSearch} />
+          <TaskSearch inputRef={inputRef} onClose={closeSearch} />
           <button type="button" className={styles.cancel} onClick={closeSearch}>
             {t("search.cancel")}
           </button>

@@ -1,15 +1,15 @@
 import { isListId, type ListId } from "@/features/lists/model/lists";
 import { listChanged } from "@/features/lists/model/viewSlice";
 import { toastShown } from "@/features/notifications/model/toastSlice";
-import { addTodo } from "@/features/todos/model/thunks";
-import { normalizeTitle, type TodoDraft } from "@/features/todos/model/todo";
+import { normalizeTitle, type TaskDraft } from "@/features/tasks/model/task";
+import { addTask } from "@/features/tasks/model/thunks";
 
 import type { AppStore } from "./store";
 
 export interface LaunchIntent {
   list: ListId | null;
   compose: boolean;
-  draft: TodoDraft | null;
+  draft: TaskDraft | null;
 }
 
 const LAUNCH_PARAMS = ["list", "action", "title", "text", "url"] as const;
@@ -39,7 +39,7 @@ export const applyLaunchIntent = (store: AppStore, intent: LaunchIntent) => {
   if (intent.list) store.dispatch(listChanged(intent.list));
   if (intent.compose && store.getState().view.list === "completed") store.dispatch(listChanged("all"));
 
-  if (intent.draft && store.dispatch(addTodo(intent.draft))) {
+  if (intent.draft && store.dispatch(addTask(intent.draft))) {
     store.dispatch(
       toastShown({
         message: { key: "toast.added", params: { title: normalizeTitle(intent.draft.title) } },

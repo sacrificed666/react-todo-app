@@ -51,7 +51,7 @@
   display: grid;
   place-items: center;
   aspect-ratio: 1;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-in-popover);
   font-size: 1.25rem;
   line-height: 1;
   transition: background-color var(--duration-fast) var(--ease-out);

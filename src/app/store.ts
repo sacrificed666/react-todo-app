@@ -5,10 +5,10 @@ import { viewSlice } from "@/features/lists/model/viewSlice";
 import { toastSlice } from "@/features/notifications/model/toastSlice";
 import { projectsSlice } from "@/features/projects/model/projectsSlice";
 import { settingsSlice } from "@/features/settings/model/settingsSlice";
-import { todosSlice } from "@/features/todos/model/todosSlice";
+import { tasksSlice } from "@/features/tasks/model/tasksSlice";
 
 export const rootReducer = withHistory(
-  combineSlices(todosSlice, projectsSlice, viewSlice, settingsSlice, toastSlice, historySlice),
+  combineSlices(tasksSlice, projectsSlice, viewSlice, settingsSlice, toastSlice, historySlice),
 );
 
 export type RootState = ReturnType<typeof rootReducer>;

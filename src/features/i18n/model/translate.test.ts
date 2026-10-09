@@ -14,15 +14,15 @@ const placeholders = (message: Message) => {
 
 describe("translate", () => {
   it("interpolates parameters with each language's quotes", () => {
-    expect(translate("en", "todo.delete", { title: "Milk" })).toBe("Delete “Milk”");
-    expect(translate("uk", "todo.delete", { title: "Молоко" })).toBe("Видалити «Молоко»");
-    expect(translate("de", "todo.delete", { title: "Milch" })).toBe("„Milch“ löschen");
-    expect(translate("fr", "todo.delete", { title: "Lait" })).toBe("Supprimer «\u00a0Lait\u00a0»");
-    expect(translate("pl", "todo.delete", { title: "Mleko" })).toBe("Usuń „Mleko”");
+    expect(translate("en", "task.delete", { title: "Milk" })).toBe("Delete “Milk”");
+    expect(translate("uk", "task.delete", { title: "Молоко" })).toBe("Видалити «Молоко»");
+    expect(translate("de", "task.delete", { title: "Milch" })).toBe("„Milch“ löschen");
+    expect(translate("fr", "task.delete", { title: "Lait" })).toBe("Supprimer «\u00a0Lait\u00a0»");
+    expect(translate("pl", "task.delete", { title: "Mleko" })).toBe("Usuń „Mleko”");
   });
 
   it("keeps unknown placeholders untouched", () => {
-    expect(translate("en", "todo.delete")).toBe("Delete “{title}”");
+    expect(translate("en", "task.delete")).toBe("Delete “{title}”");
   });
 
   it("selects plural forms", () => {

@@ -6,7 +6,7 @@ import { projectView } from "@/features/lists/model/lists";
 import { listChanged } from "@/features/lists/model/viewSlice";
 import { splitProjectName } from "@/features/projects/model/project";
 import ProjectIcon from "@/features/projects/ui/ProjectIcon/ProjectIcon";
-import { selectListCounts } from "@/features/todos/model/selectors";
+import { selectListCounts } from "@/features/tasks/model/selectors";
 import { useToday } from "@/shared/hooks/useToday";
 import { formatWeekdayShort } from "@/shared/lib/date";
 import Icon from "@/shared/ui/Icon/Icon";

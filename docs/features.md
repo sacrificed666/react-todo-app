@@ -273,7 +273,7 @@ Exported files look like this:
 {
   "app": "tasks",
   "exportedAt": "2026-10-02T10:00:00.000Z",
-  "todos": [
+  "tasks": [
     {
       "id": "V1StGXR8_Z5jdHi6B-myT",
       "title": "Book train tickets to Lviv",
@@ -310,16 +310,13 @@ Importing never deletes anything:
 
 - 🔁 tasks and projects whose `id` already exists are skipped, new ones are appended;
 - 🔗 links to projects that are missing from the file are dropped, so a task never points to nothing;
-- 📄 a plain array of tasks is accepted as well as the full export;
-- 🏷️ files from versions that kept `#tags` in the title get them moved into `tags`;
-- 🕰️ older files without projects, repeats, notes, subtasks, importance or dates, with `- [ ]` checklists in the notes, or in the first `{ "id", "text", "isCompleted" }` format, are converted automatically;
+- 📄 only files in the export format above are read: a document with a `tasks` list and, optionally, `projects`;
 - 🚫 invalid entries, dates, colours and ids are ignored or replaced, and broken or oversized files are reported in a notification.
 
 ## 💾 Persistence and sync
 
 - 💾 Tasks, projects, the selected list, sort order, the completed section state, appearance, language and effects are saved to `localStorage` after every change.
 - 🔄 Changes made in another tab of the same browser appear immediately.
-- 🕰️ Data saved in an older format is migrated to the current one on first launch.
 - 🔒 Your tasks never leave your device: there is no account, no server and no analytics. The only outside request is for the language flags, made when you open the language list.
 
 ## 📱 Install, offline and app integration

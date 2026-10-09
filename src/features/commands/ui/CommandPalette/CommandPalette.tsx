@@ -31,8 +31,8 @@ import {
 } from "@/features/settings/model/settingsSlice";
 import { ACCENTS, APPEARANCES, BACKDROPS, GLASS_STYLES } from "@/features/settings/model/theme";
 import { changeLocale } from "@/features/settings/model/thunks";
-import { selectTodos } from "@/features/todos/model/selectors";
-import { COMPOSER_INPUT_ID } from "@/features/todos/ui/ids";
+import { selectTasks } from "@/features/tasks/model/selectors";
+import { COMPOSER_INPUT_ID } from "@/features/tasks/ui/ids";
 import { useShortcut } from "@/shared/hooks/useShortcut";
 import { useToday } from "@/shared/hooks/useToday";
 import { describeDueDate } from "@/shared/lib/date";
@@ -86,7 +86,7 @@ const PaletteContent = () => {
   const list = useAppSelector(selectList);
   const sort = useAppSelector(selectSort);
   const settings = useAppSelector(selectSettings);
-  const todos = useAppSelector(selectTodos);
+  const tasks = useAppSelector(selectTasks);
   const projects = useAppSelector(selectProjects);
   const taskCommands = useTaskCommands();
   const [query, setQuery] = useState("");
@@ -123,21 +123,21 @@ const PaletteContent = () => {
   ];
 
   const foundTasks: Command[] = trimmed
-    ? todos
-        .flatMap((todo) => {
-          const score = fuzzyScore(trimmed, todo.title) ?? (todo.notes ? fuzzyScore(trimmed, todo.notes) : null);
-          return score === null ? [] : [{ todo, score }];
+    ? tasks
+        .flatMap((task) => {
+          const score = fuzzyScore(trimmed, task.title) ?? (task.notes ? fuzzyScore(trimmed, task.notes) : null);
+          return score === null ? [] : [{ task, score }];
         })
         .toSorted((a, b) => b.score - a.score)
         .slice(0, TASK_LIMIT)
-        .map(({ todo }) => ({
-          id: `task-${todo.id}`,
+        .map(({ task }) => ({
+          id: `task-${task.id}`,
           group: "tasks",
-          label: todo.title,
-          keywords: todo.notes,
-          icon: todo.completed ? "circleCheck" : todo.important ? "star" : "list",
-          hint: todo.dueDate ? describeDueDate(todo.dueDate, today, intlLocale).label : undefined,
-          run: () => dispatch(detailsOpened(todo.id)),
+          label: task.title,
+          keywords: task.notes,
+          icon: task.completed ? "circleCheck" : task.important ? "star" : "list",
+          hint: task.dueDate ? describeDueDate(task.dueDate, today, intlLocale).label : undefined,
+          run: () => dispatch(detailsOpened(task.id)),
         }))
     : [];
 

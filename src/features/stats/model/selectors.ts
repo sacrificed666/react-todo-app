@@ -3,18 +3,18 @@ import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "@/app/store";
 import type { Project } from "@/features/projects/model/project";
 import { selectProjects } from "@/features/projects/model/selectors";
-import { selectTodos } from "@/features/todos/model/selectors";
+import { selectTasks } from "@/features/tasks/model/selectors";
 import { addDays, toDateKey } from "@/shared/lib/date";
 
 // Passes today's date through to the selectors
 const selectToday = (_state: RootState, today: string) => today;
 
 // Completions of the last seven days and the current streak
-export const selectActivity = createSelector([selectTodos, selectToday], (todos, today) => {
+export const selectActivity = createSelector([selectTasks, selectToday], (tasks, today) => {
   const completions = new Map<string, number>();
-  for (const todo of todos) {
-    if (!todo.completed || todo.completedAt === null) continue;
-    const day = toDateKey(new Date(todo.completedAt));
+  for (const task of tasks) {
+    if (!task.completed || task.completedAt === null) continue;
+    const day = toDateKey(new Date(task.completedAt));
     completions.set(day, (completions.get(day) ?? 0) + 1);
   }
 
@@ -40,14 +40,14 @@ export interface ProjectProgress {
 }
 
 // Done and total tasks of every project with tasks
-export const selectProjectProgress = createSelector([selectTodos, selectProjects], (todos, projects) => {
+export const selectProjectProgress = createSelector([selectTasks, selectProjects], (tasks, projects) => {
   const totals = new Map<string, { done: number; total: number }>();
-  for (const todo of todos) {
-    if (todo.projectId === null) continue;
-    const entry = totals.get(todo.projectId) ?? { done: 0, total: 0 };
+  for (const task of tasks) {
+    if (task.projectId === null) continue;
+    const entry = totals.get(task.projectId) ?? { done: 0, total: 0 };
     entry.total += 1;
-    if (todo.completed) entry.done += 1;
-    totals.set(todo.projectId, entry);
+    if (task.completed) entry.done += 1;
+    totals.set(task.projectId, entry);
   }
   return projects.flatMap((project): ProjectProgress[] => {
     const entry = totals.get(project.id);

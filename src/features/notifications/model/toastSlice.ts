@@ -2,7 +2,7 @@ import { createSlice, nanoid, type PayloadAction } from "@reduxjs/toolkit";
 
 import type { MessageKey } from "@/features/i18n/model/translate";
 import type { ViewId } from "@/features/lists/model/lists";
-import type { RemovedTodo } from "@/features/todos/model/todosSlice";
+import type { RemovedTask } from "@/features/tasks/model/tasksSlice";
 
 export interface ToastMessage {
   key: MessageKey;
@@ -12,10 +12,10 @@ export interface ToastMessage {
 export type ToastTone = "neutral" | "success" | "error";
 
 export type ToastAction =
-  | { type: "restore"; todos: RemovedTodo[] }
+  | { type: "restore"; tasks: RemovedTask[] }
   | { type: "reload" }
   | { type: "undo" }
-  | { type: "show"; list: ViewId; todoId: string };
+  | { type: "show"; list: ViewId; taskId: string };
 
 export interface Toast {
   id: string;

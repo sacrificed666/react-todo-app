@@ -1,7 +1,7 @@
 import type { AppThunk, RootState } from "@/app/store";
 import { toastShown, type ToastMessage } from "@/features/notifications/model/toastSlice";
 import { selectProjects } from "@/features/projects/model/selectors";
-import { selectTodos } from "@/features/todos/model/selectors";
+import { selectTasks } from "@/features/tasks/model/selectors";
 import { downloadJson } from "@/shared/lib/download";
 
 import { dataImported } from "./actions";
@@ -22,13 +22,13 @@ export const importData =
     }
 
     const state = getState();
-    const todos = data.todos.filter((todo) => !(todo.id in state.todos.entities));
+    const tasks = data.tasks.filter((task) => !(task.id in state.tasks.entities));
     const projects = data.projects.filter((project) => !(project.id in state.projects.entities));
-    dispatch(dataImported({ todos, projects }));
+    dispatch(dataImported({ tasks, projects }));
 
     const message: ToastMessage =
-      todos.length > 0
-        ? { key: "toast.imported", params: { count: todos.length } }
+      tasks.length > 0
+        ? { key: "toast.imported", params: { count: tasks.length } }
         : projects.length > 0
           ? { key: "toast.importedProjects", params: { count: projects.length } }
           : { key: "toast.nothingImported" };
@@ -39,7 +39,7 @@ export const importData =
 export const exportData = (): AppThunk => (_dispatch, getState) => {
   const state = getState();
   const now = new Date();
-  downloadJson(exportFileName(now), createExport({ todos: selectTodos(state), projects: selectProjects(state) }, now));
+  downloadJson(exportFileName(now), createExport({ tasks: selectTasks(state), projects: selectProjects(state) }, now));
 };
 
 // Undoes the last change and says what it was

@@ -3,7 +3,7 @@
 [![CI/CD](https://github.com/sacrificed666/tasks/actions/workflows/ci.yml/badge.svg)](https://github.com/sacrificed666/tasks/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/sacrificed666/tasks/actions/workflows/codeql.yml/badge.svg)](https://github.com/sacrificed666/tasks/actions/workflows/codeql.yml)
 
-A private to-do list that lives in your browser: plan the day with smart lists, group tasks into projects, repeat them on a schedule and find anything with one search, on a computer or a phone, online or offline. Built with React 19, Redux Toolkit, TypeScript 7 and Vite 8 as a static, local-first web app, in ten languages, accessible, light or dark. Your tasks stay on your device: no account, no server and no analytics.
+A private task planner that lives in your browser: plan the day with smart lists, group tasks into projects, repeat them on a schedule and find anything with one search, on a computer or a phone, online or offline. Built with React 19, Redux Toolkit, TypeScript 7 and Vite 8 as a static, local-first web app, in ten languages, accessible, light or dark. Your tasks stay on your device: no account, no server and no analytics.
 
 **[🌐 Live demo](https://sacrificed666.github.io/react-todo-app/)**
 
@@ -65,6 +65,13 @@ npm ci
 npm run dev          # http://localhost:5173/react-todo-app/
 ```
 
+🛠️ Or with `make`, which lists every command with `make help`:
+
+```bash
+make setup           # packages, .env and the test browser
+make dev             # the dev server
+```
+
 ```bash
 npm run check        # lint, format check, type check and unit tests in one go
 npm run test:e2e     # browsers, offline mode, accessibility and Lighthouse on the production build
@@ -74,7 +81,7 @@ npm run build        # production build in dist/
 🐳 The same app runs in Docker, with an overlay for every environment, see [Deployment](./docs/deployment.md#-docker):
 
 ```bash
-docker compose -f compose.yaml -f docker/development.yaml up --watch
+docker compose -f compose.yaml -f docker/development.yaml up --watch   # or: make up
 ```
 
 ## 📚 Documentation

@@ -1,8 +1,8 @@
 import { useAppSelector } from "@/app/hooks";
 import { selectList, selectSearching } from "@/features/lists/model/selectors";
 import ListHeader from "@/features/lists/ui/ListHeader/ListHeader";
-import TodoComposer from "@/features/todos/ui/TodoComposer/TodoComposer";
-import TodoList from "@/features/todos/ui/TodoList/TodoList";
+import TaskComposer from "@/features/tasks/ui/TaskComposer/TaskComposer";
+import TaskList from "@/features/tasks/ui/TaskList/TaskList";
 
 import styles from "./Workspace.module.scss";
 
@@ -16,8 +16,8 @@ const Workspace = () => {
   return (
     <main id={WORKSPACE_ID} className={styles.main} tabIndex={-1}>
       <ListHeader />
-      {searching || list === "completed" ? null : <TodoComposer key={list} view={list} />}
-      <TodoList />
+      {searching || list === "completed" ? null : <TaskComposer key={list} view={list} />}
+      <TaskList />
     </main>
   );
 };

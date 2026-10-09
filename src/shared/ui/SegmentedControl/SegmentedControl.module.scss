@@ -1,10 +1,11 @@
 @use "@/shared/styles/mixins" as *;
 
+// A capsule by default; a container can set --segmented-radius to stay concentric
 .control {
   --inset: 3px;
   position: relative;
   isolation: isolate;
-  border-radius: var(--radius-full);
+  border-radius: var(--segmented-radius, var(--radius-full));
   background-color: var(--color-fill);
   box-shadow: inset 0 1px 2px var(--color-shade);
   --segment: calc((100% - 2 * var(--inset)) / var(--count));
@@ -22,7 +23,7 @@
 
 .indicator {
   position: absolute;
-  border-radius: var(--radius-full);
+  border-radius: calc(var(--segmented-radius, var(--radius-full)) - var(--inset));
   background-color: var(--glass-tint-pressed);
   inset-block: var(--inset);
   left: calc(var(--inset) + var(--index) * var(--segment));
@@ -53,7 +54,7 @@
   gap: 6px;
   min-inline-size: 0;
   padding-inline: 10px;
-  border-radius: var(--radius-full);
+  border-radius: calc(var(--segmented-radius, var(--radius-full)) - var(--inset));
   color: var(--color-text-secondary);
   font-size: 0.9375rem;
   font-weight: 500;

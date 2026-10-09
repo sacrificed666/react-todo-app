@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { setupStore } from "@/app/store";
 import { detailsOpened } from "@/features/lists/model/viewSlice";
 import { selectToast } from "@/features/notifications/model/selectors";
-import { makeProject, makeState, makeTodo } from "@/test/factories";
+import { makeProject, makeState, makeTask } from "@/test/factories";
 
 import { selectProjects } from "./selectors";
 import { createProject, deleteProject } from "./thunks";
@@ -28,7 +28,7 @@ describe("deleteProject", () => {
   it("removes the project and its tasks, closes their details and offers undo", () => {
     const store = setupStore(
       makeState(
-        [makeTodo({ id: "a", title: "Slides", projectId: "work" }), makeTodo({ id: "b", title: "Milk" })],
+        [makeTask({ id: "a", title: "Slides", projectId: "work" }), makeTask({ id: "b", title: "Milk" })],
         "project:work",
         "",
         [makeProject({ id: "work", name: "Work" })],
@@ -39,7 +39,7 @@ describe("deleteProject", () => {
     store.dispatch(deleteProject("work"));
 
     const state = store.getState();
-    expect(state.todos.ids).toEqual(["b"]);
+    expect(state.tasks.ids).toEqual(["b"]);
     expect(state.view).toMatchObject({ list: "all", detailsId: null });
     expect(selectToast(state)).toMatchObject({
       message: { key: "toast.projectDeleted", params: { name: "Work", count: 1 } },

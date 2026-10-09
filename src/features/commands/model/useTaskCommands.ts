@@ -2,9 +2,9 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { exportData, redo, selectHistory, undo } from "@/features/data/model/thunks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import { formatMessage } from "@/features/notifications/model/format";
-import { selectListCounts } from "@/features/todos/model/selectors";
-import { clearCompleted } from "@/features/todos/model/thunks";
-import { allTodosMarked } from "@/features/todos/model/todosSlice";
+import { selectListCounts } from "@/features/tasks/model/selectors";
+import { allTasksMarked } from "@/features/tasks/model/tasksSlice";
+import { clearCompleted } from "@/features/tasks/model/thunks";
 import { useToday } from "@/shared/hooks/useToday";
 import { isApplePlatform } from "@/shared/lib/keyboard";
 import type { IconName } from "@/shared/ui/Icon/icons";
@@ -55,7 +55,7 @@ export const useTaskCommands = (): readonly TaskCommand[] => {
       label: allCompleted ? t("actions.markAllActive") : t("actions.completeAll"),
       icon: allCompleted ? "rotate" : "checkAll",
       disabled: counts.total === 0,
-      run: () => dispatch(allTodosMarked(!allCompleted)),
+      run: () => dispatch(allTasksMarked(!allCompleted)),
     },
     {
       id: "clear",

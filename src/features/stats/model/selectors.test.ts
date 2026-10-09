@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { setupStore } from "@/app/store";
-import { makeProject, makeState, makeTodo } from "@/test/factories";
+import { makeProject, makeState, makeTask } from "@/test/factories";
 
 import { selectActivity, selectProjectProgress } from "./selectors";
 
@@ -9,7 +9,7 @@ const today = "2026-10-01";
 const stateWith = (...args: Parameters<typeof makeState>) => setupStore(makeState(...args)).getState();
 
 const noonOf = (day: string) => new Date(`${day}T12:00:00`).getTime();
-const doneOn = (id: string, day: string) => makeTodo({ id, title: id, completed: true, completedAt: noonOf(day) });
+const doneOn = (id: string, day: string) => makeTask({ id, title: id, completed: true, completedAt: noonOf(day) });
 
 describe("selectActivity", () => {
   it("counts completions for the last seven days", () => {
@@ -18,7 +18,7 @@ describe("selectActivity", () => {
       doneOn("b", "2026-10-01"),
       doneOn("c", "2026-09-29"),
       doneOn("d", "2026-09-20"),
-      makeTodo({ id: "open", title: "Open" }),
+      makeTask({ id: "open", title: "Open" }),
     ]);
 
     const { days } = selectActivity(state, today);
@@ -48,10 +48,10 @@ describe("selectProjectProgress", () => {
     const state = setupStore(
       makeState(
         [
-          makeTodo({ id: "a", title: "A", projectId: "home" }),
-          makeTodo({ id: "b", title: "B", projectId: "home", completed: true, completedAt: 1 }),
-          makeTodo({ id: "c", title: "C", projectId: "work" }),
-          makeTodo({ id: "d", title: "D" }),
+          makeTask({ id: "a", title: "A", projectId: "home" }),
+          makeTask({ id: "b", title: "B", projectId: "home", completed: true, completedAt: 1 }),
+          makeTask({ id: "c", title: "C", projectId: "work" }),
+          makeTask({ id: "d", title: "D" }),
         ],
         "all",
         "",

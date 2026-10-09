@@ -10,7 +10,7 @@ import packageJson from "./package.json" with { type: "json" };
 
 const base = "/react-todo-app/";
 const description =
-  "A free, private to-do list with projects, tags, smart lists, repeating tasks and a calendar. Works offline in ten languages and keeps your tasks on your device.";
+  "A free, private task planner with projects, tags, smart lists, repeats and a calendar. Works offline in ten languages and keeps your tasks on your device.";
 
 const contentSecurityPolicy = [
   "default-src 'self'",

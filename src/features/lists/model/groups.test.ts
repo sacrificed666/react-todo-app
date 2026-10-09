@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 
-import { makeTodo } from "@/test/factories";
+import { makeTask } from "@/test/factories";
 
-import { groupActiveTodos } from "./groups";
+import { groupActiveTasks } from "./groups";
 
 const today = "2026-10-01";
-const due = (id: string, dueDate: string | null) => makeTodo({ id, title: id, dueDate });
-const shape = (groups: ReturnType<typeof groupActiveTodos>) =>
-  groups.map(({ id, kind, date, todos }) => [id, kind, date, todos.map((todo) => todo.id)]);
+const due = (id: string, dueDate: string | null) => makeTask({ id, title: id, dueDate });
+const shape = (groups: ReturnType<typeof groupActiveTasks>) =>
+  groups.map(({ id, kind, date, tasks }) => [id, kind, date, tasks.map((task) => task.id)]);
 
-describe("groupActiveTodos", () => {
+describe("groupActiveTasks", () => {
   it("splits Today into overdue and today", () => {
-    const groups = groupActiveTodos([due("a", today), due("b", "2026-09-28"), due("c", today)], "today", today);
+    const groups = groupActiveTasks([due("a", today), due("b", "2026-09-28"), due("c", today)], "today", today);
     expect(shape(groups)).toEqual([
       ["overdue", "overdue", null, ["b"]],
       ["today", "day", today, ["a", "c"]],
@@ -19,12 +19,12 @@ describe("groupActiveTodos", () => {
   });
 
   it("leaves out empty groups", () => {
-    expect(shape(groupActiveTodos([due("a", today)], "today", today))).toEqual([["today", "day", today, ["a"]]]);
-    expect(groupActiveTodos([], "today", today)).toEqual([]);
+    expect(shape(groupActiveTasks([due("a", today)], "today", today))).toEqual([["today", "day", today, ["a"]]]);
+    expect(groupActiveTasks([], "today", today)).toEqual([]);
   });
 
   it("groups Upcoming by day for a week and by month afterwards", () => {
-    const groups = groupActiveTodos(
+    const groups = groupActiveTasks(
       [
         due("nov", "2026-11-03"),
         due("tomorrow", "2026-10-02"),
@@ -47,7 +47,7 @@ describe("groupActiveTodos", () => {
   });
 
   it("keeps other lists in one group", () => {
-    expect(shape(groupActiveTodos([due("a", null), due("b", today)], "all", today))).toEqual([
+    expect(shape(groupActiveTasks([due("a", null), due("b", today)], "all", today))).toEqual([
       ["active", "all", null, ["a", "b"]],
     ]);
   });

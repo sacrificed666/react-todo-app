@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
 import ProjectIcon from "@/features/projects/ui/ProjectIcon/ProjectIcon";
-import { selectListProgress, selectVisibleTodos } from "@/features/todos/model/selectors";
+import { selectListProgress, selectVisibleTasks } from "@/features/tasks/model/selectors";
 import { useToday } from "@/shared/hooks/useToday";
 import { formatHeadline } from "@/shared/lib/date";
 import Icon from "@/shared/ui/Icon/Icon";
@@ -25,7 +25,7 @@ const ListHeader = () => {
   const view = useViewInfo();
   const { done, total } = useAppSelector((state) => selectListProgress(state, today));
   const results = useAppSelector((state) => {
-    const { active, completed } = selectVisibleTodos(state, today);
+    const { active, completed } = selectVisibleTasks(state, today);
     return active.length + completed.length;
   });
   const showProgress =

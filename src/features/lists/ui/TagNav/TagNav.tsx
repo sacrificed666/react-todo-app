@@ -2,7 +2,7 @@ import { useId } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
-import { selectTagCounts } from "@/features/todos/model/selectors";
+import { selectTagCounts } from "@/features/tasks/model/selectors";
 import Icon from "@/shared/ui/Icon/Icon";
 
 import { selectQuery } from "../../model/selectors";
@@ -38,7 +38,7 @@ const TagNav = ({ onNavigate }: TagNavProps) => {
                 type="button"
                 className={styles.tag}
                 aria-pressed={active}
-                aria-label={t("lists.counter", { label: t("todo.tag", { tag }), count })}
+                aria-label={t("lists.counter", { label: t("task.tag", { tag }), count })}
                 onClick={() => {
                   dispatch(queryChanged(active ? "" : tag));
                   onNavigate?.();

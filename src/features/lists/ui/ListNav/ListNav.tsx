@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useI18n } from "@/features/i18n/model/useI18n";
-import { selectListCounts, type ListCounts } from "@/features/todos/model/selectors";
-import { useDropTarget } from "@/features/todos/ui/TaskDnd/useDropTarget";
+import { selectListCounts, type ListCounts } from "@/features/tasks/model/selectors";
+import { useDropTarget } from "@/features/tasks/ui/TaskDnd/useDropTarget";
 import { useToday } from "@/shared/hooks/useToday";
 import Icon from "@/shared/ui/Icon/Icon";
 

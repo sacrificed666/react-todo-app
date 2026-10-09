@@ -1,7 +1,7 @@
 @use "@/shared/styles/mixins" as *;
 
 .dialog {
-  @include glass(var(--radius-xl), var(--glass-tint-strong), var(--glass-blur-thick));
+  @include glass(var(--radius-sheet), var(--glass-tint-strong), var(--glass-blur-thick));
   position: fixed;
   inline-size: min(34rem, calc(100vw - 24px));
   max-block-size: min(44rem, calc(100dvh - 48px));

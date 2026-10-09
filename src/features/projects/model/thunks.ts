@@ -2,7 +2,7 @@ import type { AppThunk } from "@/app/store";
 import { projectView } from "@/features/lists/model/lists";
 import { detailsClosed, listChanged } from "@/features/lists/model/viewSlice";
 import { toastShown } from "@/features/notifications/model/toastSlice";
-import { selectTodos } from "@/features/todos/model/selectors";
+import { selectTasks } from "@/features/tasks/model/selectors";
 
 import { normalizeProjectName, type ProjectDraft } from "./project";
 import { projectAdded, projectRemoved } from "./projectsSlice";
@@ -26,9 +26,9 @@ export const deleteProject =
     const project = state.projects.entities[id];
     if (!project) return;
 
-    const taskIds = selectTodos(state)
-      .filter((todo) => todo.projectId === id)
-      .map((todo) => todo.id);
+    const taskIds = selectTasks(state)
+      .filter((task) => task.projectId === id)
+      .map((task) => task.id);
     const { detailsId } = state.view;
 
     dispatch(projectRemoved(id));

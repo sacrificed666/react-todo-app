@@ -1,4 +1,4 @@
-import type { Todo } from "@/features/todos/model/todo";
+import type { Task } from "@/features/tasks/model/task";
 
 export const SORT_MODES = ["manual", "dueDate", "priority", "newest", "alphabetical"] as const;
 
@@ -9,7 +9,7 @@ export const isSortMode = (value: unknown): value is SortMode =>
   typeof value === "string" && (SORT_MODES as readonly string[]).includes(value);
 
 // Earlier dates first, tasks without a date last
-const byDueDate = (a: Todo, b: Todo) => {
+const byDueDate = (a: Task, b: Task) => {
   if (a.dueDate === b.dueDate) return 0;
   if (a.dueDate === null) return 1;
   if (b.dueDate === null) return -1;
@@ -19,17 +19,17 @@ const byDueDate = (a: Todo, b: Todo) => {
 const collator = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
 
 // Tasks in the chosen order; manual keeps the dragged order
-export const sortTodos = (todos: readonly Todo[], mode: SortMode): readonly Todo[] => {
+export const sortTasks = (tasks: readonly Task[], mode: SortMode): readonly Task[] => {
   switch (mode) {
     case "manual":
-      return todos;
+      return tasks;
     case "dueDate":
-      return todos.toSorted(byDueDate);
+      return tasks.toSorted(byDueDate);
     case "priority":
-      return todos.toSorted((a, b) => Number(b.important) - Number(a.important));
+      return tasks.toSorted((a, b) => Number(b.important) - Number(a.important));
     case "newest":
-      return todos.toSorted((a, b) => b.createdAt - a.createdAt);
+      return tasks.toSorted((a, b) => b.createdAt - a.createdAt);
     case "alphabetical":
-      return todos.toSorted((a, b) => collator.compare(a.title, b.title));
+      return tasks.toSorted((a, b) => collator.compare(a.title, b.title));
   }
 };

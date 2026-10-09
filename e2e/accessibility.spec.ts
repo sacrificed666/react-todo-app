@@ -41,7 +41,7 @@ for (const scheme of ["light", "dark"] as const) {
 
 test("keeps the empty state accessible", async ({ page, context }) => {
   await context.clearCookies();
-  await page.addInitScript(() => localStorage.removeItem("tasks/todos"));
+  await page.addInitScript(() => localStorage.removeItem("tasks/data"));
   await page.goto("./?list=upcoming");
   expect(await violations(page)).toEqual([]);
 });
